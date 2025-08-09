@@ -51,6 +51,9 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="local\application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="SDL2.dll" />
@@ -1650,6 +1653,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\sdl2\SDL_vulkan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\local\application.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

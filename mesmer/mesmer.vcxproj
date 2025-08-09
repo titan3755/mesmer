@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)include\imgui;$(ProjectDir)include\sdl2;$(ProjectDir)include\ogl;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include\imgui;$(ProjectDir)include\sdl2;$(ProjectDir)include\ogl;$(ProjectDir)include\local;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)lib\sdl2;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)include\imgui;$(ProjectDir)include\sdl2;$(ProjectDir)include\ogl;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include\imgui;$(ProjectDir)include\sdl2;$(ProjectDir)include\ogl;$(ProjectDir)include\local;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)lib\sdl2;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -146,6 +146,7 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="include\ogl\glm\detail\glm.cpp" />
     <ClCompile Include="include\ogl\glm\glm.cppm" />
+    <ClCompile Include="local\application.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -300,6 +301,7 @@
     <ClInclude Include="include\imgui\imstb_rectpack.h" />
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
+    <ClInclude Include="include\local\application.hpp" />
     <ClInclude Include="include\ogl\glad\glad.h" />
     <ClInclude Include="include\ogl\GLFW\glfw3.h" />
     <ClInclude Include="include\ogl\GLFW\glfw3native.h" />
