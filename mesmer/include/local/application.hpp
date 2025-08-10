@@ -2,6 +2,8 @@
 #ifndef MESMER_APPLICATION_HPP
 #define MESMER_APPLICATION_HPP
 
+#include <logger.hpp>
+
 #include <iostream>
 #include <stdexcept>
 #include <glad/glad.h>
