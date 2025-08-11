@@ -2,6 +2,8 @@
 #ifndef MESMER_APPLICATION_HPP
 #define MESMER_APPLICATION_HPP
 
+#include <shader.hpp>
+
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -24,6 +26,7 @@ private:
     const char* windowTitle;
     int argc;
     char** argv;
+	Shader* ourShader; // Pointer to the shader object
 
     SDL_Window* window;
     SDL_GLContext gl_context;

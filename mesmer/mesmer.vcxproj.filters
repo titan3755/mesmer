@@ -54,7 +54,7 @@
     <ClCompile Include="local\application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="local\shader_program.cpp">
+    <ClCompile Include="local\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -474,6 +474,9 @@
     <None Include="include\ogl\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="shaders\triangle.vert" />
+    <None Include="shaders\triangle.frag" />
+    <None Include="imgui.ini" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
@@ -1973,7 +1976,7 @@
     <ClInclude Include="include\spdlog\version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\local\shader_program.hpp">
+    <ClInclude Include="include\local\shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

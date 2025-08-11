@@ -1,25 +1,4 @@
-#include <application.hpp>
-
-const char* vertexShaderSource = R"(
-    #version 460 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 1) in vec3 aColor;
-    out vec3 ourColor;
-    void main() {
-        gl_Position = vec4(aPos, 1.0);
-        ourColor = aColor;
-    }
-)";
-
-const char* fragmentShaderSource = R"(
-    #version 460 core
-    out vec4 FragColor;
-    in vec3 ourColor;
-    void main() {
-        FragColor = vec4(ourColor, 1.0f);
-    }
-)";
-
+#include "application.hpp"
 
 Application::Application(int width, int height, const char* title, int argc, char* argv[]) {
     this->screenWidth = width;
@@ -32,13 +11,10 @@ Application::Application(int width, int height, const char* title, int argc, cha
     this->VBO_vertices = 0;
     this->VBO_colors = 0;
     this->VAO = 0;
-    this->shaderProgram = 0;
+    this->ourShader = nullptr;
+	this->shaderProgram = 0;
     if (argc > 1) {
-        std::cout << "Command line arguments: ";
-        for (int i = 1; i < argc; ++i) {
-            std::cout << argv[i] << " ";
-        }
-        std::cout << std::endl;
+        spdlog::info("Command line arguments detected.");
     }
 }
 
@@ -77,16 +53,17 @@ void Application::run() {
             glViewport(0, 0, screenWidth, screenHeight);
             glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
             glClear(GL_COLOR_BUFFER_BIT);
-            glUseProgram(shaderProgram);
+
+            ourShader->use();
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLES, 0, 3);
+
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
             SDL_GL_SwapWindow(window);
         }
-
     }
     catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        spdlog::error("An exception occurred: {}", e.what());
         cleanup();
     }
 
@@ -97,10 +74,10 @@ void Application::initSDL() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
     }
+    spdlog::info("SDL initialized successfully.");
 }
 
 void Application::initOpenGL() {
-    const char* glsl_version = "#version 460";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -117,7 +94,6 @@ void Application::initOpenGL() {
         screenHeight,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
     );
-
     if (!window) {
         throw std::runtime_error("Failed to create SDL window.");
     }
@@ -133,12 +109,11 @@ void Application::initOpenGL() {
         throw std::runtime_error("Failed to initialize GLAD.");
     }
 
-	spdlog::info("OpenGL Vendor: {}", std::string((const char*)glGetString(GL_VENDOR)));
-    spdlog::info("OpenGL Renderer: {}", std::string((const char*)glGetString(GL_RENDERER)));
-	spdlog::info("OpenGL Version: {}", std::string((const char*)glGetString(GL_VERSION)));
-    spdlog::info("GLSL Version: {}", std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
-    
-	spdlog::info("OpenGL initialized successfully.");
+    spdlog::info("OpenGL Vendor: {}", (const char*)glGetString(GL_VENDOR));
+    spdlog::info("OpenGL Renderer: {}", (const char*)glGetString(GL_RENDERER));
+    spdlog::info("OpenGL Version: {}", (const char*)glGetString(GL_VERSION));
+    spdlog::info("GLSL Version: {}", (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+    spdlog::info("OpenGL initialized successfully.");
 }
 
 void Application::initImGui() {
@@ -150,40 +125,11 @@ void Application::initImGui() {
 
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init("#version 460");
+    spdlog::info("ImGui initialized successfully.");
 }
 
 void Application::initTriangle() {
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        throw std::runtime_error(std::string("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n") + infoLog);
-    }
-
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        throw std::runtime_error(std::string("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n") + infoLog);
-    }
-
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        throw std::runtime_error(std::string("ERROR::SHADER::PROGRAM::LINKING_FAILED\n") + infoLog);
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    ourShader = new Shader("shaders/triangle.vert", "shaders/triangle.frag");
 
     float vertices[] = {
         -0.5f, -0.5f, 0.0f, // left  
@@ -210,14 +156,16 @@ void Application::initTriangle() {
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    spdlog::info("Triangle initialized successfully.");
 }
 
-
 void Application::cleanup() {
+    // Clean up the shader object
+    delete ourShader;
+
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO_vertices);
     glDeleteBuffers(1, &VBO_colors);
-    glDeleteProgram(shaderProgram);
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
@@ -230,4 +178,5 @@ void Application::cleanup() {
         SDL_DestroyWindow(window);
     }
     SDL_Quit();
+    spdlog::info("Application cleaned up successfully.");
 }
