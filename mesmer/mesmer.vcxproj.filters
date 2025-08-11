@@ -54,6 +54,9 @@
     <ClCompile Include="local\application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="local\shader_program.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="SDL2.dll" />
@@ -1968,6 +1971,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\spdlog\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\local\shader_program.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
