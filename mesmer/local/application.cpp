@@ -1,4 +1,4 @@
-#include "application.hpp"
+#include <application.hpp>
 
 const char* vertexShaderSource = R"(
     #version 460 core
@@ -133,10 +133,12 @@ void Application::initOpenGL() {
         throw std::runtime_error("Failed to initialize GLAD.");
     }
 
-    std::cout << "OpenGL Loaded" << std::endl;
-    std::cout << "Vendor:   " << glGetString(GL_VENDOR) << std::endl;
-    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
-    std::cout << "Version:  " << glGetString(GL_VERSION) << std::endl;
+	spdlog::info("OpenGL Vendor: {}", std::string((const char*)glGetString(GL_VENDOR)));
+    spdlog::info("OpenGL Renderer: {}", std::string((const char*)glGetString(GL_RENDERER)));
+	spdlog::info("OpenGL Version: {}", std::string((const char*)glGetString(GL_VERSION)));
+    spdlog::info("GLSL Version: {}", std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    
+	spdlog::info("OpenGL initialized successfully.");
 }
 
 void Application::initImGui() {
