@@ -2,8 +2,6 @@
 #ifndef MESMER_APPLICATION_HPP
 #define MESMER_APPLICATION_HPP
 
-#include <logger.hpp>
-
 #include <iostream>
 #include <stdexcept>
 #include <glad/glad.h>
@@ -15,15 +13,25 @@
 
 class Application {
 public:
-	Application(int width = 1920, int height = 1080, const char* title = "program", int argc = 0, char* argv[] = 0);
-	~Application() = default;
-	void run();
+    Application(int width, int height, const char* title, int argc, char* argv[]);
+    void run();
+
 private:
-	int screenWidth;
-	int screenHeight;
-	const char* windowTitle;
-	int argc;
-	char** argv;
+    int screenWidth;
+    int screenHeight;
+    const char* windowTitle;
+    int argc;
+    char** argv;
+
+    SDL_Window* window;
+    SDL_GLContext gl_context;
+
+    unsigned int VBO_vertices, VBO_colors, VAO, shaderProgram;
+    void initSDL();
+    void initOpenGL();
+    void initImGui();
+    void initTriangle();
+    void cleanup();
 };
 
 #endif

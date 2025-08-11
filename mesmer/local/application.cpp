@@ -1,81 +1,57 @@
-#include <application.hpp>
+#include "application.hpp"
+
+const char* vertexShaderSource = R"(
+    #version 460 core
+    layout (location = 0) in vec3 aPos;
+    layout (location = 1) in vec3 aColor;
+    out vec3 ourColor;
+    void main() {
+        gl_Position = vec4(aPos, 1.0);
+        ourColor = aColor;
+    }
+)";
+
+const char* fragmentShaderSource = R"(
+    #version 460 core
+    out vec4 FragColor;
+    in vec3 ourColor;
+    void main() {
+        FragColor = vec4(ourColor, 1.0f);
+    }
+)";
+
 
 Application::Application(int width, int height, const char* title, int argc, char* argv[]) {
-	this->screenWidth = width;
-	this->screenHeight = height;
-	this->windowTitle = title;
-	this->argc = argc;
-	this->argv = argv;
+    this->screenWidth = width;
+    this->screenHeight = height;
+    this->windowTitle = title;
+    this->argc = argc;
+    this->argv = argv;
+    this->window = nullptr;
+    this->gl_context = nullptr;
+    this->VBO_vertices = 0;
+    this->VBO_colors = 0;
+    this->VAO = 0;
+    this->shaderProgram = 0;
+    if (argc > 1) {
+        std::cout << "Command line arguments: ";
+        for (int i = 1; i < argc; ++i) {
+            std::cout << argv[i] << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 void Application::run() {
-    // this is a sample app (will be heavily modified later)
-    SDL_Window* window = nullptr;
-
     try {
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
-            throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
-        }
-
-        const char* glsl_version = "#version 460";
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
-
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-
-        window = SDL_CreateWindow(
-            windowTitle,
-            SDL_WINDOWPOS_CENTERED,
-            SDL_WINDOWPOS_CENTERED,
-            screenWidth,
-            screenHeight,
-            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
-        );
-
-        if (!window) {
-            throw std::runtime_error("Failed to create SDL window.");
-        }
-
-        SDL_GLContext gl_context = SDL_GL_CreateContext(window);
-        if (!gl_context) {
-            throw std::runtime_error(std::string("SDL_GL_CreateContext Error: ") + SDL_GetError());
-        }
-        SDL_GL_MakeCurrent(window, gl_context);
-        SDL_GL_SetSwapInterval(1);
-
-        if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-            throw std::runtime_error("Failed to initialize GLAD.");
-        }
-        std::cout << "OpenGL Loaded" << std::endl;
-        std::cout << "Vendor:   " << glGetString(GL_VENDOR) << std::endl;
-        std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
-        std::cout << "Version:  " << glGetString(GL_VERSION) << std::endl;
-
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-        ImGui::StyleColorsDark();
-        ImGuiStyle& style = ImGui::GetStyle();
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-            style.WindowRounding = 0.0f;
-            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-        }
-
-        ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
-        ImGui_ImplOpenGL3_Init(glsl_version);
+        initSDL();
+        initOpenGL();
+        initImGui();
+        initTriangle();
 
         bool done = false;
-        ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+        ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
         bool show_demo_window = true;
-        bool show_another_window = false;
 
         while (!done) {
             SDL_Event event;
@@ -93,74 +69,161 @@ void Application::run() {
             ImGui_ImplSDL2_NewFrame();
             ImGui::NewFrame();
 
-            {
-                static float f = 0.0f;
-                static int counter = 0;
-
-                ImGui::Begin("Hello, world!");
-
-                ImGui::Text("This is some useful text.");
-                ImGui::Checkbox("Demo Window", &show_demo_window);
-                ImGui::Checkbox("Another Window", &show_another_window);
-
-                ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-                ImGui::ColorEdit3("clear color", (float*)&clear_color);
-
-                if (ImGui::Button("Button"))
-                    counter++;
-                ImGui::SameLine();
-                ImGui::Text("counter = %d", counter);
-
-                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-                ImGui::End();
-            }
-
-            if (show_another_window) {
-                ImGui::Begin("Another Window", &show_another_window);
-                ImGui::Text("Hello from another window!");
-                if (ImGui::Button("Close Me"))
-                    show_another_window = false;
-                ImGui::End();
-            }
-
             if (show_demo_window) {
                 ImGui::ShowDemoWindow(&show_demo_window);
             }
 
             ImGui::Render();
-            glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+            glViewport(0, 0, screenWidth, screenHeight);
             glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
             glClear(GL_COLOR_BUFFER_BIT);
-
+            glUseProgram(shaderProgram);
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-            if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-                SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-                SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-                ImGui::UpdatePlatformWindows();
-                ImGui::RenderPlatformWindowsDefault();
-                SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-            }
-
             SDL_GL_SwapWindow(window);
         }
 
     }
     catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplSDL2_Shutdown();
-        ImGui::DestroyContext();
-
-        if (window) {
-            SDL_DestroyWindow(window);
-        }
-        SDL_Quit();
+        cleanup();
     }
+
+    cleanup();
+}
+
+void Application::initSDL() {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
+        throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
+    }
+}
+
+void Application::initOpenGL() {
+    const char* glsl_version = "#version 460";
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+    window = SDL_CreateWindow(
+        windowTitle,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        screenWidth,
+        screenHeight,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
+    );
+
+    if (!window) {
+        throw std::runtime_error("Failed to create SDL window.");
+    }
+
+    gl_context = SDL_GL_CreateContext(window);
+    if (!gl_context) {
+        throw std::runtime_error(std::string("SDL_GL_CreateContext Error: ") + SDL_GetError());
+    }
+    SDL_GL_MakeCurrent(window, gl_context);
+    SDL_GL_SetSwapInterval(1);
+
+    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+        throw std::runtime_error("Failed to initialize GLAD.");
+    }
+
+    std::cout << "OpenGL Loaded" << std::endl;
+    std::cout << "Vendor:   " << glGetString(GL_VENDOR) << std::endl;
+    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "Version:  " << glGetString(GL_VERSION) << std::endl;
+}
+
+void Application::initImGui() {
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+    ImGui_ImplOpenGL3_Init("#version 460");
+}
+
+void Application::initTriangle() {
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+    int success;
+    char infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        throw std::runtime_error(std::string("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n") + infoLog);
+    }
+
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        throw std::runtime_error(std::string("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n") + infoLog);
+    }
+
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        throw std::runtime_error(std::string("ERROR::SHADER::PROGRAM::LINKING_FAILED\n") + infoLog);
+    }
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f, // left  
+         0.5f, -0.5f, 0.0f, // right 
+         0.0f,  0.5f, 0.0f  // top   
+    };
+    float colors[] = {
+        1.0f, 0.0f, 0.0f,   // red
+        0.0f, 1.0f, 0.0f,   // green
+        0.0f, 0.0f, 1.0f    // blue
+    };
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO_vertices);
+    glGenBuffers(1, &VBO_colors);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_vertices);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_colors);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+
+void Application::cleanup() {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO_vertices);
+    glDeleteBuffers(1, &VBO_colors);
+    glDeleteProgram(shaderProgram);
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
 
+    if (gl_context) {
+        SDL_GL_DeleteContext(gl_context);
+    }
     if (window) {
         SDL_DestroyWindow(window);
     }
