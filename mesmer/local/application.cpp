@@ -20,10 +20,16 @@ Application::Application(int width, int height, const char* title, int argc, cha
 
 void Application::run() {
     try {
+		std::cout << "---------------------------------------------" << std::endl;
+        std::cout << "| Mesmer - A fractal generator and explorer |" << std::endl;
+		std::cout << "---------------------------------------------" << std::endl;
+        std::cout << "\n";
+		spdlog::info("Starting application...");
         initSDL();
         initOpenGL();
         initImGui();
         initTriangle();
+        std::cout << "\n\033[30;42m Mesmer application core has been initialized \033[0m" << std::endl;
 
         bool done = false;
         ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
