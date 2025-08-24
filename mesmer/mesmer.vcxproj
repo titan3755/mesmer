@@ -293,6 +293,7 @@
     <None Include="include\ogl\glm\gtx\vector_query.inl" />
     <None Include="include\ogl\glm\gtx\wrap.inl" />
     <None Include="SDL2.dll" />
+    <None Include="shaders\common.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="shaders\triangle.vert" />
   </ItemGroup>

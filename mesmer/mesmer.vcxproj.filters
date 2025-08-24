@@ -477,6 +477,7 @@
     <None Include="shaders\triangle.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="imgui.ini" />
+    <None Include="shaders\common.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">

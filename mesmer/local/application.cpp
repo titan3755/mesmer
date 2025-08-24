@@ -29,7 +29,7 @@ void Application::run() {
         initOpenGL();
         initImGui();
         initTriangle();
-        std::cout << "\n\033[30;42m Mesmer application core has been initialized \033[0m" << std::endl;
+        std::cout << "\n\033[30;42m Mesmer application core has been initialized \033[0m\n" << std::endl;
 
         bool done = false;
         ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
