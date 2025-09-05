@@ -56,7 +56,9 @@ void Application::run() {
             }
 
             ImGui::Render();
-            glViewport(0, 0, screenWidth, screenHeight);
+            int drawable_w, drawable_h;
+            SDL_GL_GetDrawableSize(window, &drawable_w, &drawable_h);
+            glViewport(0, 0, drawable_w, drawable_h);
             glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
             glClear(GL_COLOR_BUFFER_BIT);
 
@@ -98,11 +100,13 @@ void Application::initOpenGL() {
         SDL_WINDOWPOS_CENTERED,
         screenWidth,
         screenHeight,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED
     );
     if (!window) {
         throw std::runtime_error("Failed to create SDL window.");
     }
+    SDL_SetWindowFullscreen(window, 0);  // force windowed
+    SDL_SetWindowBordered(window, SDL_TRUE);
 
     gl_context = SDL_GL_CreateContext(window);
     if (!gl_context) {

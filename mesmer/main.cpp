@@ -1,7 +1,7 @@
 #include <application.hpp>
 
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 const char* WINDOW_TITLE = "Mesmer";
 
 int main(int argc, char* argv[]) {
