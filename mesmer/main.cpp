@@ -1,11 +1,9 @@
 #include <application.hpp>
 
-const int SCREEN_WIDTH = 1920;
-const int SCREEN_HEIGHT = 1080;
 const char* WINDOW_TITLE = "Mesmer";
 
 int main(int argc, char* argv[]) {
-	Application app(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE, argc, argv);
+	Application app(WINDOW_TITLE, argc, argv);
 	try {
 		app.run();
 	}

@@ -1,8 +1,8 @@
 #include "application.hpp"
 
-Application::Application(int width, int height, const char* title, int argc, char* argv[]) {
-    this->screenWidth = width;
-    this->screenHeight = height;
+Application::Application(const char* title, int argc, char* argv[]) {
+    this->screenWidth = 0;
+    this->screenHeight = 0;
     this->windowTitle = title;
     this->argc = argc;
     this->argv = argv;
@@ -93,6 +93,14 @@ void Application::initOpenGL() {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+	SDL_DisplayMode current;
+    if (SDL_GetCurrentDisplayMode(0, &current) != 0) {
+        spdlog::critical("Error getting display mode!");
+        throw std::runtime_error(std::string("SDL_GetCurrentDisplayMode Error: ") + SDL_GetError());
+	}
+	screenWidth = current.w * 3 / 4;
+	screenHeight = current.h * 3 / 4;
 
     window = SDL_CreateWindow(
         windowTitle,

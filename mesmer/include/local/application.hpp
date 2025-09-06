@@ -17,7 +17,7 @@
 
 class Application {
 public:
-    Application(int width, int height, const char* title, int argc, char* argv[]);
+    Application(const char* title, int argc, char* argv[]);
     void run();
 
 private:
