@@ -57,6 +57,9 @@
     <ClCompile Include="local\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="local\settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="SDL2.dll" />
@@ -1978,6 +1981,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\local\shader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\local\settings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

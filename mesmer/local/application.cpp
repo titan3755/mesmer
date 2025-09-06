@@ -1,4 +1,4 @@
-#include "application.hpp"
+#include <application.hpp>
 
 Application::Application(const char* title, int argc, char* argv[]) {
     this->screenWidth = 0;
@@ -99,8 +99,8 @@ void Application::initOpenGL() {
         spdlog::critical("Error getting display mode!");
         throw std::runtime_error(std::string("SDL_GetCurrentDisplayMode Error: ") + SDL_GetError());
 	}
-	screenWidth = current.w * 3 / 4;
-	screenHeight = current.h * 3 / 4;
+    screenWidth = current.w;
+    screenHeight = current.h;
 
     window = SDL_CreateWindow(
         windowTitle,

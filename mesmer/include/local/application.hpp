@@ -3,6 +3,7 @@
 #define MESMER_APPLICATION_HPP
 
 #include <shader.hpp>
+#include <settings.hpp>
 
 #include <iostream>
 #include <stdexcept>

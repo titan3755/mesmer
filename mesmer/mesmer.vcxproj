@@ -149,6 +149,7 @@
     <ClCompile Include="include\ogl\glm\detail\glm.cpp" />
     <ClCompile Include="include\ogl\glm\glm.cppm" />
     <ClCompile Include="local\application.cpp" />
+    <ClCompile Include="local\settings.cpp" />
     <ClCompile Include="local\shader.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -309,6 +310,7 @@
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="include\local\application.hpp" />
+    <ClInclude Include="include\local\settings.hpp" />
     <ClInclude Include="include\local\shader.hpp" />
     <ClInclude Include="include\ogl\glad\glad.h" />
     <ClInclude Include="include\ogl\GLFW\glfw3.h" />
