@@ -20,9 +20,12 @@ private:
 	std::string filename;
 	std::map<std::string, std::string> settingsMap;
 
+	void checkFileExists();
 	void loadSettings();
 	void appendSettings(std::map<std::string, std::string>);
-
+	void updateSetting(const std::string& key, const std::string& value);
+	std::string getSetting(const std::string& key) const;
+	void saveSettings() const;
 };
 
 #endif
