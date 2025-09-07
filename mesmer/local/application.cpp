@@ -1,4 +1,4 @@
-#include <application.hpp>
+﻿#include <application.hpp>
 
 Application::Application(const char* title, const char* settings_file, int argc, char* argv[]) {
     this->screenWidth = 0;
