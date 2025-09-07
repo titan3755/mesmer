@@ -19,6 +19,20 @@ private:
 	bool fileExists = false;
 	std::string filename;
 	std::map<std::string, std::string> settingsMap;
+	std::map <std::string, std::string> defaults = {
+		{
+		{"window_width", "1280"},
+		{"window_height", "720"},
+		{"fullscreen", "false"},
+		{"vsync", "true"},
+		{"max_fps", "60"},
+		{"theme", "dark"},
+		{"language", "en"},
+		{"autosave_interval", "10"},
+		{"recent_files", ""},
+		{"default_save_path", "./saves"},
+		}
+	};
 
 	void checkFileExists();
 	void loadSettings();
