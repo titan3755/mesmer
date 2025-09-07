@@ -1,6 +1,6 @@
 #include <application.hpp>
 
-Application::Application(const char* title, int argc, char* argv[]) {
+Application::Application(const char* title, const char* settings_file, int argc, char* argv[]) {
     this->screenWidth = 0;
     this->screenHeight = 0;
     this->windowTitle = title;

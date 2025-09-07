@@ -1,9 +1,10 @@
 #include <application.hpp>
 
 const char* WINDOW_TITLE = "Mesmer";
+const char* SETTINGS_FILE = "settings.mesmer";
 
 int main(int argc, char* argv[]) {
-	Application app(WINDOW_TITLE, argc, argv);
+	Application app(WINDOW_TITLE, SETTINGS_FILE, argc, argv);
 	try {
 		app.run();
 	}
