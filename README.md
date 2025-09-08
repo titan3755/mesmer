@@ -3,8 +3,9 @@
 ## { --UNDER ACTIVE DEVELOPMENT-- }
 
 ### Added features
--> Settings functionality added
--> Code modularized for easier modifications
+-> Settings functionality added <br>
+-> Code modularized for easier modifications <br>
 
 ### ToDo
+->
 
