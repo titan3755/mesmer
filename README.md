@@ -1,3 +1,10 @@
 # mesmer
 
-## UNDER ACTIVE DEVELOPMENT
+## { --UNDER ACTIVE DEVELOPMENT-- }
+
+### Added features
+-> Settings functionality added
+-> Code modularized for easier modifications
+
+### ToDo
+
