@@ -33,7 +33,7 @@ private:
     SDL_Window* window;
     SDL_GLContext gl_context;
 
-    unsigned int VBO_vertices, VBO_colors, VAO, shaderProgram;
+    unsigned int VBO_vertices, VAO, EBO, shaderProgram;
     void initSDL();
     void initOpenGL();
     void initImGui();

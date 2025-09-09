@@ -295,6 +295,8 @@
     <None Include="include\ogl\glm\gtx\wrap.inl" />
     <None Include="SDL2.dll" />
     <None Include="SDL2_ttf.dll" />
+    <None Include="shaders\background.frag" />
+    <None Include="shaders\background.vert" />
     <None Include="shaders\common.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="shaders\triangle.vert" />

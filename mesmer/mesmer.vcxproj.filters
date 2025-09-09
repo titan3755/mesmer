@@ -482,6 +482,8 @@
     <None Include="imgui.ini" />
     <None Include="shaders\common.vert" />
     <None Include="SDL2_ttf.dll" />
+    <None Include="shaders\background.vert" />
+    <None Include="shaders\background.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">

@@ -9,8 +9,8 @@ Application::Application(const char* title, const char* settings_file, int argc,
 	this->window = nullptr;
 	this->gl_context = nullptr;
 	this->VBO_vertices = 0;
-	this->VBO_colors = 0;
 	this->VAO = 0;
+	this->EBO = 0;
 	this->ourShader = nullptr;
 	this->shaderProgram = 0;
 	this->m_font_regular = nullptr;
@@ -87,8 +87,10 @@ void Application::run() {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			ourShader->use();
+			ourShader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
+			ourShader->setVec2("iResolution", (float)screenWidth, (float)screenHeight);
 			glBindVertexArray(VAO);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			SDL_GL_SwapWindow(window);
@@ -174,48 +176,45 @@ void Application::initImGui() {
 }
 
 void Application::initTriangle() {
-	ourShader = new Shader("shaders/triangle.vert", "shaders/triangle.frag");
-
+	ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
 	float vertices[] = {
-	-0.5f, -0.5f, 0.0f, // left
-	0.5f, -0.5f, 0.0f, // right
-	0.0f, 0.5f, 0.0f // top
-	};
-	float colors[] = {
-	1.0f, 0.0f, 0.0f, // red
-	0.0f, 1.0f, 0.0f, // green
-	0.0f, 0.0f, 1.0f // blue
+		// positions       // texcoords
+		-1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+		 1.0f,  1.0f, 0.0f,  1.0f, 1.0f
 	};
 
+	unsigned int indices[] = {
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	GLuint EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO_vertices);
-	glGenBuffers(1, &VBO_colors);
+	glGenBuffers(1, &EBO);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_vertices);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_colors);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	spdlog::info("Triangle initialized successfully.");
+	spdlog::info("Screen quad initialized successfully.");
 }
 
 void Application::cleanup() {
-	// Clean up the shader object
 	delete ourShader;
-
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO_vertices);
-	glDeleteBuffers(1, &VBO_colors);
-
+	glDeleteBuffers(1, &EBO);
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-
 	if (gl_context) {
 		SDL_GL_DeleteContext(gl_context);
 	}
