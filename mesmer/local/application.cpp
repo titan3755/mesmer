@@ -139,7 +139,7 @@ void Application::initOpenGL() {
 	if (!window) {
 		throw std::runtime_error("Failed to create SDL window.");
 	}
-	SDL_SetWindowFullscreen(window, 0); // force windowed
+	SDL_SetWindowFullscreen(window, 0);
 	SDL_SetWindowBordered(window, SDL_TRUE);
 
 	gl_context = SDL_GL_CreateContext(window);
@@ -178,7 +178,6 @@ void Application::initImGui() {
 void Application::initTriangle() {
 	ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
 	float vertices[] = {
-		// positions       // texcoords
 		-1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
 		 1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
