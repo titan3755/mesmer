@@ -481,6 +481,7 @@
     <None Include="shaders\triangle.frag" />
     <None Include="imgui.ini" />
     <None Include="shaders\common.vert" />
+    <None Include="SDL2_ttf.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
@@ -1984,6 +1985,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\local\settings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sdl2_ttf\SDL_ttf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)include\imgui;$(ProjectDir)include\sdl2;$(ProjectDir)include\ogl;$(ProjectDir)include;$(ProjectDir)include\local;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)lib\sdl2;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)include\imgui;$(ProjectDir)include\sdl2;$(ProjectDir)include\sdl2_ttf;$(ProjectDir)include\ogl;$(ProjectDir)include;$(ProjectDir)include\local;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)lib\sdl2;$(ProjectDir)lib\sdl2_ttf;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)include\imgui;$(ProjectDir)include\sdl2;$(ProjectDir)include\ogl;$(ProjectDir)include;$(ProjectDir)include\local;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)lib\sdl2;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)include\imgui;$(ProjectDir)include\sdl2;$(ProjectDir)include\sdl2_ttf;$(ProjectDir)include\ogl;$(ProjectDir)include;$(ProjectDir)include\local;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)lib\sdl2;$(ProjectDir)lib\sdl2_ttf;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -116,7 +116,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;shell32.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;shell32.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,7 +133,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;shell32.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;shell32.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -294,6 +294,7 @@
     <None Include="include\ogl\glm\gtx\vector_query.inl" />
     <None Include="include\ogl\glm\gtx\wrap.inl" />
     <None Include="SDL2.dll" />
+    <None Include="SDL2_ttf.dll" />
     <None Include="shaders\common.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="shaders\triangle.vert" />
@@ -696,6 +697,7 @@
     <ClInclude Include="include\sdl2\SDL_version.h" />
     <ClInclude Include="include\sdl2\SDL_video.h" />
     <ClInclude Include="include\sdl2\SDL_vulkan.h" />
+    <ClInclude Include="include\sdl2_ttf\SDL_ttf.h" />
     <ClInclude Include="include\spdlog\async.h" />
     <ClInclude Include="include\spdlog\async_logger-inl.h" />
     <ClInclude Include="include\spdlog\async_logger.h" />
