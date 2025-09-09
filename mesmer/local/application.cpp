@@ -53,20 +53,21 @@ void Application::run() {
 			ImGui_ImplSDL2_NewFrame();
 			ImGui::NewFrame();
 
+			ImGuiIO& io = ImGui::GetIO();
 			ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
+
 			draw_list->AddText(
 				ImVec2(10, 10),
 				IM_COL32(255, 255, 0, 255),
 				"Mesmer - Main Menu"
 			);
-			// main title
-			//ImGui::PushFont(m_font_large);
 			draw_list->AddText(
-				ImVec2((float)screenWidth / 2 - 120, 10),
-				IM_COL32(0, 255, 255, 255),
-				"Mesmer - A fractal generator and explorer"
+				m_font_large,
+				48.0f,
+				ImVec2((float)screenWidth / 2 - 100, 20),
+				IM_COL32(255, 255, 255, 255),
+				"Mesmer"
 			);
-			//ImGui::PopFont();
 			const char* status = "All Systems OK - No errors detected";
 			draw_list->AddText(
 				ImVec2((float)screenWidth - 300, 10),
@@ -166,8 +167,9 @@ void Application::initImGui() {
 
 	ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
 	ImGui_ImplOpenGL3_Init("#version 460");
-	//m_font_regular = io.Fonts->AddFontFromFileTTF("assets/fonts/dg.otf", 18.0f);
-	//m_font_large = io.Fonts->AddFontFromFileTTF("assets/fonts/dg.otf", 48.0f);
+	io.Fonts->AddFontDefault();
+	m_font_regular = io.Fonts->AddFontFromFileTTF("assets/fonts/cw.otf", 18.0f);
+	m_font_large = io.Fonts->AddFontFromFileTTF("assets/fonts/cw.otf", 48.0f);
 	spdlog::info("ImGui initialized successfully.");
 }
 
