@@ -39,6 +39,9 @@ private:
     void initImGui();
     void initTriangle();
     void cleanup();
+
+    ImFont* m_font_regular;
+    ImFont* m_font_large;
 };
 
 #endif
