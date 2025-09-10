@@ -64,9 +64,9 @@ void Application::run() {
 			draw_list->AddText(
 				m_font_large,
 				68.0f,
-				ImVec2((float)screenWidth / 2 - 125, 20),
+				ImVec2((float)screenWidth / 2 - 140, 20),
 				IM_COL32(255, 255, 255, 255),
-				"Mesmer"
+				"MESMER"
 			);
 			const char* status = "All Systems OK - No errors detected";
 			draw_list->AddText(
