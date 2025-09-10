@@ -1,6 +1,5 @@
 ﻿#include <application.hpp>
 
-// Constructor and other methods remain the same...
 Application::Application(const char* title, const char* settings_file, int argc, char* argv[]) {
 	this->screenWidth = 0;
 	this->screenHeight = 0;
@@ -70,6 +69,26 @@ void Application::run() {
 				}
 
 
+				ImGui::End();
+			}
+			{
+				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 225, main_viewport->WorkPos.y + screenHeight / 2 - 100));
+				ImGui::SetNextWindowSize(ImVec2(450, 250));
+				ImGui::Begin("Main Buttons", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+				ImGui::PushFont(m_font_large);
+				ImGui::Spacing();
+				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - 400) * 0.5f);
+				if (ImGui::Button("Explore Fractals", ImVec2(400, 80))) {
+					spdlog::info("'Explore Fractals' button clicked!");
+				}
+
+				ImGui::Spacing();
+				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - 400) * 0.5f);
+				if (ImGui::Button("Quit Application", ImVec2(400, 80))) {
+					done = true;
+				}
+				ImGui::PopFont();
 				ImGui::End();
 			}
 
