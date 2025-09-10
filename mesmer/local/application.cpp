@@ -63,8 +63,8 @@ void Application::run() {
 			);
 			draw_list->AddText(
 				m_font_large,
-				48.0f,
-				ImVec2((float)screenWidth / 2 - 100, 20),
+				68.0f,
+				ImVec2((float)screenWidth / 2 - 125, 20),
 				IM_COL32(255, 255, 255, 255),
 				"Mesmer"
 			);
