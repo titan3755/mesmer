@@ -7,6 +7,7 @@
 -> Code modularized for easier modifications <br>
 -> Simple background effect added <br>
 -> Settings sidebar added <br>
+-> Text and title added <br>
 
 ### ToDo
 -> Add proper handling of shader files <br>
