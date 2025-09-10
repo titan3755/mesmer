@@ -1,5 +1,6 @@
 ﻿#include <application.hpp>
 
+// Constructor and other methods remain the same...
 Application::Application(const char* title, const char* settings_file, int argc, char* argv[]) {
 	this->screenWidth = 0;
 	this->screenHeight = 0;
@@ -20,6 +21,7 @@ Application::Application(const char* title, const char* settings_file, int argc,
 	}
 }
 
+
 void Application::run() {
 	try {
 		std::cout << "---------------------------------------------" << std::endl;
@@ -34,8 +36,8 @@ void Application::run() {
 		std::cout << "\n\033[30;42m Mesmer application core has been initialized \033[0m\n" << std::endl;
 
 		bool done = false;
-		ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
-		bool show_demo_window = true;
+		static ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
+		static bool show_demo_window = false;
 
 		while (!done) {
 			SDL_Event event;
@@ -52,6 +54,24 @@ void Application::run() {
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
 			ImGui::NewFrame();
+
+			{
+				ImGui::Begin("Control Panel");
+				if (ImGui::CollapsingHeader("Display Settings"))
+				{
+					ImGui::ColorEdit3("Background Color", (float*)&clear_color);
+				}
+
+				if (ImGui::CollapsingHeader("Fractal Parameters"))
+				{
+					ImGui::Text("Controls for the fractal will go here.");
+					static float example_slider = 0.0f;
+					ImGui::SliderFloat("Zoom", &example_slider, 0.0f, 10.0f);
+				}
+
+
+				ImGui::End();
+			}
 
 			ImGuiIO& io = ImGui::GetIO();
 			ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
@@ -103,6 +123,7 @@ void Application::run() {
 
 	cleanup();
 }
+
 
 void Application::initSDL() {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
