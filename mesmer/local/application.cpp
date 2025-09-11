@@ -109,7 +109,7 @@ void Application::run() {
 			);
 			const char* status = "Status: All Systems OK";
 			draw_list->AddText(
-				ImVec2((float)screenWidth - 300, 10),
+				ImVec2((float)screenWidth - 200, 10),
 				IM_COL32(0, 255, 0, 255),
 				status
 			);
