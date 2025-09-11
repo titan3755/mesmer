@@ -107,7 +107,7 @@ void Application::run() {
 				IM_COL32(255, 255, 255, 255),
 				"MESMER"
 			);
-			const char* status = "All Systems OK - No errors detected";
+			const char* status = "Status: All Systems OK";
 			draw_list->AddText(
 				ImVec2((float)screenWidth - 300, 10),
 				IM_COL32(0, 255, 0, 255),
