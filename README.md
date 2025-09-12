@@ -13,5 +13,6 @@
 -> Add proper handling of shader files <br>
 -> Implement settings GUI using ImGUI <br>
 -> Make a proper menu / initial state screen <br>
+-> Start development on the actual fractal rendering systems <br>
 -> (...)
 
