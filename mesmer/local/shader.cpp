@@ -1,3 +1,9 @@
+/*
+    Mesmer - An interactive and high-performance fractal generator and explorer.
+    Made by -> Titan // GH: https://github.com/titan3755/mesmer
+    [shader.cpp]
+*/
+
 #include <shader.hpp>
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {

@@ -1,4 +1,10 @@
-﻿#include <application.hpp>
+﻿/*
+	Mesmer - An interactive and high-performance fractal generator and explorer.
+	Made by -> Titan // GH: https://github.com/titan3755/mesmer
+	[application.cpp]
+*/
+
+#include <application.hpp>
 
 Application::Application(const char* title, const char* settings_file, int argc, char* argv[]) {
 	this->screenWidth = 0;
