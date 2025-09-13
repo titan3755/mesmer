@@ -73,21 +73,25 @@ void Application::run() {
 			}
 			{
 				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 225, main_viewport->WorkPos.y + screenHeight / 2 - 100));
-				ImGui::SetNextWindowSize(ImVec2(450, 250));
-				ImGui::Begin("Main Buttons", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 270, main_viewport->WorkPos.y + screenHeight / 2 - 100));
+				ImGui::SetNextWindowSize(ImVec2(550, 150));
+				ImGui::Begin("Main Buttons", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
 				ImGui::PushFont(m_font_large);
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10.0f, 20.0f));
 				ImGui::Spacing();
-				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - 400) * 0.5f);
-				if (ImGui::Button("Explore Fractals", ImVec2(400, 80))) {
+				ImGui::Spacing();
+				float button_width = 250.0f;
+				float spacing = 30.0f;
+				float total_width = (button_width * 2) + spacing;
+				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
+				if (ImGui::Button("Explore", ImVec2(button_width, 80))) {
 					spdlog::info("'Explore Fractals' button clicked!");
 				}
-
-				ImGui::Spacing();
-				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - 400) * 0.5f);
-				if (ImGui::Button("Quit Application", ImVec2(400, 80))) {
+				ImGui::SameLine(0.0f, spacing);
+				if (ImGui::Button("Quit", ImVec2(button_width, 80))) {
 					done = true;
 				}
+				ImGui::PopStyleVar();
 				ImGui::PopFont();
 				ImGui::End();
 			}
