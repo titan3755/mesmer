@@ -28,6 +28,7 @@ void Application::run() {
 		std::cout << "---------------------------------------------" << std::endl;
 		std::cout << "\n";
 		spdlog::info("Starting application...");
+		static bool show_fractal_selection = false;
 		initSDL();
 		initOpenGL();
 		initImGui();
@@ -85,6 +86,7 @@ void Application::run() {
 				float total_width = (button_width * 2) + spacing;
 				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
 				if (ImGui::Button("Explore", ImVec2(button_width, 80))) {
+					show_fractal_selection = !show_fractal_selection;
 					spdlog::info("'Explore Fractals' button clicked!");
 				}
 				ImGui::SameLine(0.0f, spacing);
@@ -92,6 +94,42 @@ void Application::run() {
 					done = true;
 				}
 				ImGui::PopStyleVar();
+				ImGui::PopFont();
+				ImGui::End();
+			}
+			if (show_fractal_selection)
+			{
+				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+				// Position this new window directly below the first one, with a small 10px gap
+				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 270, main_viewport->WorkPos.y + screenHeight / 2 + 60));
+				ImGui::SetNextWindowSize(ImVec2(550, 150));
+				ImGui::Begin("Fractal Selection", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
+				ImGui::PushFont(m_font_large);
+				float button_width = 250.0f;
+				float spacing = 30.0f;
+				float total_width = (button_width * 2) + spacing;
+				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
+
+				// Mandelbrot
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.3f, 0.8f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.4f, 0.9f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.2f, 0.7f, 1.0f));
+				if (ImGui::Button("Mandelbrot", ImVec2(button_width, 80))) {
+					spdlog::info("'Mandelbrot' button clicked!");
+				}
+				ImGui::PopStyleColor(3);
+
+				ImGui::SameLine(0.0f, spacing);
+
+				// Julia
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.2f, 0.8f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.3f, 0.9f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.1f, 0.7f, 1.0f));
+				if (ImGui::Button("Julia", ImVec2(button_width, 80))) {
+					spdlog::info("'Julia' button clicked!");
+				}
+				ImGui::PopStyleColor(3);
+
 				ImGui::PopFont();
 				ImGui::End();
 			}
