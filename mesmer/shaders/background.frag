@@ -7,7 +7,7 @@ uniform vec2 iResolution;
 
 void main() {
     vec2 uv = TexCoords * 2.0 - 1.0;
-    float wave = sin(uv.x * 2.0 + iTime * 2.2) * cos(uv.y * 3.0 - iTime);
+    float wave = sin(uv.x * 2.0 + iTime * 5.2) * cos(uv.y * 5.2 - iTime);
     vec3 color1 = vec3(0.7, 0.2, 0.3);
     vec3 color2 = vec3(0.4, 0.2, 0.2);
     vec3 accent = vec3(0.3, 0.15, 0.05);
