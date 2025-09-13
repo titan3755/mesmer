@@ -1,3 +1,9 @@
+/*
+	Mesmer - An interactive and high-performance fractal generator and explorer.
+	Made by -> Titan // GH: https://github.com/titan3755/mesmer
+	[settings.hpp]
+*/
+
 #pragma once
 #ifndef MESMER_SETTINGS_HPP
 #define MESMER_SETTINGS_HPP
