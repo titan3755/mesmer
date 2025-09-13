@@ -101,11 +101,11 @@ void Application::run() {
 			{
 				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
 				// Position this new window directly below the first one, with a small 10px gap
-				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 270, main_viewport->WorkPos.y + screenHeight / 2 + 60));
-				ImGui::SetNextWindowSize(ImVec2(550, 150));
+				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 320, main_viewport->WorkPos.y + screenHeight / 2 + 60));
+				ImGui::SetNextWindowSize(ImVec2(650, 150));
 				ImGui::Begin("Fractal Selection", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
 				ImGui::PushFont(m_font_large);
-				float button_width = 250.0f;
+				float button_width = 320.0f;
 				float spacing = 30.0f;
 				float total_width = (button_width * 2) + spacing;
 				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
