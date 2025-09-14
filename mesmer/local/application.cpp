@@ -232,6 +232,15 @@ void Application::run() {
 					"MESMER"
 				);
 			}
+			else {
+				draw_list->AddText(
+					m_font_large,
+					20.0f,
+					ImVec2((float)screenWidth / 2 - 170, 20),
+					IM_COL32(255, 255, 255, 255),
+					"Press Space Bar to exit to main menu"
+				);
+			}
 			draw_list->AddText(
 				ImVec2((float)screenWidth - 200, 10),
 				IM_COL32(0, 255, 0, 255),
