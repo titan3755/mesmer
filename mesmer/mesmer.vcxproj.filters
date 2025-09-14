@@ -486,6 +486,8 @@
     <None Include="shaders\background.frag" />
     <None Include="shaders\mandelbrot.vert" />
     <None Include="shaders\mandelbrot.frag" />
+    <None Include="shaders\julia.vert" />
+    <None Include="shaders\julia.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
