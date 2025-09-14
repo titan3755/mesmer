@@ -93,6 +93,19 @@ void Application::run() {
 
 						m_drag_start_pos = current_pos;
 					}
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+						show_main_buttons = !show_main_buttons;
+						show_fractal_selection = false;
+						spdlog::info("'Space' key pressed - toggling main buttons.");
+						Application::m_currentFractal = FractalType::NONE;
+						if (ourShader != nullptr) {
+							delete ourShader;
+						}
+						ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
+						spdlog::info("Reverted to background shader.");
+						sub = "Mesmer - Main Menu";
+						title_text_toggle = true;
+					}
 				}
 				if (event.type == SDL_QUIT) {
 					done = true;
