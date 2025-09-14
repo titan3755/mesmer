@@ -8,6 +8,8 @@
 -> Simple background effect added <br>
 -> Settings sidebar added <br>
 -> Text and title added <br>
+-> Added basic (unoptimized) fractal rendering system for mandelbrot set <br>
+-> Basic QOL improvements <br>
 
 ### ToDo
 -> Add proper handling of shader files [DONE] <br>
