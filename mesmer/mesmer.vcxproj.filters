@@ -484,6 +484,8 @@
     <None Include="SDL2_ttf.dll" />
     <None Include="shaders\background.vert" />
     <None Include="shaders\background.frag" />
+    <None Include="shaders\mandelbrot.vert" />
+    <None Include="shaders\mandelbrot.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">

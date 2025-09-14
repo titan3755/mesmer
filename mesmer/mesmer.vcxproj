@@ -298,6 +298,8 @@
     <None Include="shaders\background.frag" />
     <None Include="shaders\background.vert" />
     <None Include="shaders\common.vert" />
+    <None Include="shaders\mandelbrot.frag" />
+    <None Include="shaders\mandelbrot.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="shaders\triangle.vert" />
   </ItemGroup>
