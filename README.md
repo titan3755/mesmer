@@ -14,6 +14,6 @@
 -> Implement settings GUI using ImGUI [DONE] <br>
 -> Make a proper menu / initial state screen [DONE] <br>
 -> Start development on the actual fractal rendering systems <br>
--> Add two fractal rendering systems for Mandelbrot and Julia sets [HIGH PRIORITY] <br>
+-> Add fractal rendering system for Julia set [HIGH PRIORITY] <br>
 -> (...)
 
