@@ -47,6 +47,7 @@ void Application::run() {
 		static bool show_demo_window = false;
 		const char* status = "Status: All Systems OK";
 		const char* sub = "Mesmer - Main Menu";
+		static bool title_text_toggle = true;
 
 		while (!done) {
 			SDL_Event event;
@@ -195,6 +196,7 @@ void Application::run() {
 					show_fractal_selection = false;
 					show_main_buttons = false;
 					sub = "Mesmer - Mandelbrot Set";
+					title_text_toggle = false;
 				}
 				ImGui::PopStyleColor(3);
 
@@ -221,13 +223,15 @@ void Application::run() {
 				IM_COL32(255, 255, 0, 255),
 				sub
 			);
-			draw_list->AddText(
-				m_font_large,
-				68.0f,
-				ImVec2((float)screenWidth / 2 - 140, 20),
-				IM_COL32(255, 255, 255, 255),
-				"MESMER"
-			);
+			if (title_text_toggle) {
+				draw_list->AddText(
+					m_font_large,
+					68.0f,
+					ImVec2((float)screenWidth / 2 - 140, 20),
+					IM_COL32(255, 255, 255, 255),
+					"MESMER"
+				);
+			}
 			draw_list->AddText(
 				ImVec2((float)screenWidth - 200, 10),
 				IM_COL32(0, 255, 0, 255),
