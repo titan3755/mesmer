@@ -48,6 +48,14 @@ private:
 
     ImFont* m_font_regular;
     ImFont* m_font_large;
+    enum class FractalType { NONE, MANDELBROT, JULIA };
+    FractalType m_currentFractal = FractalType::NONE;
+    double m_mandel_zoom = 1.0;
+    double m_mandel_center_x = -0.75;
+    double m_mandel_center_y = 0.0;
+    int m_mandel_max_iterations = 200;
+    bool m_is_dragging = false;
+    ImVec2 m_drag_start_pos;
 };
 
 #endif

@@ -35,6 +35,7 @@ void Application::run() {
 		std::cout << "\n";
 		spdlog::info("Starting application...");
 		static bool show_fractal_selection = false;
+		static bool show_main_buttons = true;
 		initSDL();
 		initOpenGL();
 		initImGui();
@@ -44,11 +45,54 @@ void Application::run() {
 		bool done = false;
 		static ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
 		static bool show_demo_window = false;
+		const char* status = "Status: All Systems OK";
+		const char* sub = "Mesmer - Main Menu";
 
 		while (!done) {
 			SDL_Event event;
 			while (SDL_PollEvent(&event)) {
+				ImGuiIO& io = ImGui::GetIO();
 				ImGui_ImplSDL2_ProcessEvent(&event);
+				if (m_currentFractal == FractalType::MANDELBROT && !io.WantCaptureMouse)
+				{
+					if (event.type == SDL_MOUSEWHEEL)
+					{
+						int mouseX, mouseY;
+						SDL_GetMouseState(&mouseX, &mouseY);
+						double mouse_real_before = (double)(mouseX - screenWidth / 2) / (0.5 * m_mandel_zoom * screenWidth) + m_mandel_center_x;
+						double mouse_imag_before = (double)(screenHeight / 2 - mouseY) / (0.5 * m_mandel_zoom * screenHeight) + m_mandel_center_y;
+						if (event.wheel.y > 0)
+							m_mandel_zoom *= 1.1;
+						else if (event.wheel.y < 0)
+							m_mandel_zoom /= 1.1;
+						double mouse_real_after = (double)(mouseX - screenWidth / 2) / (0.5 * m_mandel_zoom * screenWidth) + m_mandel_center_x;
+						double mouse_imag_after = (double)(screenHeight / 2 - mouseY) / (0.5 * m_mandel_zoom * screenHeight) + m_mandel_center_y;
+						m_mandel_center_x += mouse_real_before - mouse_real_after;
+						m_mandel_center_y += mouse_imag_before - mouse_imag_after;
+					}
+					if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = true;
+						m_drag_start_pos = ImGui::GetMousePos();
+					}
+					if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = false;
+					}
+					if (event.type == SDL_MOUSEMOTION && m_is_dragging)
+					{
+						ImVec2 current_pos = ImGui::GetMousePos();
+						ImVec2 delta = ImVec2(current_pos.x - m_drag_start_pos.x, current_pos.y - m_drag_start_pos.y);
+
+						double dx = -delta.x / (0.5 * m_mandel_zoom * screenWidth);
+						double dy = delta.y / (0.5 * m_mandel_zoom * screenHeight);
+
+						m_mandel_center_x += dx;
+						m_mandel_center_y += dy;
+
+						m_drag_start_pos = current_pos;
+					}
+				}
 				if (event.type == SDL_QUIT) {
 					done = true;
 				}
@@ -70,15 +114,34 @@ void Application::run() {
 
 				if (ImGui::CollapsingHeader("Fractal Parameters"))
 				{
-					ImGui::Text("Controls for the fractal will go here.");
-					static float example_slider = 0.0f;
-					ImGui::SliderFloat("Zoom", &example_slider, 0.0f, 10.0f);
+					if (m_currentFractal == FractalType::MANDELBROT)
+					{
+						ImGui::Text("Mandelbrot Controls");
+						ImGui::Separator();
+
+						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
+						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
+
+						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+
+						if (ImGui::Button("Reset View")) {
+							m_mandel_zoom = 1.0;
+							m_mandel_center_x = -0.75;
+							m_mandel_center_y = 0.0;
+							m_mandel_max_iterations = 200;
+						}
+					}
+					else
+					{
+						ImGui::Text("No fractal selected.");
+					}
 				}
 
 
 				ImGui::End();
 			}
-			{
+			if (show_main_buttons) {
 				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
 				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 270, main_viewport->WorkPos.y + screenHeight / 2 - 100));
 				ImGui::SetNextWindowSize(ImVec2(550, 150));
@@ -106,7 +169,6 @@ void Application::run() {
 			if (show_fractal_selection)
 			{
 				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-				// Position this new window directly below the first one, with a small 10px gap
 				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 320, main_viewport->WorkPos.y + screenHeight / 2 + 60));
 				ImGui::SetNextWindowSize(ImVec2(650, 150));
 				ImGui::Begin("Fractal Selection", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
@@ -116,12 +178,23 @@ void Application::run() {
 				float total_width = (button_width * 2) + spacing;
 				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
 
-				// Mandelbrot
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.3f, 0.8f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.4f, 0.9f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.2f, 0.7f, 1.0f));
 				if (ImGui::Button("Mandelbrot", ImVec2(button_width, 80))) {
 					spdlog::info("'Mandelbrot' button clicked!");
+					m_currentFractal = FractalType::MANDELBROT;
+
+					if (ourShader != nullptr) {
+						delete ourShader;
+					}
+
+					ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
+					spdlog::info("Loaded Mandelbrot shader.");
+
+					show_fractal_selection = false;
+					show_main_buttons = false;
+					sub = "Mesmer - Mandelbrot Set";
 				}
 				ImGui::PopStyleColor(3);
 
@@ -146,7 +219,7 @@ void Application::run() {
 			draw_list->AddText(
 				ImVec2(10, 10),
 				IM_COL32(255, 255, 0, 255),
-				"Mesmer - Main Menu"
+				sub
 			);
 			draw_list->AddText(
 				m_font_large,
@@ -155,7 +228,6 @@ void Application::run() {
 				IM_COL32(255, 255, 255, 255),
 				"MESMER"
 			);
-			const char* status = "Status: All Systems OK";
 			draw_list->AddText(
 				ImVec2((float)screenWidth - 200, 10),
 				IM_COL32(0, 255, 0, 255),
@@ -176,6 +248,11 @@ void Application::run() {
 			ourShader->use();
 			ourShader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
 			ourShader->setVec2("iResolution", (float)screenWidth, (float)screenHeight);
+			if (m_currentFractal == FractalType::MANDELBROT) {
+				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+				ourShader->setDouble("u_zoom", m_mandel_zoom);
+				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+			}
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
