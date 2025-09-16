@@ -13,9 +13,10 @@
 
 ### ToDo
 -> Add proper handling of shader files [DONE] <br>
--> Implement settings GUI using ImGUI [DONE] <br>
+-> Implement settings GUI using ImGUI [PARTIALLY-DONE] <br>
 -> Make a proper menu / initial state screen [DONE] <br>
 -> Start development on the actual fractal rendering systems <br>
 -> Add fractal rendering system for Julia set [HIGH PRIORITY] <br>
+-> Tidy up the GUI <br>
 -> (...)
 
