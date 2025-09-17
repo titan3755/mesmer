@@ -6,6 +6,7 @@ in vec2 TexCoords;
 uniform dvec2 u_center;
 uniform double u_zoom;
 uniform int u_max_iterations;
+uniform vec2 iResolution;
 
 vec3 palette(float t) {
     vec3 a = vec3(0.5, 0.5, 0.5);
@@ -17,9 +18,10 @@ vec3 palette(float t) {
 
 void main()
 {
-    dvec2 c = (dvec2(TexCoords) * 2.0 - 1.0) / u_zoom + u_center;
+    dvec2 uv = (dvec2(TexCoords) * 2.0 - 1.0);
+    uv.x *= double(iResolution.x) / double(iResolution.y);
+    dvec2 c = uv / u_zoom + u_center;
     dvec2 z = dvec2(0.0);
-    
     int i;
     for (i = 0; i < u_max_iterations; i++)
     {
@@ -32,7 +34,6 @@ void main()
             break;
         }
     }
-
     if (i == u_max_iterations)
     {
         FragColor = vec4(0.0, 0.0, 0.0, 1.0);
