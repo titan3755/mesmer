@@ -273,7 +273,7 @@ void Application::run() {
 
 			ourShader->use();
 			ourShader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
-			ourShader->setVec2("iResolution", (float)screenWidth, (float)screenHeight);
+			ourShader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
 			if (m_currentFractal == FractalType::MANDELBROT) {
 				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
