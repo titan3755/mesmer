@@ -109,7 +109,7 @@ void Application::run() {
 				}
 				if (m_currentFractal == FractalType::JULIA && m_julia_interactive_mode && !io.WantCaptureMouse)
 				{
-					if (event.type == SDL_MOUSEMOTION)
+					if (event.type == SDL_MOUSEMOTION && m_julia_c_map_to_mouse)
 					{
 						int mouseX, mouseY;
 						SDL_GetMouseState(&mouseX, &mouseY);
@@ -221,6 +221,7 @@ void Application::run() {
 						ImGui::InputDouble("Constant c (imag)", &m_julia_c_y, 0.001, 0.0, "%.8f");
 
 						ImGui::Checkbox("Interactive Mode (Mouse)", &m_julia_interactive_mode);
+						ImGui::Checkbox("Map Julia Const to Mouse Pos", &m_julia_c_map_to_mouse);
 
 						ImGui::Separator();
 						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
