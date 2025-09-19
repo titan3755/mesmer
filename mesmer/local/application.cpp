@@ -175,6 +175,15 @@ void Application::run() {
 							spdlog::info("'M' key pressed - Julia constant will no longer map to mouse position.");
 						}
 					}
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_i) {
+						m_julia_interactive_mode = !m_julia_interactive_mode;
+						if (m_julia_interactive_mode) {
+							spdlog::info("'I' key pressed - Julia interactive mode enabled.");
+						}
+						else {
+							spdlog::info("'I' key pressed - Julia interactive mode disabled.");
+						}
+					}
 				}
 				if (event.type == SDL_QUIT) {
 					done = true;
