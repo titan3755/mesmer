@@ -166,6 +166,15 @@ void Application::run() {
 						sub = "Mesmer - Main Menu";
 						title_text_toggle = true;
 					}
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_m) {
+						m_julia_c_map_to_mouse = !m_julia_c_map_to_mouse;
+						if (m_julia_c_map_to_mouse) {
+							spdlog::info("'M' key pressed - Julia constant will now map to mouse position.");
+						}
+						else {
+							spdlog::info("'M' key pressed - Julia constant will no longer map to mouse position.");
+						}
+					}
 				}
 				if (event.type == SDL_QUIT) {
 					done = true;
