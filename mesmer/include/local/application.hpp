@@ -59,6 +59,7 @@ private:
     double m_julia_c_x = -0.8;
     double m_julia_c_y = 0.156;
     bool m_julia_interactive_mode = false;
+    bool m_julia_c_map_to_mouse = false;
 };
 
 #endif
