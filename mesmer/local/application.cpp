@@ -211,6 +211,21 @@ void Application::run() {
 					sub = "Mesmer - Mandelbrot Set";
 					title_text_toggle = false;
 				}
+				if (ImGui::Button("Julia", ImVec2(button_width, 80))) {
+					spdlog::info("'Julia' button clicked!");
+					m_currentFractal = FractalType::JULIA;
+
+					if (ourShader != nullptr) {
+						delete ourShader;
+					}
+					ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
+					spdlog::info("Loaded Julia shader.");
+
+					show_fractal_selection = false;
+					show_main_buttons = false;
+					sub = "Mesmer - Julia Set";
+					title_text_toggle = false;
+				}
 				ImGui::PopStyleColor(3);
 
 				ImGui::SameLine(0.0f, spacing);
