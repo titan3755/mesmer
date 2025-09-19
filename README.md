@@ -18,5 +18,11 @@
 -> Start development on the actual fractal rendering systems <br>
 -> Add fractal rendering system for Julia set [HIGH PRIORITY] <br>
 -> Tidy up the GUI <br>
--> (...)
+-> (...) <br>
+
+### More fractal ideas to implement
+-> Tricorn fractal <br>
+-> Burning Ship fractal <br>
+-> Julia fractal <br>
+
 
