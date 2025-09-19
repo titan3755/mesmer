@@ -56,6 +56,9 @@ private:
     int m_mandel_max_iterations = 200;
     bool m_is_dragging = false;
     ImVec2 m_drag_start_pos;
+    double m_julia_c_x = -0.8;
+    double m_julia_c_y = 0.156;
+    bool m_julia_interactive_mode = false;
 };
 
 #endif

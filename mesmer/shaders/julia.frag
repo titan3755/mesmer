@@ -6,4 +6,50 @@
 
 #version 460 core
 
-// to be implemented later ...
+out vec4 FragColor;
+in vec2 TexCoords;
+
+uniform dvec2 u_center;
+uniform double u_zoom;
+uniform int u_max_iterations;
+uniform vec2 iResolution;
+uniform dvec2 u_julia_c;
+
+vec3 palette(float t) {
+    vec3 a = vec3(0.5, 0.5, 0.5);
+    vec3 b = vec3(0.5, 0.5, 0.5);
+    vec3 c = vec3(1.0, 1.0, 1.0);
+    vec3 d = vec3(0.00, 0.33, 0.67);
+    return a + b * cos(6.28318 * (c * t + d));
+}
+
+void main()
+{
+    dvec2 uv = (dvec2(TexCoords) * 2.0 - 1.0);
+    uv.x *= double(iResolution.x) / double(iResolution.y);
+    dvec2 z = uv / u_zoom + u_center;
+    int i;
+    for (i = 0; i < u_max_iterations; i++)
+    {
+        double x_temp = z.x * z.x - z.y * z.y + u_julia_c.x;
+        z.y = 2.0 * z.x * z.y + u_julia_c.y;
+        z.x = x_temp;
+        if (dot(z, z) > 4.0)
+        {
+            break;
+        }
+    }
+
+    if (i == u_max_iterations)
+    {
+        FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    else
+    {
+        float magnitude = float(dot(z, z));
+        float smooth_i = float(i) - log2(log2(magnitude));
+        float color_val = smooth_i / float(u_max_iterations);
+        vec3 color = palette(color_val);
+        FragColor = vec4(color, 1.0);
+    }
+}
