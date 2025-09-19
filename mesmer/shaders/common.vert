@@ -14,3 +14,5 @@ void main() {
 	gl_Position = vec4(aPos, 1.0);
 	ourColor = aColor;
 }
+
+// will be used in the future as the common vertex shader for both fractals (mandelbrot and julia)
