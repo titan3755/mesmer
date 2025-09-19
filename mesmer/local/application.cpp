@@ -107,6 +107,10 @@ void Application::run() {
 						title_text_toggle = true;
 					}
 				}
+				if (m_currentFractal == FractalType::JULIA && m_julia_interactive_mode && !io.WantCaptureMouse)
+				{
+
+				}
 				if (event.type == SDL_QUIT) {
 					done = true;
 				}
@@ -143,6 +147,34 @@ void Application::run() {
 							m_mandel_zoom = 1.0;
 							m_mandel_center_x = -0.75;
 							m_mandel_center_y = 0.0;
+							m_mandel_max_iterations = 200;
+						}
+					}
+					else if (m_currentFractal == FractalType::JULIA)
+					{
+						ImGui::Text("Julia Controls");
+						ImGui::Separator();
+
+						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
+						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
+
+						ImGui::Separator();
+
+						ImGui::InputDouble("Constant c (real)", &m_julia_c_x, 0.001, 0.0, "%.8f");
+						ImGui::InputDouble("Constant c (imag)", &m_julia_c_y, 0.001, 0.0, "%.8f");
+
+						ImGui::Checkbox("Interactive Mode (Mouse)", &m_julia_interactive_mode);
+
+						ImGui::Separator();
+						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+
+						if (ImGui::Button("Reset View")) {
+							m_mandel_zoom = 1.0;
+							m_mandel_center_x = 0.0;
+							m_mandel_center_y = 0.0;
+							m_julia_c_x = -0.8;
+							m_julia_c_y = 0.156;
 							m_mandel_max_iterations = 200;
 						}
 					}
@@ -211,6 +243,13 @@ void Application::run() {
 					sub = "Mesmer - Mandelbrot Set";
 					title_text_toggle = false;
 				}
+				ImGui::PopStyleColor(3);
+				ImGui::SameLine(0.0f, spacing);
+
+				// Julia
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.2f, 0.8f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.3f, 0.9f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.1f, 0.7f, 1.0f));
 				if (ImGui::Button("Julia", ImVec2(button_width, 80))) {
 					spdlog::info("'Julia' button clicked!");
 					m_currentFractal = FractalType::JULIA;
@@ -225,17 +264,6 @@ void Application::run() {
 					show_main_buttons = false;
 					sub = "Mesmer - Julia Set";
 					title_text_toggle = false;
-				}
-				ImGui::PopStyleColor(3);
-
-				ImGui::SameLine(0.0f, spacing);
-
-				// Julia
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.2f, 0.8f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.3f, 0.9f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.1f, 0.7f, 1.0f));
-				if (ImGui::Button("Julia", ImVec2(button_width, 80))) {
-					spdlog::info("'Julia' button clicked!");
 				}
 				ImGui::PopStyleColor(3);
 
@@ -293,6 +321,13 @@ void Application::run() {
 				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
 				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+			}
+			else if (m_currentFractal == FractalType::JULIA)
+			{
+				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+				ourShader->setDouble("u_zoom", m_mandel_zoom);
+				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				ourShader->setDVec2("u_julia_c", m_julia_c_x, m_julia_c_y);
 			}
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
