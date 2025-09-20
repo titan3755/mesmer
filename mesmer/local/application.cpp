@@ -202,6 +202,14 @@ void Application::run() {
 				if (ImGui::CollapsingHeader("Display Settings"))
 				{
 					ImGui::ColorEdit3("Background Color", (float*)&clear_color);
+
+					ImGui::Separator();
+					ImGui::Text("Fractal Color Palette");
+					ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_a);
+					ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_b);
+					ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_c, 0.0f, 2.0f);
+					ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_d, 0.0f, 1.0f);
+					ImGui::Separator();
 				}
 
 				if (ImGui::CollapsingHeader("Fractal Parameters"))

@@ -14,13 +14,13 @@ uniform double u_zoom;
 uniform int u_max_iterations;
 uniform vec2 iResolution;
 uniform dvec2 u_julia_c;
+uniform vec3 u_palette_a;
+uniform vec3 u_palette_b;
+uniform vec3 u_palette_c;
+uniform vec3 u_palette_d;
 
 vec3 palette(float t) {
-    vec3 a = vec3(0.5, 0.5, 0.5);
-    vec3 b = vec3(0.5, 0.5, 0.5);
-    vec3 c = vec3(1.0, 1.0, 0.5);
-    vec3 d = vec3(0.8, 0.9, 0.3);
-    return a + b * cos(6.28318 * (c * t + d));
+    return u_palette_a + u_palette_b * cos(6.28318 * (u_palette_c * t + u_palette_d));
 }
 
 void main()
