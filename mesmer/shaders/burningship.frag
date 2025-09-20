@@ -17,6 +17,7 @@ uniform vec3 u_palette_a;
 uniform vec3 u_palette_b;
 uniform vec3 u_palette_c;
 uniform vec3 u_palette_d;
+uniform float u_color_density;
 
 vec3 palette(float t) {
     return u_palette_a + u_palette_b * cos(6.28318 * (u_palette_c * t + u_palette_d));
