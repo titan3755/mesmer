@@ -65,7 +65,20 @@ private:
     ImVec4 m_palette_c = ImVec4(1.0f, 1.0f, 0.5f, 1.0f);
     ImVec4 m_palette_d = ImVec4(0.8f, 0.9f, 0.3f, 1.0f);
     bool m_apply_common_color_palette = false;
-
+	ImVec4 m_palette_mandelbrot_a = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	ImVec4 m_palette_mandelbrot_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	ImVec4 m_palette_mandelbrot_c = ImVec4(1.0f, 1.0f, 0.5f, 1.0f);
+	ImVec4 m_palette_mandelbrot_d = ImVec4(0.8f, 0.9f, 0.3f, 1.0f);
+	ImVec4 m_palette_julia_a = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	ImVec4 m_palette_julia_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	ImVec4 m_palette_julia_c = ImVec4(1.0f, 1.0f, 0.5f, 1.0f);
+	ImVec4 m_palette_julia_d = ImVec4(0.8f, 0.9f, 0.3f, 1.0f);
+	ImVec4 m_palette_burning_ship_a = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	ImVec4 m_palette_burning_ship_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	ImVec4 m_palette_burning_ship_c = ImVec4(1.0f, 1.0f, 0.5f, 1.0f);
+	ImVec4 m_palette_burning_ship_d = ImVec4(0.8f, 0.9f, 0.3f, 1.0f);
+    // tricorn here
+    
     // menu bg color params
     ImVec4 m_menu_bg_color_one = ImVec4(0.05f, 0.08f, 0.20f, 1.0f);
     ImVec4 m_menu_bg_color_two = ImVec4(0.15f, 0.05f, 0.25f, 1.0f);
