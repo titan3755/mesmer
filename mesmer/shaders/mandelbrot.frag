@@ -19,11 +19,7 @@ uniform vec3 u_palette_c;
 uniform vec3 u_palette_d;
 
 vec3 palette(float t) {
-    vec3 a = vec3(0.5, 0.5, 0.5);
-    vec3 b = vec3(0.5, 0.5, 0.5);
-    vec3 c = vec3(1.0, 1.0, 1.0);
-    vec3 d = vec3(0.00, 0.33, 0.67);
-    return a + b * cos(6.28318 * (c * t + d));
+    return u_palette_a + u_palette_b * cos(6.28318 * (u_palette_c * t + u_palette_d));
 }
 
 void main()
