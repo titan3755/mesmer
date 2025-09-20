@@ -400,6 +400,10 @@ void Application::run() {
 			ourShader->use();
 			ourShader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
 			ourShader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 			if (m_currentFractal == FractalType::MANDELBROT) {
 				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
