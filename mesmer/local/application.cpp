@@ -313,6 +313,7 @@ void Application::run() {
 				float total_width = (button_width * 2) + spacing;
 				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
 
+				// Mandelbrot
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.3f, 0.8f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.4f, 0.9f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.2f, 0.7f, 1.0f));
@@ -358,6 +359,8 @@ void Application::run() {
 				ImGui::PopStyleColor(3);
 				ImGui::SameLine(0.0f, spacing);
 
+				// Burning Ship
+
 				if (ImGui::Button("Burning Ship", ImVec2(button_width, 80))) {
 					spdlog::info("'Burning Ship' button clicked!");
 					m_currentFractal = FractalType::BURNING_SHIP;
@@ -377,6 +380,13 @@ void Application::run() {
 					m_mandel_zoom = 0.5;
 					m_mandel_center_x = -0.5;
 					m_mandel_center_y = -0.5;
+				}
+
+				ImGui::SameLine(0.0f, spacing);
+
+				if (ImGui::Button("Tricorn", ImVec2(button_width, 80))) {
+					spdlog::info("'Tricorn' button clicked!");
+					// todo: implement tricorn shader
 				}
 
 				ImGui::PopFont();
