@@ -13,6 +13,10 @@ uniform dvec2 u_center;
 uniform double u_zoom;
 uniform int u_max_iterations;
 uniform vec2 iResolution;
+uniform vec3 u_palette_a;
+uniform vec3 u_palette_b;
+uniform vec3 u_palette_c;
+uniform vec3 u_palette_d;
 
 vec3 palette(float t) {
     vec3 a = vec3(0.5, 0.5, 0.5);
