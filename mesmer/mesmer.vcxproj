@@ -297,6 +297,7 @@
     <None Include="SDL2_ttf.dll" />
     <None Include="shaders\background.frag" />
     <None Include="shaders\background.vert" />
+    <None Include="shaders\burningship.vert" />
     <None Include="shaders\common.vert" />
     <None Include="shaders\julia.frag" />
     <None Include="shaders\julia.vert" />

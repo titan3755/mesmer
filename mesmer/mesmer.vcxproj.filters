@@ -488,6 +488,7 @@
     <None Include="shaders\mandelbrot.frag" />
     <None Include="shaders\julia.vert" />
     <None Include="shaders\julia.frag" />
+    <None Include="shaders\burningship.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
