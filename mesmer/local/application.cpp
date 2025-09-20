@@ -639,13 +639,13 @@ void Application::initOpenGL() {
 		SDL_WINDOWPOS_CENTERED,
 		screenWidth,
 		screenHeight,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED
+		SDL_WINDOW_OPENGL /*| SDL_WINDOW_RESIZABLE*/ | SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED
 	);
 	if (!window) {
 		throw std::runtime_error("Failed to create SDL window.");
 	}
 	SDL_SetWindowFullscreen(window, 0);
-	SDL_SetWindowBordered(window, SDL_TRUE);
+	// SDL_SetWindowBordered(window, SDL_TRUE);
 
 	gl_context = SDL_GL_CreateContext(window);
 	if (!gl_context) {
