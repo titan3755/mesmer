@@ -354,7 +354,30 @@ void Application::run() {
 					sub = "Mesmer - Julia Set";
 					title_text_toggle = false;
 				}
+
 				ImGui::PopStyleColor(3);
+				ImGui::SameLine(0.0f, spacing);
+
+				if (ImGui::Button("Burning Ship", ImVec2(button_width, 80))) {
+					spdlog::info("'Burning Ship' button clicked!");
+					m_currentFractal = FractalType::BURNING_SHIP;
+
+					if (ourShader != nullptr) {
+						delete ourShader;
+					}
+
+					ourShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
+					spdlog::info("Loaded Burning Ship shader.");
+
+					show_fractal_selection = false;
+					show_main_buttons = false;
+					sub = "Mesmer - Burning Ship";
+					title_text_toggle = false;
+
+					m_mandel_zoom = 0.5;
+					m_mandel_center_x = -0.5;
+					m_mandel_center_y = -0.5;
+				}
 
 				ImGui::PopFont();
 				ImGui::End();
