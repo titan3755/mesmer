@@ -78,6 +78,9 @@ private:
     ImVec4 m_palette_burning_ship_c = ImVec4(1.0f, 0.7f, 0.4f, 1.0f);
     ImVec4 m_palette_burning_ship_d = ImVec4(0.00f, 0.15f, 0.20f, 1.0f);
     // tricorn here
+
+    // color density
+    float m_color_density = 0.05f;
     
     // menu bg color params
     ImVec4 m_menu_bg_color_one = ImVec4(0.05f, 0.08f, 0.20f, 1.0f);

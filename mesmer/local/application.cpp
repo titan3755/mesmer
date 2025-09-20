@@ -263,6 +263,10 @@ void Application::run() {
 				{
 					ImGui::ColorEdit3("Background Color", (float*)&clear_color); // maybe useless
 
+					ImGui::Separator();
+					ImGui::SliderFloat("Color Density", &m_color_density, 0.01f, 0.5f, "%.3f");
+					ImGui::Separator();
+
 					ImGui::Checkbox("Apply Common Color Palette to All Fractals", &m_apply_common_color_palette);
 
 					ImGui::Separator();
@@ -542,6 +546,7 @@ void Application::run() {
 			ourShader->setVec3("iColorOne", m_menu_bg_color_one.x, m_menu_bg_color_one.y, m_menu_bg_color_one.z);
 			ourShader->setVec3("iColorTwo", m_menu_bg_color_two.x, m_menu_bg_color_two.y, m_menu_bg_color_two.z);
 			ourShader->setVec3("iAccentColor", m_menu_bg_accent_color.x, m_menu_bg_accent_color.y, m_menu_bg_accent_color.z);
+			ourShader->setFloat("u_color_density", m_color_density);
 			if (m_apply_common_color_palette) {
 				ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
 				ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);

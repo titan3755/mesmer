@@ -49,7 +49,7 @@ void main()
     {
         float magnitude = float(dot(z, z));
         float smooth_i = float(i) - log2(log2(magnitude));
-        float color_val = smooth_i / float(u_max_iterations);
+        float color_val = smooth_i * u_color_density;
         vec3 color = palette(color_val);
         FragColor = vec4(color, 1.0);
     }
