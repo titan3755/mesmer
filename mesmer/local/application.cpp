@@ -199,7 +199,10 @@ void Application::run() {
 
 			{
 				ImGui::Begin("Control Panel");
-				if (ImGui::CollapsingHeader("Menu BG Settings"))
+				if (ImGui::CollapsingHeader("Menu BG Settings")) 
+				{
+					
+				}
 				if (ImGui::CollapsingHeader("Fractal Display Settings"))
 				{
 					ImGui::ColorEdit3("Background Color", (float*)&clear_color); // maybe useless

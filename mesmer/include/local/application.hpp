@@ -48,7 +48,7 @@ private:
 
     ImFont* m_font_regular;
     ImFont* m_font_large;
-    enum class FractalType { NONE, MANDELBROT, JULIA };
+    enum class FractalType { NONE, MANDELBROT, JULIA, BURNING_SHIP, TRICORN };
     FractalType m_currentFractal = FractalType::NONE;
     double m_mandel_zoom = 1.0;
     double m_mandel_center_x = -0.75;
@@ -64,6 +64,10 @@ private:
     ImVec4 m_palette_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
     ImVec4 m_palette_c = ImVec4(1.0f, 1.0f, 0.5f, 1.0f);
     ImVec4 m_palette_d = ImVec4(0.8f, 0.9f, 0.3f, 1.0f);
+    // menu bg color params
+    ImVec4 m_menu_bg_color_one = ImVec4(0.0, 0.1, 0.4, 0.0);
+	ImVec4 m_menu_bg_color_two = ImVec4(0.1, 0.0, 0.3, 0.0);
+    ImVec4 m_menu_bg_accent_color = ImVec4(1.0, 0.2, 0.5, 0.0);
 };
 
 #endif
