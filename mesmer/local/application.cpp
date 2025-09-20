@@ -281,12 +281,11 @@ void Application::run() {
 						ImGui::Text("Mandelbrot Controls");
 						ImGui::Separator();
 
-						ImGui::Separator();
 						ImGui::Text("Mandelbrot Set Fractal Color Palette");
 						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_mandelbrot_a);
-						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_b);
-						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_c, 0.0f, 2.0f);
-						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_d, 0.0f, 1.0f);
+						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_mandelbrot_b);
+						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_mandelbrot_c, 0.0f, 2.0f);
+						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_mandelbrot_d, 0.0f, 1.0f);
 						ImGui::Separator();
 
 						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
@@ -305,6 +304,13 @@ void Application::run() {
 					else if (m_currentFractal == FractalType::JULIA)
 					{
 						ImGui::Text("Julia Controls");
+						ImGui::Separator();
+
+						ImGui::Text("Julia Set Fractal Color Palette");
+						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_julia_a);
+						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_julia_b);
+						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_julia_c, 0.0f, 2.0f);
+						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_julia_d, 0.0f, 1.0f);
 						ImGui::Separator();
 
 						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
@@ -335,6 +341,14 @@ void Application::run() {
 					{
 						ImGui::Text("Burning Ship Controls");
 						ImGui::Separator();
+
+						ImGui::Text("Burning Ship Set Fractal Color Palette");
+						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_burning_ship_a);
+						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_burning_ship_b);
+						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_burning_ship_c, 0.0f, 2.0f);
+						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_burning_ship_d, 0.0f, 1.0f);
+						ImGui::Separator();
+
 						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
 						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
