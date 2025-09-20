@@ -263,8 +263,10 @@ void Application::run() {
 				{
 					ImGui::ColorEdit3("Background Color", (float*)&clear_color); // maybe useless
 
+					ImGui::Checkbox("Apply Common Color Palette to All Fractals", &m_apply_common_color_palette);
+
 					ImGui::Separator();
-					ImGui::Text("Fractal Color Palette");
+					ImGui::Text("Fractal Common Color Palette");
 					ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_a);
 					ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_b);
 					ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_c, 0.0f, 2.0f);
@@ -274,9 +276,6 @@ void Application::run() {
 
 				if (ImGui::CollapsingHeader("Fractal Parameters"))
 				{
-
-					ImGui::Checkbox("Apply Common Color Palette to All Fractals", &m_apply_common_color_palette);
-
 					if (m_currentFractal == FractalType::MANDELBROT)
 					{
 						ImGui::Text("Mandelbrot Controls");
