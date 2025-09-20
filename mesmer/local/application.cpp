@@ -249,6 +249,8 @@ void Application::run() {
 			ImGui_ImplSDL2_NewFrame();
 			ImGui::NewFrame();
 
+			// control panel
+
 			{
 				ImGui::Begin("Control Panel");
 				if (ImGui::CollapsingHeader("Menu BG Settings")) 
@@ -272,6 +274,9 @@ void Application::run() {
 
 				if (ImGui::CollapsingHeader("Fractal Parameters"))
 				{
+
+					ImGui::Checkbox("Apply Common Color Palette to All Fractals", &m_apply_common_color_palette);
+
 					if (m_currentFractal == FractalType::MANDELBROT)
 					{
 						ImGui::Text("Mandelbrot Controls");
@@ -516,14 +521,22 @@ void Application::run() {
 			ourShader->setVec3("iColorOne", m_menu_bg_color_one.x, m_menu_bg_color_one.y, m_menu_bg_color_one.z);
 			ourShader->setVec3("iColorTwo", m_menu_bg_color_two.x, m_menu_bg_color_two.y, m_menu_bg_color_two.z);
 			ourShader->setVec3("iAccentColor", m_menu_bg_accent_color.x, m_menu_bg_accent_color.y, m_menu_bg_accent_color.z);
-			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
-			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
-			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
-			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+			if (m_apply_common_color_palette) {
+				ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+				ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+				ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+				ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+			}
 			if (m_currentFractal == FractalType::MANDELBROT) {
 				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
 				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				if (!m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+				}
 			}
 			else if (m_currentFractal == FractalType::JULIA)
 			{
@@ -531,13 +544,29 @@ void Application::run() {
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
 				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
 				ourShader->setDVec2("u_julia_c", m_julia_c_x, m_julia_c_y);
+				if (!m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_julia_a.x, m_palette_julia_a.y, m_palette_julia_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_julia_b.x, m_palette_julia_b.y, m_palette_julia_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_julia_c.x, m_palette_julia_c.y, m_palette_julia_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_julia_d.x, m_palette_julia_d.y, m_palette_julia_d.z);
+				}
 			}
 			else if (m_currentFractal == FractalType::BURNING_SHIP) 
 			{
 				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
 				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				if (!m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_burning_ship_a.x, m_palette_burning_ship_a.y, m_palette_burning_ship_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_burning_ship_b.x, m_palette_burning_ship_b.y, m_palette_burning_ship_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_burning_ship_c.x, m_palette_burning_ship_c.y, m_palette_burning_ship_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_burning_ship_d.x, m_palette_burning_ship_d.y, m_palette_burning_ship_d.z);
+				}
 			}
+			else {
+				// no fractal selected
+			}
+
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
