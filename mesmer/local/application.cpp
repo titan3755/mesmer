@@ -39,7 +39,7 @@ void Application::run() {
 		initSDL();
 		initOpenGL();
 		initImGui();
-		initTriangle();
+		initBG();
 		std::cout << "\n\033[30;42m Mesmer application core has been initialized \033[0m\n" << std::endl;
 
 		bool done = false;
@@ -680,7 +680,7 @@ void Application::initImGui() {
 	spdlog::info("ImGui initialized successfully.");
 }
 
-void Application::initTriangle() {
+void Application::initBG() {
 	ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
 	float vertices[] = {
 		-1.0f,  1.0f, 0.0f,  0.0f, 1.0f,

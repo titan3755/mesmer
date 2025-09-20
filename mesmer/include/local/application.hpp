@@ -43,7 +43,7 @@ private:
     void initSDL();
     void initOpenGL();
     void initImGui();
-    void initTriangle();
+    void initBG();
     void cleanup();
 
     ImFont* m_font_regular;
