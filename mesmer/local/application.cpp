@@ -185,6 +185,9 @@ void Application::run() {
 						}
 					}
 				}
+				if (m_currentFractal == FractalType::BURNING_SHIP && !io.WantCaptureMouse) {
+
+				}
 				if (event.type == SDL_QUIT) {
 					done = true;
 				}
@@ -264,6 +267,21 @@ void Application::run() {
 							m_mandel_center_y = 0.0;
 							m_julia_c_x = -0.8;
 							m_julia_c_y = 0.156;
+							m_mandel_max_iterations = 200;
+						}
+					}
+					else if (m_currentFractal == FractalType::BURNING_SHIP)
+					{
+						ImGui::Text("Burning Ship Controls");
+						ImGui::Separator();
+						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
+						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
+						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						if (ImGui::Button("Reset View")) {
+							m_mandel_zoom = 1.0;
+							m_mandel_center_x = -0.5;
+							m_mandel_center_y = -0.5;
 							m_mandel_max_iterations = 200;
 						}
 					}
