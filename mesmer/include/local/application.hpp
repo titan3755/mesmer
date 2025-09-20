@@ -60,6 +60,10 @@ private:
     double m_julia_c_y = 0.156;
     bool m_julia_interactive_mode = false;
     bool m_julia_c_map_to_mouse = false;
+    ImVec4 m_palette_a = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+    ImVec4 m_palette_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+    ImVec4 m_palette_c = ImVec4(1.0f, 1.0f, 0.5f, 1.0f);
+    ImVec4 m_palette_d = ImVec4(0.8f, 0.9f, 0.3f, 1.0f);
 };
 
 #endif
