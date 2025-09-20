@@ -64,6 +64,8 @@ private:
     ImVec4 m_palette_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
     ImVec4 m_palette_c = ImVec4(1.0f, 1.0f, 0.5f, 1.0f);
     ImVec4 m_palette_d = ImVec4(0.8f, 0.9f, 0.3f, 1.0f);
+    bool m_apply_common_color_palette = false;
+
     // menu bg color params
     ImVec4 m_menu_bg_color_one = ImVec4(0.05f, 0.08f, 0.20f, 1.0f);
     ImVec4 m_menu_bg_color_two = ImVec4(0.15f, 0.05f, 0.25f, 1.0f);
