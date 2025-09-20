@@ -304,13 +304,16 @@ void Application::run() {
 			if (show_fractal_selection)
 			{
 				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 320, main_viewport->WorkPos.y + screenHeight / 2 + 60));
-				ImGui::SetNextWindowSize(ImVec2(650, 150));
+				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 330,
+					main_viewport->WorkPos.y + screenHeight / 2 + 60));
+				ImGui::SetNextWindowSize(ImVec2(680, 300));
 				ImGui::Begin("Fractal Selection", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
 				ImGui::PushFont(m_font_large);
 				float button_width = 320.0f;
 				float spacing = 30.0f;
 				float total_width = (button_width * 2) + spacing;
+
+				// --- Row 1: Mandelbrot + Julia ---
 				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
 
 				// Mandelbrot
@@ -321,10 +324,7 @@ void Application::run() {
 					spdlog::info("'Mandelbrot' button clicked!");
 					m_currentFractal = FractalType::MANDELBROT;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
-					}
-
+					if (ourShader != nullptr) delete ourShader;
 					ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
 					spdlog::info("Loaded Mandelbrot shader.");
 
@@ -334,6 +334,7 @@ void Application::run() {
 					title_text_toggle = false;
 				}
 				ImGui::PopStyleColor(3);
+
 				ImGui::SameLine(0.0f, spacing);
 
 				// Julia
@@ -344,9 +345,7 @@ void Application::run() {
 					spdlog::info("'Julia' button clicked!");
 					m_currentFractal = FractalType::JULIA;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
-					}
+					if (ourShader != nullptr) delete ourShader;
 					ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
 					spdlog::info("Loaded Julia shader.");
 
@@ -355,12 +354,13 @@ void Application::run() {
 					sub = "Mesmer - Julia Set";
 					title_text_toggle = false;
 				}
-
 				ImGui::PopStyleColor(3);
-				ImGui::SameLine(0.0f, spacing);
+
+				// --- Row 2: Burning Ship + Tricorn ---
+				ImGui::NewLine();
+				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
 
 				// Burning Ship
-
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.25f, 0.15f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.35f, 0.20f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.15f, 0.10f, 1.0f));
@@ -368,10 +368,7 @@ void Application::run() {
 					spdlog::info("'Burning Ship' button clicked!");
 					m_currentFractal = FractalType::BURNING_SHIP;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
-					}
-
+					if (ourShader != nullptr) delete ourShader;
 					ourShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
 					spdlog::info("Loaded Burning Ship shader.");
 
@@ -384,8 +381,8 @@ void Application::run() {
 					m_mandel_center_x = -0.5;
 					m_mandel_center_y = -0.5;
 				}
-
 				ImGui::PopStyleColor(3);
+
 				ImGui::SameLine(0.0f, spacing);
 
 				// Tricorn
@@ -396,10 +393,12 @@ void Application::run() {
 					spdlog::info("'Tricorn' button clicked!");
 					// todo: implement tricorn shader
 				}
+				ImGui::PopStyleColor(3);
 
 				ImGui::PopFont();
 				ImGui::End();
 			}
+
 
 			ImGuiIO& io = ImGui::GetIO();
 			ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
