@@ -77,3 +77,4 @@ void Settings::saveSettings() const {
 	}
 }
 
+// will be applied to application.cpp later (...)
