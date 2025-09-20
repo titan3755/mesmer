@@ -201,7 +201,9 @@ void Application::run() {
 				ImGui::Begin("Control Panel");
 				if (ImGui::CollapsingHeader("Menu BG Settings")) 
 				{
-					
+					ImGui::ColorEdit3("Menu BG Color One", (float*)&m_menu_bg_color_one);
+					ImGui::ColorEdit3("Menu BG Color Two", (float*)&m_menu_bg_color_two);
+					ImGui::ColorEdit3("Menu BG Accent Color", (float*)&m_menu_bg_accent_color);
 				}
 				if (ImGui::CollapsingHeader("Fractal Display Settings"))
 				{
@@ -404,6 +406,9 @@ void Application::run() {
 			ourShader->use();
 			ourShader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
 			ourShader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
+			ourShader->setVec3("iColorOne", m_menu_bg_color_one.x, m_menu_bg_color_one.y, m_menu_bg_color_one.z);
+			ourShader->setVec3("iColorTwo", m_menu_bg_color_two.x, m_menu_bg_color_two.y, m_menu_bg_color_two.z);
+			ourShader->setVec3("iColorAccent", m_menu_bg_accent_color.x, m_menu_bg_accent_color.y, m_menu_bg_accent_color.z);
 			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
 			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
 			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
