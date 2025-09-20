@@ -11,7 +11,7 @@ uniform float iTime;
 uniform vec2 iResolution;
 uniform vec3 iColorOne;
 uniform vec3 iColorTwo;
-uniform vec3 iAccentColor;
+uniform vec3 iAccentColor = vec3(1.0, 0.2, 0.5);
 void main() {
     vec2 uv = (TexCoords * 2.0 - 1.0) * vec2(iResolution.x / iResolution.y, 1.0);
     float wave = sin(uv.x * 2.0 + iTime * 2.2) * cos(uv.y * 5.2 - iTime);
