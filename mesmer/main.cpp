@@ -9,6 +9,9 @@
 const char* WINDOW_TITLE = "Mesmer";
 const char* SETTINGS_FILE = "settings.mesmer";
 
+// application metadata
+
+
 int main(int argc, char* argv[]) {
 	Application app(WINDOW_TITLE, SETTINGS_FILE, argc, argv);
 	try {
