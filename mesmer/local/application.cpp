@@ -237,6 +237,9 @@ void Application::run() {
 						title_text_toggle = true;
 					}
 				}
+				if (m_currentFractal == FractalType::BURNING_SHIP && !io.WantCaptureMouse) {
+
+				}
 				if (event.type == SDL_QUIT) {
 					done = true;
 				}
@@ -363,6 +366,10 @@ void Application::run() {
 							m_mandel_center_y = -0.5;
 							m_mandel_max_iterations = 200;
 						}
+					}
+					else if (m_currentFractal == FractalType::TRICORN) 
+					{
+
 					}
 					else
 					{
