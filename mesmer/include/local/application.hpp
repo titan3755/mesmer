@@ -73,10 +73,10 @@ private:
     ImVec4 m_palette_julia_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
     ImVec4 m_palette_julia_c = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
     ImVec4 m_palette_julia_d = ImVec4(0.80f, 0.90f, 1.00f, 1.0f);
-    ImVec4 m_palette_burning_ship_a = ImVec4(0.1f, 0.05f, 0.02f, 1.0f);
-    ImVec4 m_palette_burning_ship_b = ImVec4(0.4f, 0.25f, 0.2f, 1.0f);
-    ImVec4 m_palette_burning_ship_c = ImVec4(1.0f, 0.8f, 0.6f, 1.0f);
-    ImVec4 m_palette_burning_ship_d = ImVec4(0.0f, 0.25f, 0.35f, 1.0f);
+    ImVec4 m_palette_burning_ship_a = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+    ImVec4 m_palette_burning_ship_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+    ImVec4 m_palette_burning_ship_c = ImVec4(1.0f, 1.0f, 0.925f, 1.0f);
+    ImVec4 m_palette_burning_ship_d = ImVec4(0.00f, 1.0f, 0.220f, 1.0f);
     ImVec4 m_palette_tricorn_a = ImVec4(0.02f, 0.00f, 0.20f, 1.0f);
     ImVec4 m_palette_tricorn_b = ImVec4(0.20f, 0.80f, 1.00f, 1.0f);
     ImVec4 m_palette_tricorn_c = ImVec4(1.00f, 0.20f, 0.80f, 1.0f);

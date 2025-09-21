@@ -48,6 +48,7 @@ void Application::run() {
 		const char* status = "Status: All Systems OK";
 		const char* sub = "Mesmer - Main Menu";
 		static bool title_text_toggle = true;
+		static bool hud_toggle = true;
 
 		while (!done) {
 			SDL_Event event;
@@ -553,6 +554,7 @@ void Application::run() {
 					m_mandel_zoom = 22.0;
 					m_mandel_center_x = -1.75;
 					m_mandel_center_y = -0.04;
+					m_color_density = 0.031f;
 				}
 				ImGui::PopStyleColor(3);
 
