@@ -632,6 +632,18 @@ void Application::run() {
 					ourShader->setVec3("u_palette_d", m_palette_burning_ship_d.x, m_palette_burning_ship_d.y, m_palette_burning_ship_d.z);
 				}
 			}
+			else if (m_currentFractal == FractalType::TRICORN)
+			{
+				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+				ourShader->setDouble("u_zoom", m_mandel_zoom);
+				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				if (!m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_tricorn_a.x, m_palette_tricorn_a.y, m_palette_tricorn_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_tricorn_b.x, m_palette_tricorn_b.y, m_palette_tricorn_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_tricorn_c.x, m_palette_tricorn_c.y, m_palette_tricorn_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_tricorn_d.x, m_palette_tricorn_d.y, m_palette_tricorn_d.z);
+				}
+			}
 			else {
 				// no fractal selected
 			}
