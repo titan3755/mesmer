@@ -10,7 +10,13 @@ const char* WINDOW_TITLE = "Mesmer";
 const char* SETTINGS_FILE = "settings.mesmer";
 
 // application metadata
-
+std::map<std::string, std::string> app_metadata = {
+	{"name", "Mesmer"},
+	{"version", "1.0.0"},
+	{"author", "Mahmud Al Muhaimin"},
+	{"license", "MIT"},
+	{"description", "A fractal explorer application"}
+};
 
 int main(int argc, char* argv[]) {
 	Application app(WINDOW_TITLE, SETTINGS_FILE, argc, argv);
