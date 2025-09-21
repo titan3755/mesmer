@@ -10,6 +10,7 @@ Application::Application(const char* title, const char* settings_file, std::map<
 	this->screenWidth = 0;
 	this->screenHeight = 0;
 	this->windowTitle = title;
+	this->app_metadata = metadata;
 	this->argc = argc;
 	this->argv = argv;
 	this->window = nullptr;
@@ -460,19 +461,20 @@ void Application::run() {
 			if (info_gui_window_toggle && hud_toggle)
 			{
 				ImGui::Begin("Information");
-				ImGui::Text("Mesmer - Fractal Generator and Explorer");
+				ImGui::Text(app_metadata["description"].c_str());
 				ImGui::Separator();
-				ImGui::Text("Made by Titan // GH: https://github.com/titan3755/mesmer");
-				ImGui::Text("Version: 0.5.0 Alpha (Dev)");
-				ImGui::Text("Build Date: September 2025");
+				ImGui::Text(app_metadata["author_desc"].c_str());
+				ImGui::Text(app_metadata["version"].c_str());
+				ImGui::Text(app_metadata["build"].c_str());
+				ImGui::Text(app_metadata["license"].c_str());
 				ImGui::Separator();
 				ImGui::Text("Controls:");
-				ImGui::BulletText("H - Toggle HUD");
-				ImGui::BulletText("Space - Toggle Main Menu");
-				ImGui::BulletText("Mouse Wheel - Zoom In/Out");
-				ImGui::BulletText("Click + Drag - Pan View");
-				ImGui::BulletText("M (Julia) - Toggle mapping constant to mouse");
-				ImGui::BulletText("I (Julia) - Toggle interactive mode");
+				ImGui::BulletText(app_metadata["control_one"].c_str());
+				ImGui::BulletText(app_metadata["control_two"].c_str());
+				ImGui::BulletText(app_metadata["control_three"].c_str());
+				ImGui::BulletText(app_metadata["control_four"].c_str());
+				ImGui::BulletText(app_metadata["control_five"].c_str());
+				ImGui::BulletText(app_metadata["control_six"].c_str());
 				ImGui::Separator();
 				ImGui::Text("%s", status);
 				ImGui::End();
