@@ -14,6 +14,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <map>
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
 #include <SDL.h>
