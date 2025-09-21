@@ -77,7 +77,10 @@ private:
     ImVec4 m_palette_burning_ship_b = ImVec4(0.8f, 0.3f, 0.1f, 1.0f);
     ImVec4 m_palette_burning_ship_c = ImVec4(1.0f, 0.7f, 0.4f, 1.0f);
     ImVec4 m_palette_burning_ship_d = ImVec4(0.00f, 0.15f, 0.20f, 1.0f);
-    // tricorn here
+    ImVec4 m_palette_tricorn_a = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+    ImVec4 m_palette_tricorn_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+    ImVec4 m_palette_tricorn_c = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+    ImVec4 m_palette_tricorn_d = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
 
     // color density
     float m_color_density = 0.05f;

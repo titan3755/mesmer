@@ -369,7 +369,8 @@ void Application::run() {
 					}
 					else if (m_currentFractal == FractalType::TRICORN) 
 					{
-
+						ImGui::Text("Tricorn Controls");
+						ImGui::Separator();
 					}
 					else
 					{
