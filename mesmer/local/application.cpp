@@ -55,6 +55,10 @@ void Application::run() {
 			while (SDL_PollEvent(&event)) {
 				ImGuiIO& io = ImGui::GetIO();
 				ImGui_ImplSDL2_ProcessEvent(&event);
+				if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_h)
+				{
+					hud_toggle = !hud_toggle;
+				}
 				if (m_currentFractal == FractalType::MANDELBROT && !io.WantCaptureMouse)
 				{
 					if (event.type == SDL_MOUSEWHEEL)
@@ -304,6 +308,7 @@ void Application::run() {
 
 			// control panel
 
+			if (hud_toggle) 
 			{
 				ImGui::Begin("Control Panel");
 				if (ImGui::CollapsingHeader("Menu BG Settings")) 
@@ -594,11 +599,13 @@ void Application::run() {
 			ImGuiIO& io = ImGui::GetIO();
 			ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
 
-			draw_list->AddText(
-				ImVec2(10, 10),
-				IM_COL32(255, 255, 0, 255),
-				sub
-			);
+			if (hud_toggle) {
+				draw_list->AddText(
+					ImVec2(10, 10),
+					IM_COL32(255, 255, 0, 255),
+					sub
+				);
+			}
 			if (title_text_toggle) {
 				draw_list->AddText(
 					m_font_large,
@@ -609,19 +616,24 @@ void Application::run() {
 				);
 			}
 			else {
+				if (hud_toggle) {
+					draw_list->AddText(
+						m_font_large,
+						20.0f,
+						ImVec2((float)screenWidth / 2 - 170, 20),
+						IM_COL32(255, 255, 255, 255),
+						"Press Space Bar to exit to main menu"
+					);
+				}
+			}
+			
+			if (hud_toggle) {
 				draw_list->AddText(
-					m_font_large,
-					20.0f,
-					ImVec2((float)screenWidth / 2 - 170, 20),
-					IM_COL32(255, 255, 255, 255),
-					"Press Space Bar to exit to main menu"
+					ImVec2((float)screenWidth - 200, 10),
+					IM_COL32(0, 255, 0, 255),
+					status
 				);
 			}
-			draw_list->AddText(
-				ImVec2((float)screenWidth - 200, 10),
-				IM_COL32(0, 255, 0, 255),
-				status
-			);
 
 			if (show_demo_window) {
 				ImGui::ShowDemoWindow(&show_demo_window);
