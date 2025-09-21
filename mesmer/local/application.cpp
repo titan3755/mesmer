@@ -49,6 +49,7 @@ void Application::run() {
 		const char* sub = "Mesmer - Main Menu";
 		static bool title_text_toggle = true;
 		static bool hud_toggle = true;
+		static bool info_gui_window_toggle = false;
 
 		while (!done) {
 			SDL_Event event;
@@ -451,10 +452,32 @@ void Application::run() {
 						ImGui::Text("No fractal selected.");
 					}
 				}
-
-
+				ImGui::Checkbox("Toggle info window", &info_gui_window_toggle);
 				ImGui::End();
 			}
+
+			// info GUI window
+			if (info_gui_window_toggle && hud_toggle)
+			{
+				ImGui::Begin("Information");
+				ImGui::Text("Mesmer - Fractal Generator and Explorer");
+				ImGui::Separator();
+				ImGui::Text("Made by Titan // GH: https://github.com/titan3755/mesmer");
+				ImGui::Text("Version: 0.5.0 Alpha (Dev)");
+				ImGui::Text("Build Date: September 2025");
+				ImGui::Separator();
+				ImGui::Text("Controls:");
+				ImGui::BulletText("H - Toggle HUD");
+				ImGui::BulletText("Space - Toggle Main Menu");
+				ImGui::BulletText("Mouse Wheel - Zoom In/Out");
+				ImGui::BulletText("Click + Drag - Pan View");
+				ImGui::BulletText("M (Julia) - Toggle mapping constant to mouse");
+				ImGui::BulletText("I (Julia) - Toggle interactive mode");
+				ImGui::Separator();
+				ImGui::Text("%s", status);
+				ImGui::End();
+			}
+
 			if (show_main_buttons) {
 				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
 				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 270, main_viewport->WorkPos.y + screenHeight / 2 - 100));
