@@ -371,6 +371,25 @@ void Application::run() {
 					{
 						ImGui::Text("Tricorn Controls");
 						ImGui::Separator();
+
+						ImGui::Text("Tricorn Set Fractal Color Palette");
+						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_tricorn_a);
+						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_tricorn_b);
+						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_tricorn_c, 0.0f, 2.0f);
+						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_tricorn_d, 0.0f, 1.0f);
+						ImGui::Separator();
+
+						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
+						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
+
+						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						if (ImGui::Button("Reset View")) {
+							m_mandel_zoom = 1.0;
+							m_mandel_center_x = -0.75;
+							m_mandel_center_y = 0.0;
+							m_mandel_max_iterations = 200;
+						}
 					}
 					else
 					{
