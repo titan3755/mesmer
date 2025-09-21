@@ -306,6 +306,7 @@
     <None Include="shaders\mandelbrot.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="shaders\triangle.vert" />
+    <None Include="shaders\tricorn.frag" />
     <None Include="shaders\tricorn.vert" />
   </ItemGroup>
   <ItemGroup>
