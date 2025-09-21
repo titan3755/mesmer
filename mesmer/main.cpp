@@ -16,7 +16,13 @@ std::map<std::string, std::string> app_metadata = {
 	{"author_desc", "Made by Titan // GH: https://github.com/titan3755/mesmer"},
 	{"build", "Build Date: September 2025"},
 	{"description", "Mesmer - Fractal Generator and Explorer"},
-	{"license", "MIT"},
+	{"license", "GPL-3.0"},
+	{"control_one", "H - Toggle HUD"},
+	{"control_two", "Space - Toggle Main Menu"},
+	{"control_three", "Mouse Wheel - Zoom In/Out"},
+	{"control_four", "Click + Drag - Pan View"},
+	{"control_five", "M (Julia) - Toggle mapping constant to mouse"},
+	{"control_six", "I (Julia) - Toggle interactive mode"}
 };
 
 int main(int argc, char* argv[]) {
