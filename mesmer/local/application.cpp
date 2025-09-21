@@ -488,7 +488,23 @@ void Application::run() {
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.05f, 0.4f, 0.5f, 1.0f));
 				if (ImGui::Button("Tricorn", ImVec2(button_width, 80))) {
 					spdlog::info("'Tricorn' button clicked!");
-					// todo: implement tricorn shader
+					m_currentFractal = FractalType::TRICORN;
+
+					if (ourShader != nullptr) {
+						delete ourShader;
+					}
+
+					ourShader = new Shader("shaders/tricorn.vert", "shaders/tricorn.frag");
+					spdlog::info("Loaded Tricorn shader.");
+
+					show_fractal_selection = false;
+					show_main_buttons = false;
+					sub = "Mesmer - Tricorn";
+					title_text_toggle = false;
+
+					m_mandel_zoom = 0.5;
+					m_mandel_center_x = 0.0;
+					m_mandel_center_y = 0.0;
 				}
 				ImGui::PopStyleColor(3);
 
