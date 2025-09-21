@@ -26,7 +26,7 @@ std::map<std::string, std::string> app_metadata = {
 };
 
 int main(int argc, char* argv[]) {
-	Application app(WINDOW_TITLE, SETTINGS_FILE, argc, argv);
+	Application app(WINDOW_TITLE, SETTINGS_FILE, app_metadata, argc, argv);
 	try {
 		app.run();
 	}

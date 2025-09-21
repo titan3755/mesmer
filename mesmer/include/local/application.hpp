@@ -26,7 +26,7 @@
 
 class Application {
 public:
-    Application(const char* title, const char* settings_file, int argc, char* argv[]);
+    Application(const char* title, const char* settings_file, std::map<std::string, std::string> metadata, int argc, char* argv[]);
     void run();
 
 private:
