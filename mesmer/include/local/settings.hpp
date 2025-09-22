@@ -27,11 +27,11 @@ private:
 	std::map<std::string, std::string> settingsMap;
 	std::map <std::string, std::string> defaults = {
 		{
-		{"window_width", "1280"},
-		{"window_height", "720"},
-		{"fullscreen", "false"},
+		{"window_width", "1920"},
+		{"window_height", "1080"},
+		{"fullscreen", "true"},
 		{"vsync", "true"},
-		{"max_fps", "60"},
+		{"max_fps", "120"},
 		{"theme", "dark"},
 		{"language", "en"},
 		{"autosave_interval", "10"},
