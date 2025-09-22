@@ -10,6 +10,7 @@ Application::Application(const char* title, const char* settings_file, std::map<
 	this->screenWidth = 0;
 	this->screenHeight = 0;
 	this->windowTitle = title;
+	this->settings_file = settings_file;
 	this->app_metadata = metadata;
 	this->argc = argc;
 	this->argv = argv;
@@ -43,6 +44,9 @@ void Application::run() {
 		initBG();
 		std::cout << "\n\033[30;42m Mesmer application core has been initialized \033[0m\n" << std::endl;
 
+		// settings init
+		Settings app_settings(settings_file);
+		// -->
 		bool done = false;
 		static ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
 		static bool show_demo_window = false;

@@ -33,6 +33,7 @@ private:
     int screenWidth;
     int screenHeight;
     const char* windowTitle;
+    const char* settings_file;
 	std::map<std::string, std::string> app_metadata;
     int argc;
     char** argv;
