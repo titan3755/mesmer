@@ -46,6 +46,7 @@ void Application::run() {
 
 		// settings init
 		Settings app_settings(settings_file);
+
 		// -->
 		bool done = false;
 		static ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
