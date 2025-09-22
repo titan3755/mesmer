@@ -1,0 +1,10 @@
+autosave_interval=10
+default_save_path=./saves
+fullscreen=true
+language=en
+max_fps=120
+recent_files=
+theme=dark
+vsync=true
+window_height=1080
+window_width=1920
