@@ -16,7 +16,7 @@
 -> Implement settings GUI using ImGUI [PARTIALLY-DONE] <br>
 -> Make a proper menu / initial state screen [DONE] <br>
 -> Start development on the actual fractal rendering systems <br>
--> Add fractal rendering system for Julia set [HIGH PRIORITY] <br>
+-> Add fractal rendering system for Julia set [HIGH PRIORITY] [DONE] <br>
 -> Tidy up the GUI <br>
 -> (...) <br>
 
@@ -24,5 +24,4 @@
 -> Tricorn fractal [DONE] <br>
 -> Burning Ship fractal [DONE] <br>
 -> Julia fractal [DONE] <br>
-
 
