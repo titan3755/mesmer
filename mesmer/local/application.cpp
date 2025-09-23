@@ -56,6 +56,7 @@ void Application::run() {
 		static bool title_text_toggle = true;
 		static bool hud_toggle = true;
 		static bool info_gui_window_toggle = false;
+		int final_adaptive_iterations = m_base_iterations;
 
 		// attempt to get bg colors and accent color from settings
 		if (app_settings.getSetting("menu_bg_color_one") != "") {
