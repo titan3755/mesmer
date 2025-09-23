@@ -89,10 +89,10 @@ private:
     ImVec4 m_palette_tricorn_b = ImVec4(0.20f, 0.80f, 1.00f, 1.0f);
     ImVec4 m_palette_tricorn_c = ImVec4(1.00f, 0.20f, 0.80f, 1.0f);
     ImVec4 m_palette_tricorn_d = ImVec4(1.00f, 0.90f, 0.00f, 1.0f);
-    ImVec4 m_palette_phoenix_a = ImVec4(0.1f, 0.5f, 0.2f, 1.0f);  // deep purple  
-    ImVec4 m_palette_phoenix_b = ImVec4(0.4f, 0.1f, 0.6f, 1.0f);  // violet  
-    ImVec4 m_palette_phoenix_c = ImVec4(0.9f, 0.4f, 0.9f, 1.0f);  // magenta  
-    ImVec4 m_palette_phoenix_d = ImVec4(1.0f, 0.8f, 0.5f, 1.0f);  // golden highlight  
+    ImVec4 m_palette_phoenix_a = ImVec4(0.1f, 0.5f, 0.2f, 1.0f);
+    ImVec4 m_palette_phoenix_b = ImVec4(0.4f, 0.1f, 0.6f, 1.0f);
+    ImVec4 m_palette_phoenix_c = ImVec4(0.9f, 0.4f, 0.9f, 1.0f);
+    ImVec4 m_palette_phoenix_d = ImVec4(1.0f, 0.8f, 0.5f, 1.0f);
     double m_phoenix_c_x = 0.5067;
     double m_phoenix_c_y = 0.0200;
     double m_phoenix_p = -0.9900;
