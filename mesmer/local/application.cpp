@@ -408,6 +408,7 @@ void Application::run() {
 						ImGui::Separator();
 						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
 						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						ImGui::TextWrapped(("Current Adaptive Iterations: " + std::to_string(final_adaptive_iterations)).c_str());
 						if (ImGui::IsItemHovered()) {
 							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
 						}
@@ -456,6 +457,7 @@ void Application::run() {
 						ImGui::Separator();
 						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
 						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						ImGui::TextWrapped(("Current Adaptive Iterations: " + std::to_string(final_adaptive_iterations)).c_str());
 						if (ImGui::IsItemHovered()) {
 							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
 						}
@@ -496,6 +498,7 @@ void Application::run() {
 						ImGui::Separator();
 						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
 						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						ImGui::TextWrapped(("Current Adaptive Iterations: " + std::to_string(final_adaptive_iterations)).c_str());
 						if (ImGui::IsItemHovered()) {
 							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
 						}
@@ -534,6 +537,7 @@ void Application::run() {
 						ImGui::Separator();
 						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
 						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						ImGui::TextWrapped(("Current Adaptive Iterations: " + std::to_string(final_adaptive_iterations)).c_str());
 						if (ImGui::IsItemHovered()) {
 							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
 						}
