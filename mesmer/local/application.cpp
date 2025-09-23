@@ -652,16 +652,37 @@ void Application::run() {
 						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_phoenix_d, 0.0f, 1.0f);
 						ImGui::Separator();
 
-						// Pan and zoom controls
 						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
 						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
+
+						if (m_adaptive_iterations) {
+							ImGui::BeginDisabled();
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+							ImGui::EndDisabled();
+						}
+						else {
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						}
+
 						ImGui::Separator();
-						// Phoenix-specific controls
 						ImGui::SliderFloat("Constant c (real)", (float*)&m_phoenix_c_x, -2.0f, 2.0f);
 						ImGui::SliderFloat("Constant c (imag)", (float*)&m_phoenix_c_y, -2.0f, 2.0f);
 						ImGui::SliderFloat("Constant p", (float*)&m_phoenix_p, -2.0f, 2.0f);
 						ImGui::Separator();
+
+						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
+						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						ImGui::TextWrapped(("Current Adaptive Iterations: " + std::to_string(final_adaptive_iterations)).c_str());
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
+						}
+						if (ImGui::Button("Reset View")) {
+							m_mandel_zoom = 1.0;
+							m_mandel_center_x = -0.75;
+							m_mandel_center_y = 0.0;
+							m_mandel_max_iterations = 200;
+						}
 					}
 					else
 					{
@@ -832,7 +853,9 @@ void Application::run() {
 				ImGui::PopStyleColor(3);
 
 				// phoenix
-				ImGui::SameLine(0.0f, spacing);
+				ImGui::NewLine();
+				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - button_width) * 0.5f);
+
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.4f, 0.1f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.5f, 0.2f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.3f, 0.05f, 1.0f));
@@ -854,7 +877,7 @@ void Application::run() {
 					m_mandel_zoom = 0.5;
 					m_mandel_center_x = 0.0;
 					m_mandel_center_y = 0.0;
-				}				
+				}
 				ImGui::PopStyleColor(3);
 
 				// lyapunov (coming soon)
@@ -1023,6 +1046,32 @@ void Application::run() {
 					ourShader->setVec3("u_palette_c", m_palette_tricorn_c.x, m_palette_tricorn_c.y, m_palette_tricorn_c.z);
 					ourShader->setVec3("u_palette_d", m_palette_tricorn_d.x, m_palette_tricorn_d.y, m_palette_tricorn_d.z);
 				}
+			}
+			else if (m_currentFractal == FractalType::PHOENIX)
+			{
+				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+				ourShader->setDouble("u_zoom", m_mandel_zoom);
+				ourShader->setDVec2("u_julia_c", m_phoenix_c_x, m_phoenix_c_y); // Re-using julia uniform name from previous code
+				ourShader->setDouble("u_phoenix_p", m_phoenix_p);
+				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				if (m_adaptive_iterations) {
+					int final_iterations = m_base_iterations;
+					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+					}
+					final_adaptive_iterations = final_iterations;
+					ourShader->setInt("u_max_iterations", final_iterations);
+				}
+				else {
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				}
+				if (!m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_phoenix_a.x, m_palette_phoenix_a.y, m_palette_phoenix_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_phoenix_b.x, m_palette_phoenix_b.y, m_palette_phoenix_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_phoenix_c.x, m_palette_phoenix_c.y, m_palette_phoenix_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_phoenix_d.x, m_palette_phoenix_d.y, m_palette_phoenix_d.z);
+				}
+
 			}
 			else {
 				// no fractal selected
