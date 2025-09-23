@@ -23,5 +23,4 @@
 
 ### More fractal ideas to implement
 -> Tricorn fractal [DONE] <br>
--> Julia fractal [DONE] <br>
 
