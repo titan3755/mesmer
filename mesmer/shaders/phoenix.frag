@@ -47,6 +47,16 @@ void main()
     }
 
     // Coloring is the same as your other fractals
-    if (i == u_max_iterations) { /* ... */ }
-    else { /* ... */ }
+    if (i == u_max_iterations)
+    {
+        FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    else
+    {
+        float magnitude = float(dot(z, z));
+        float smooth_i = float(i) - log2(log2(magnitude));
+        float color_val = smooth_i * u_color_density;
+        vec3 color = palette(color_val);
+        FragColor = vec4(color, 1.0);
+    }
 }
