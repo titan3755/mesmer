@@ -21,7 +21,7 @@
 -> (...) <br>
 
 ### More fractal ideas to implement
--> Tricorn fractal <br>
+-> Tricorn fractal [DONE] <br>
 -> Burning Ship fractal <br>
 -> Julia fractal <br>
 
