@@ -53,6 +53,7 @@ private:
     ImFont* m_font_large;
     enum class FractalType { NONE, MANDELBROT, JULIA, BURNING_SHIP, TRICORN };
     FractalType m_currentFractal = FractalType::NONE;
+    int max_iterations_default = 10000;
     double m_mandel_zoom = 1.0;
     double m_mandel_center_x = -0.75;
     double m_mandel_center_y = 0.0;
