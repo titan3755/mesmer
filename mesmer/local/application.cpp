@@ -640,6 +640,10 @@ void Application::run() {
 							m_mandel_max_iterations = 200;
 						}
 					}
+					else if (m_currentFractal == FractalType::PHOENIX) 
+					{
+
+					}
 					else
 					{
 						ImGui::Text("No fractal selected.");
