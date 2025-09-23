@@ -139,13 +139,8 @@ void Application::run() {
 			std::string float_str = app_settings.getSetting("fractal_color_density");
 			try {
 				float value = std::stof(float_str);
-				if (value >= 0.1f && value <= 20.0f) {
-					m_color_density = value;
-					spdlog::info("Loaded color_density from settings: {}", float_str);
-				}
-				else {
-					spdlog::warn("color_density in settings is out of range (0.1-20.0). Using default value");
-				}
+				m_color_density = value;
+				spdlog::info("Loaded color_density from settings: {}", float_str);
 			}
 			catch (const std::exception& e) {
 				spdlog::error("Error parsing color_density from settings: {}. Using default value", e.what());
