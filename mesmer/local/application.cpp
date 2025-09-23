@@ -827,7 +827,7 @@ void Application::run() {
 				ImVec2 text_pos = ImVec2((float)screenWidth / 2 - 140, 20);
 				ImU32 outline_col = IM_COL32(0, 0, 0, 255);
 				ImU32 fill_col = IM_COL32(255, 255, 255, 255);
-				float thickness = 2.0f;
+				float thickness = 4.0f;
 				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x - thickness, text_pos.y - thickness), outline_col, "MESMER");
 				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x + thickness, text_pos.y - thickness), outline_col, "MESMER");
 				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x - thickness, text_pos.y + thickness), outline_col, "MESMER");
