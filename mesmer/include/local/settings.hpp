@@ -19,6 +19,12 @@ public:
 	Settings(const char* filename);
 	~Settings();
 
+	void checkFileExists();
+	void loadSettings();
+	void appendSettings(std::map<std::string, std::string>);
+	void updateSetting(const std::string& key, const std::string& value);
+	std::string getSetting(const std::string& key) const;
+	void saveSettings() const;
 	bool exists() const { return fileExists; }
 
 private:
@@ -40,12 +46,6 @@ private:
 		}
 	};
 
-	void checkFileExists();
-	void loadSettings();
-	void appendSettings(std::map<std::string, std::string>);
-	void updateSetting(const std::string& key, const std::string& value);
-	std::string getSetting(const std::string& key) const;
-	void saveSettings() const;
 };
 
 #endif
