@@ -788,6 +788,7 @@ void Application::run() {
 					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
 						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
 					}
+					final_adaptive_iterations = final_iterations;
 					ourShader->setInt("u_max_iterations", final_iterations);
 				}
 				else {
@@ -811,6 +812,7 @@ void Application::run() {
 					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
 						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
 					}
+					final_adaptive_iterations = final_iterations;
 					ourShader->setInt("u_max_iterations", final_iterations);
 				}
 				else {
@@ -833,6 +835,7 @@ void Application::run() {
 					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
 						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
 					}
+					final_adaptive_iterations = final_iterations;
 					ourShader->setInt("u_max_iterations", final_iterations);
 				}
 				else {
@@ -855,6 +858,7 @@ void Application::run() {
 					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
 						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
 					}
+					final_adaptive_iterations = final_iterations;
 					ourShader->setInt("u_max_iterations", final_iterations);
 				}
 				else {
