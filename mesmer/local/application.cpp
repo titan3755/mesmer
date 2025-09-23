@@ -808,6 +808,34 @@ void Application::run() {
 				}
 				ImGui::PopStyleColor(3);
 
+				// phoenix
+				ImGui::SameLine(0.0f, spacing);
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.4f, 0.1f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.5f, 0.2f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.3f, 0.05f, 1.0f));
+				if (ImGui::Button("Phoenix", ImVec2(button_width, 80))) {
+					m_currentFractal = FractalType::PHOENIX;
+
+					if (ourShader != nullptr) {
+						delete ourShader;
+					}
+
+					ourShader = new Shader("shaders/phoenix.vert", "shaders/phoenix.frag");
+					spdlog::info("Loaded Phoenix shader.");
+
+					show_fractal_selection = false;
+					show_main_buttons = false;
+					sub = "Mesmer - Phoenix";
+					title_text_toggle = false;
+
+					m_mandel_zoom = 0.5;
+					m_mandel_center_x = 0.0;
+					m_mandel_center_y = 0.0;
+				}				
+				ImGui::PopStyleColor(3);
+
+				// lyapunov (coming soon)
+
 				ImGui::PopFont();
 				ImGui::End();
 			}
