@@ -23,4 +23,5 @@
 
 ### More fractal ideas to implement
 -> Lyapunov Fractals <br>
+-> (...) <br>
 
