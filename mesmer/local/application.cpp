@@ -646,10 +646,10 @@ void Application::run() {
 						ImGui::Separator();
 
 						ImGui::Text("Phoenix Set Fractal Color Palette");
-						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_tricorn_a);
-						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_tricorn_b);
-						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_tricorn_c, 0.0f, 2.0f);
-						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_tricorn_d, 0.0f, 1.0f);
+						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_phoenix_a);
+						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_phoenix_b);
+						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_phoenix_c, 0.0f, 2.0f);
+						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_phoenix_d, 0.0f, 1.0f);
 						ImGui::Separator();
 
 						// Pan and zoom controls
