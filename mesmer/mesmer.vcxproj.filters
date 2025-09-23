@@ -493,6 +493,7 @@
     <None Include="shaders\tricorn.vert" />
     <None Include="shaders\tricorn.frag" />
     <None Include="shaders\phoenix.vert" />
+    <None Include="shaders\phoenix.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
