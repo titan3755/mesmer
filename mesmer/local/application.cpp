@@ -118,11 +118,11 @@ void Application::run() {
 		}
 
 		if (app_settings.getSetting("fractal_palette_c") != "") {
-			std::string color_str = app_settings.getSetting("palette_c");
+			std::string color_str = app_settings.getSetting("fractal_palette_c");
 			float r, g, b, a;
 			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
 				m_palette_c = ImVec4(r, g, b, a);
-				spdlog::info("Loaded palette_c from settings: {}", color_str);
+				spdlog::info("Loaded fractal_palette_c from settings: {}", color_str);
 			}
 		}
 
