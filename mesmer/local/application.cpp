@@ -87,6 +87,73 @@ void Application::run() {
 			}
 		}
 
+		// fractal common color settings load attempt
+		if (app_settings.getSetting("apply_common_color_palette") != "") {
+			std::string bool_str = app_settings.getSetting("apply_common_color_palette");
+			if (bool_str == "true") {
+				m_apply_common_color_palette = true;
+			}
+			else {
+				m_apply_common_color_palette = false;
+			}
+			spdlog::info("Loaded apply_common_color_palette from settings: {}", bool_str);
+		}
+
+		if (app_settings.getSetting("palette_a") != "") {
+			std::string color_str = app_settings.getSetting("palette_a");
+			float r, g, b, a;
+			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
+				m_palette_a = ImVec4(r, g, b, a);
+				spdlog::info("Loaded palette_a from settings: {}", color_str);
+			}
+		}
+
+		if (app_settings.getSetting("palette_b") != "") {
+			std::string color_str = app_settings.getSetting("palette_b");
+			float r, g, b, a;
+			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
+				m_palette_b = ImVec4(r, g, b, a);
+				spdlog::info("Loaded palette_b from settings: {}", color_str);
+			}
+		}
+
+		if (app_settings.getSetting("palette_c") != "") {
+			std::string color_str = app_settings.getSetting("palette_c");
+			float r, g, b, a;
+			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, g, b, &a) == 4) {
+				m_palette_c = ImVec4(r, g, b, a);
+				spdlog::info("Loaded palette_c from settings: {}", color_str);
+			}
+		}
+
+		if (app_settings.getSetting("palette_d") != "") {
+			std::string color_str = app_settings.getSetting("palette_d");
+			float r, g, b, a;
+			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
+				m_palette_d = ImVec4(r, g, b, a);
+				spdlog::info("Loaded palette_d from settings: {}", color_str);
+			}
+		}
+
+		if (app_settings.getSetting("base_iterations") != "") {
+			std::string int_str = app_settings.getSetting("base_iterations");
+			try {
+				int value = std::stoi(int_str);
+				if (value > 0 && value <= 10000) {
+					m_base_iterations = value;
+					spdlog::info("Loaded base_iterations from settings: {}", int_str);
+				}
+				else {
+					spdlog::warn("base_iterations in settings is out of range (1-10000). Using default value: 100");
+				}
+			}
+			catch (const std::exception& e) {
+				spdlog::error("Error parsing base_iterations from settings: {}. Using default value: 100", e.what());
+			}
+		}
+
+		// <--
+
 
 		// ---------------------------------
 
