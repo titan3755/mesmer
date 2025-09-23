@@ -22,5 +22,5 @@
 -> (...) <br>
 
 ### More fractal ideas to implement
--> Tricorn fractal [DONE] <br>
+-> Lyapunov Fractals <br>
 
