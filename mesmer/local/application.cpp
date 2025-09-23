@@ -58,7 +58,8 @@ void Application::run() {
 		static bool info_gui_window_toggle = false;
 		int final_adaptive_iterations = m_base_iterations;
 
-		// attempt to get bg colors and accent color from settings
+		// settings load
+		// bg menu settings load attempt
 		if (app_settings.getSetting("menu_bg_color_one") != "") {
 			std::string color_str = app_settings.getSetting("menu_bg_color_one");
 			float r, g, b, a;
@@ -85,6 +86,9 @@ void Application::run() {
 				spdlog::info("Loaded menu_bg_accent_color from settings: {}", color_str);
 			}
 		}
+
+
+		// ---------------------------------
 
 		while (!done) {
 			SDL_Event event;
@@ -377,6 +381,15 @@ void Application::run() {
 					ImGui::SliderFloat3("Frequency Cmn (c)", (float*)&m_palette_c, 0.0f, 2.0f);
 					ImGui::SliderFloat3("Phase Cmn (d)", (float*)&m_palette_d, 0.0f, 1.0f);
 					ImGui::Separator();
+					if (ImGui::Button("Save Common Color Preferences")) {
+						app_settings.updateSetting("fractal_palette_a", std::to_string(m_palette_a.x) + "," + std::to_string(m_palette_a.y) + "," + std::to_string(m_palette_a.z) + "," + "1.000000");
+						app_settings.updateSetting("fractal_palette_b", std::to_string(m_palette_b.x) + "," + std::to_string(m_palette_b.y) + "," + std::to_string(m_palette_b.z) + "," + "1.000000");
+						app_settings.updateSetting("fractal_palette_c", std::to_string(m_palette_c.x) + "," + std::to_string(m_palette_c.y) + "," + std::to_string(m_palette_c.z) + "," + "1.000000");
+						app_settings.updateSetting("fractal_palette_d", std::to_string(m_palette_d.x) + "," + std::to_string(m_palette_d.y) + "," + std::to_string(m_palette_d.z) + "," + "1.000000");
+						app_settings.updateSetting("fractal_color_density", std::to_string(m_color_density));
+						app_settings.updateSetting("fractal_apply_common_palette", m_apply_common_color_palette ? "true" : "false");
+						app_settings.saveSettings();
+					}
 				}
 
 				if (ImGui::CollapsingHeader("Fractal Parameters"))
