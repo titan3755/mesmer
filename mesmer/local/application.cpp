@@ -46,7 +46,6 @@ void Application::run() {
 
 		// settings init
 		Settings app_settings(settings_file);
-		
 
 		// -->
 		bool done = false;

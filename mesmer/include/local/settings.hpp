@@ -25,6 +25,9 @@ public:
 	void updateSetting(const std::string& key, const std::string& value);
 	std::string getSetting(const std::string& key) const;
 	void saveSettings() const;
+	void deleteSetting(const std::string& key);
+	void clearSettings();
+	void printSettings();
 	bool exists() const { return fileExists; }
 
 private:
