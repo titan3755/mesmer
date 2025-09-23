@@ -824,15 +824,27 @@ void Application::run() {
 				);
 			}
 			if (title_text_toggle) {
-				
+				addTextWithStroke(
+					draw_list,
+					m_font_large,
+					68.0f,
+					ImVec2((float)screenWidth / 2 - 140, 20),
+					IM_COL32(255, 255, 255, 255),
+					IM_COL32(0, 0, 0, 255),
+					4.0f,
+					"MESMER"
+				);
 			}
 			else {
 				if (hud_toggle) {
-					draw_list->AddText(
+					addTextWithStroke(
+						draw_list,
 						m_font_large,
 						20.0f,
 						ImVec2((float)screenWidth / 2 - 170, 20),
 						IM_COL32(255, 255, 255, 255),
+						IM_COL32(0, 0, 0, 255),
+						2.0f,
 						"Press Space Bar to exit to main menu"
 					);
 				}
