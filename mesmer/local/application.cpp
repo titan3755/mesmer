@@ -397,6 +397,12 @@ void Application::run() {
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
 
 						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						ImGui::Separator();
+						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
+						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
+						}
 
 						if (ImGui::Button("Reset View")) {
 							m_mandel_zoom = 1.0;
@@ -431,6 +437,12 @@ void Application::run() {
 
 						ImGui::Separator();
 						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						ImGui::Separator();
+						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
+						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
+						}
 
 						if (ImGui::Button("Reset View")) {
 							m_mandel_zoom = 1.0;
@@ -457,6 +469,12 @@ void Application::run() {
 						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
 						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						ImGui::Separator();
+						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
+						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
+						}
 						if (ImGui::Button("Reset View")) {
 							m_mandel_zoom = 22.0;
 							m_mandel_center_x = -1.75;
@@ -481,6 +499,12 @@ void Application::run() {
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
 
 						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						ImGui::Separator();
+						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
+						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
+						}
 						if (ImGui::Button("Reset View")) {
 							m_mandel_zoom = 1.0;
 							m_mandel_center_x = -0.75;
