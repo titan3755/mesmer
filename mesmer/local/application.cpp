@@ -57,6 +57,34 @@ void Application::run() {
 		static bool hud_toggle = true;
 		static bool info_gui_window_toggle = false;
 
+		// attempt to get bg colors and accent color from settings
+		if (app_settings.getSetting("menu_bg_color_one") != "") {
+			std::string color_str = app_settings.getSetting("menu_bg_color_one");
+			float r, g, b, a;
+			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
+				m_menu_bg_color_one = ImVec4(r, g, b, a);
+				spdlog::info("Loaded menu_bg_color_one from settings: {}", color_str);
+			}
+		}
+
+		if (app_settings.getSetting("menu_bg_color_two") != "") {
+			std::string color_str = app_settings.getSetting("menu_bg_color_two");
+			float r, g, b, a;
+			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
+				m_menu_bg_color_two = ImVec4(r, g, b, a);
+				spdlog::info("Loaded menu_bg_color_two from settings: {}", color_str);
+			}
+		}
+
+		if (app_settings.getSetting("menu_bg_accent_color") != "") {
+			std::string color_str = app_settings.getSetting("menu_bg_accent_color");
+			float r, g, b, a;
+			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
+				m_menu_bg_accent_color = ImVec4(r, g, b, a);
+				spdlog::info("Loaded menu_bg_accent_color from settings: {}", color_str);
+			}
+		}
+
 		while (!done) {
 			SDL_Event event;
 			while (SDL_PollEvent(&event)) {
@@ -323,6 +351,13 @@ void Application::run() {
 					ImGui::SliderFloat3("Menu BG Color One", (float*)&m_menu_bg_color_one, 0.0f, 1.0f);
 					ImGui::SliderFloat3("Menu BG Color Two", (float*)&m_menu_bg_color_two, 0.0f, 1.0f);
 					ImGui::SliderFloat3("Menu BG Accent Color", (float*)&m_menu_bg_accent_color, 0.0f, 1.0f);
+					ImGui::Separator();
+					if (ImGui::Button("Save BG Preferences")) {
+						app_settings.updateSetting("menu_bg_color_one", std::to_string(m_menu_bg_color_one.x) + "," + std::to_string(m_menu_bg_color_one.y) + "," + std::to_string(m_menu_bg_color_one.z));
+						app_settings.updateSetting("menu_bg_color_two", std::to_string(m_menu_bg_color_two.x) + "," + std::to_string(m_menu_bg_color_two.y) + "," + std::to_string(m_menu_bg_color_two.z));
+						app_settings.updateSetting("menu_bg_accent_color", std::to_string(m_menu_bg_accent_color.x) + "," + std::to_string(m_menu_bg_accent_color.y) + "," + std::to_string(m_menu_bg_accent_color.z));
+						app_settings.saveSettings();
+					}
 				}
 				if (ImGui::CollapsingHeader("Fractal Display Settings"))
 				{

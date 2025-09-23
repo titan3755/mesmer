@@ -68,6 +68,7 @@ std::string Settings::getSetting(const std::string& key) const {
 void Settings::saveSettings() const {
 	std::ofstream file(this->filename);
 	if (!file.is_open()) {
+		spdlog::error("Could not open settings file {} for writing.", this->filename);
 		std::cerr << "Could not open " << this->filename << " for writing.\n";
 		return;
 	}
