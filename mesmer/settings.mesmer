@@ -1,11 +1,11 @@
 autosave_interval=10
 default_save_path=./saves
-fractal_apply_common_palette=false
+fractal_apply_common_palette=true
 fractal_color_density=0.060000
-fractal_palette_a=0.500000,0.500000,0.500000,1.000000
-fractal_palette_b=0.501961,1.000000,0.501961,1.000000
-fractal_palette_c=1.000000,1.000000,1.225000,1.000000
-fractal_palette_d=0.800000,0.900000,0.300000,1.000000
+fractal_palette_a=0.537255,0.000000,0.709804,1.000000
+fractal_palette_b=0.498039,1.000000,0.862745,1.000000
+fractal_palette_c=0.797000,1.000000,1.225000,1.000000
+fractal_palette_d=0.800000,0.562000,0.300000,1.000000
 fullscreen=true
 language=en
 max_fps=120

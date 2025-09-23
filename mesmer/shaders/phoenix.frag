@@ -35,18 +35,16 @@ void main()
     int i;
     for (i = 0; i < u_max_iterations; i++)
     {
-        dvec2 z_temp = z; // Store current z before overwriting
+        dvec2 z_temp = z;
         
-        // Phoenix formula
         z.x = z.x * z.x - z.y * z.y + u_phoenix_c.x + u_phoenix_p * z_prev.x;
         z.y = 2.0 * z_temp.x * z_temp.y + u_phoenix_c.y + u_phoenix_p * z_prev.y;
 
-        z_prev = z_temp; // Update z_prev for the next iteration
+        z_prev = z_temp;
 
         if (dot(z, z) > 4.0) break;
     }
 
-    // Coloring is the same as your other fractals
     if (i == u_max_iterations)
     {
         FragColor = vec4(0.0, 0.0, 0.0, 1.0);
