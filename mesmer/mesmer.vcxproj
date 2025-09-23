@@ -304,6 +304,7 @@
     <None Include="shaders\julia.vert" />
     <None Include="shaders\mandelbrot.frag" />
     <None Include="shaders\mandelbrot.vert" />
+    <None Include="shaders\phoenix.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="shaders\triangle.vert" />
     <None Include="shaders\tricorn.frag" />

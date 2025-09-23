@@ -492,6 +492,7 @@
     <None Include="shaders\burningship.frag" />
     <None Include="shaders\tricorn.vert" />
     <None Include="shaders\tricorn.frag" />
+    <None Include="shaders\phoenix.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
