@@ -88,15 +88,15 @@ void Application::run() {
 		}
 
 		// fractal common color settings load attempt
-		if (app_settings.getSetting("fractal_apply_common_color_palette") != "") {
-			std::string bool_str = app_settings.getSetting("fractal_apply_common_color_palette");
+		if (app_settings.getSetting("fractal_apply_common_palette") != "") {
+			std::string bool_str = app_settings.getSetting("fractal_apply_common_palette");
 			if (bool_str == "true") {
 				m_apply_common_color_palette = true;
 			}
 			else {
 				m_apply_common_color_palette = false;
 			}
-			spdlog::info("Loaded fractal_apply_common_color_palette from settings: {}", bool_str);
+			spdlog::info("Loaded fractal_apply_common_palette from settings: {}", bool_str);
 		}
 
 		if (app_settings.getSetting("fractal_palette_a") != "") {
