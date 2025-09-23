@@ -77,4 +77,19 @@ void Settings::saveSettings() const {
 	}
 }
 
+void Settings::deleteSetting(const std::string& key) {
+	this->settingsMap.erase(key);
+}
+
+void Settings::clearSettings() {
+	this->settingsMap.clear();
+}
+
+void Settings::printSettings() {
+	for (const auto& kv : this->settingsMap) {
+		spdlog::info("Printing All Settings: ");
+		std::cout << kv.first << " = " << kv.second << std::endl;
+	}
+}
+
 // will be applied to application.cpp later (...)
