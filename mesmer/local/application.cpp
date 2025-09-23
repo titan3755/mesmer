@@ -824,19 +824,7 @@ void Application::run() {
 				);
 			}
 			if (title_text_toggle) {
-				ImVec2 text_pos = ImVec2((float)screenWidth / 2 - 140, 20);
-				ImU32 outline_col = IM_COL32(0, 0, 0, 255);
-				ImU32 fill_col = IM_COL32(255, 255, 255, 255);
-				float thickness = 4.0f;
-				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x - thickness, text_pos.y - thickness), outline_col, "MESMER");
-				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x + thickness, text_pos.y - thickness), outline_col, "MESMER");
-				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x - thickness, text_pos.y + thickness), outline_col, "MESMER");
-				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x + thickness, text_pos.y + thickness), outline_col, "MESMER");
-				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x - thickness, text_pos.y), outline_col, "MESMER");
-				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x + thickness, text_pos.y), outline_col, "MESMER");
-				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x, text_pos.y - thickness), outline_col, "MESMER");
-				draw_list->AddText(m_font_large, 68.0f, ImVec2(text_pos.x, text_pos.y + thickness), outline_col, "MESMER");
-				draw_list->AddText(m_font_large, 68.0f, text_pos, fill_col, "MESMER");
+				
 			}
 			else {
 				if (hud_toggle) {
@@ -1111,4 +1099,16 @@ void Application::cleanup() {
 	}
 	SDL_Quit();
 	spdlog::info("Application cleaned up successfully.");
+}
+
+void Application::addTextWithStroke(ImDrawList* draw_list, ImFont* font, float size, ImVec2 pos, ImU32 fill_col, ImU32 outline_col, float thickness, const char* text) {
+	draw_list->AddText(font, size, ImVec2(pos.x - thickness, pos.y - thickness), outline_col, text);
+	draw_list->AddText(font, size, ImVec2(pos.x + thickness, pos.y - thickness), outline_col, text);
+	draw_list->AddText(font, size, ImVec2(pos.x - thickness, pos.y + thickness), outline_col, text);
+	draw_list->AddText(font, size, ImVec2(pos.x + thickness, pos.y + thickness), outline_col, text);
+	draw_list->AddText(font, size, ImVec2(pos.x - thickness, pos.y), outline_col, text);
+	draw_list->AddText(font, size, ImVec2(pos.x + thickness, pos.y), outline_col, text);
+	draw_list->AddText(font, size, ImVec2(pos.x, pos.y - thickness), outline_col, text);
+	draw_list->AddText(font, size, ImVec2(pos.x, pos.y + thickness), outline_col, text);
+	draw_list->AddText(font, size, pos, fill_col, text);
 }

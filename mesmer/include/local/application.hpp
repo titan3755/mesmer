@@ -49,6 +49,8 @@ private:
     void initBG();
     void cleanup();
 
+    void addTextWithStroke(ImDrawList* draw_list, ImFont* font, float size, ImVec2 pos, ImU32 fill_col, ImU32 outline_col, float thickness, const char* text);
+
     ImFont* m_font_regular;
     ImFont* m_font_large;
     enum class FractalType { NONE, MANDELBROT, JULIA, BURNING_SHIP, TRICORN };
