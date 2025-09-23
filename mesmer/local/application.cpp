@@ -353,9 +353,9 @@ void Application::run() {
 					ImGui::SliderFloat3("Menu BG Accent Color", (float*)&m_menu_bg_accent_color, 0.0f, 1.0f);
 					ImGui::Separator();
 					if (ImGui::Button("Save BG Preferences")) {
-						app_settings.updateSetting("menu_bg_color_one", std::to_string(m_menu_bg_color_one.x) + "," + std::to_string(m_menu_bg_color_one.y) + "," + std::to_string(m_menu_bg_color_one.z));
-						app_settings.updateSetting("menu_bg_color_two", std::to_string(m_menu_bg_color_two.x) + "," + std::to_string(m_menu_bg_color_two.y) + "," + std::to_string(m_menu_bg_color_two.z));
-						app_settings.updateSetting("menu_bg_accent_color", std::to_string(m_menu_bg_accent_color.x) + "," + std::to_string(m_menu_bg_accent_color.y) + "," + std::to_string(m_menu_bg_accent_color.z));
+						app_settings.updateSetting("menu_bg_color_one", std::to_string(m_menu_bg_color_one.x) + "," + std::to_string(m_menu_bg_color_one.y) + "," + std::to_string(m_menu_bg_color_one.z) + "," + "1.000000");
+						app_settings.updateSetting("menu_bg_color_two", std::to_string(m_menu_bg_color_two.x) + "," + std::to_string(m_menu_bg_color_two.y) + "," + std::to_string(m_menu_bg_color_two.z) + "," + "1.000000");
+						app_settings.updateSetting("menu_bg_accent_color", std::to_string(m_menu_bg_accent_color.x) + "," + std::to_string(m_menu_bg_accent_color.y) + "," + std::to_string(m_menu_bg_accent_color.z) + "," + "1.000000");
 						app_settings.saveSettings();
 					}
 				}
