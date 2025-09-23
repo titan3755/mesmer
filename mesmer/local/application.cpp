@@ -708,6 +708,9 @@ void Application::run() {
 						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
 						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Constant c (real)", &m_phoenix_c_x, 0.01, 0.0, "%.4f");
+						ImGui::InputDouble("Constant c (imag)", &m_phoenix_c_y, 0.01, 0.0, "%.4f");
+						ImGui::InputDouble("Constant p", &m_phoenix_p, 0.01, 0.0, "%.4f");
 
 						if (m_adaptive_iterations) {
 							ImGui::BeginDisabled();
@@ -717,12 +720,6 @@ void Application::run() {
 						else {
 							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
 						}
-
-						ImGui::Separator();
-						ImGui::SliderFloat("Constant c (real)", (float*)&m_phoenix_c_x, -2.0f, 2.0f);
-						ImGui::SliderFloat("Constant c (imag)", (float*)&m_phoenix_c_y, -2.0f, 2.0f);
-						ImGui::SliderFloat("Constant p", (float*)&m_phoenix_p, -2.0f, 2.0f);
-						ImGui::Separator();
 
 						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
 						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);

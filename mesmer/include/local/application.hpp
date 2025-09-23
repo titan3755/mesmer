@@ -93,8 +93,8 @@ private:
 	ImVec4 m_palette_phoenix_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
 	ImVec4 m_palette_phoenix_c = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	ImVec4 m_palette_phoenix_d = ImVec4(0.80f, 0.90f, 1.00f, 1.0f);
-    double m_phoenix_c_x = 0.5667;
-    double m_phoenix_c_y = 0.4;
+    double m_phoenix_c_x = 0.6667;
+    double m_phoenix_c_y = 0.1;
     double m_phoenix_p = -0.5;
 
     // color density
