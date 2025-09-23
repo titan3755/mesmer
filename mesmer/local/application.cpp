@@ -413,6 +413,10 @@ void Application::run() {
 						title_text_toggle = true;
 					}
 				}
+				if (m_currentFractal == FractalType::PHOENIX && !io.WantCaptureMouse)
+				{
+
+				}
 				if (event.type == SDL_QUIT) {
 					done = true;
 				}
