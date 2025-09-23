@@ -127,11 +127,11 @@ void Application::run() {
 		}
 
 		if (app_settings.getSetting("fractal_palette_d") != "") {
-			std::string color_str = app_settings.getSetting("palette_d");
+			std::string color_str = app_settings.getSetting("fractal_palette_d");
 			float r, g, b, a;
 			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
 				m_palette_d = ImVec4(r, g, b, a);
-				spdlog::info("Loaded palette_d from settings: {}", color_str);
+				spdlog::info("Loaded fractal_palette_d from settings: {}", color_str);
 			}
 		}
 
@@ -144,11 +144,11 @@ void Application::run() {
 					spdlog::info("Loaded color_density from settings: {}", float_str);
 				}
 				else {
-					spdlog::warn("color_density in settings is out of range (0.1-20.0). Using default value: 1.0");
+					spdlog::warn("color_density in settings is out of range (0.1-20.0). Using default value");
 				}
 			}
 			catch (const std::exception& e) {
-				spdlog::error("Error parsing color_density from settings: {}. Using default value: 1.0", e.what());
+				spdlog::error("Error parsing color_density from settings: {}. Using default value", e.what());
 			}
 		}
 
