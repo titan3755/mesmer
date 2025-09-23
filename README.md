@@ -23,6 +23,6 @@
 ### More fractal ideas to implement
 -> Tricorn fractal [DONE] <br>
 -> Burning Ship fractal [DONE] <br>
--> Julia fractal <br>
+-> Julia fractal [DONE] <br>
 
 
