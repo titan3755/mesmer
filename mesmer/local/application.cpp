@@ -396,7 +396,14 @@ void Application::run() {
 						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
 
-						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						if (m_adaptive_iterations) {
+							ImGui::BeginDisabled();
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+							ImGui::EndDisabled();
+						}
+						else {
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						}
 						ImGui::Separator();
 						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
 						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
@@ -436,7 +443,15 @@ void Application::run() {
 						ImGui::Checkbox("Map Julia Const to Mouse Pos", &m_julia_c_map_to_mouse);
 
 						ImGui::Separator();
-						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+
+						if (m_adaptive_iterations) {
+							ImGui::BeginDisabled();
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+							ImGui::EndDisabled();
+						}
+						else {
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						}
 						ImGui::Separator();
 						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
 						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
@@ -468,7 +483,15 @@ void Application::run() {
 						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
 						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
-						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+
+						if (m_adaptive_iterations) {
+							ImGui::BeginDisabled();
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+							ImGui::EndDisabled();
+						}
+						else {
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						}
 						ImGui::Separator();
 						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
 						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
@@ -498,7 +521,15 @@ void Application::run() {
 						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
 
-						ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+
+						if (m_adaptive_iterations) {
+							ImGui::BeginDisabled();
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+							ImGui::EndDisabled();
+						}
+						else {
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						}
 						ImGui::Separator();
 						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
 						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
@@ -751,7 +782,16 @@ void Application::run() {
 			if (m_currentFractal == FractalType::MANDELBROT) {
 				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				if (m_adaptive_iterations) {
+					int final_iterations = m_base_iterations;
+					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+					}
+					ourShader->setInt("u_max_iterations", final_iterations);
+				}
+				else {
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				}
 				if (!m_apply_common_color_palette) {
 					ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
 					ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
@@ -765,6 +805,16 @@ void Application::run() {
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
 				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
 				ourShader->setDVec2("u_julia_c", m_julia_c_x, m_julia_c_y);
+				if (m_adaptive_iterations) {
+					int final_iterations = m_base_iterations;
+					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+					}
+					ourShader->setInt("u_max_iterations", final_iterations);
+				}
+				else {
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				}
 				if (!m_apply_common_color_palette) {
 					ourShader->setVec3("u_palette_a", m_palette_julia_a.x, m_palette_julia_a.y, m_palette_julia_a.z);
 					ourShader->setVec3("u_palette_b", m_palette_julia_b.x, m_palette_julia_b.y, m_palette_julia_b.z);
@@ -777,6 +827,16 @@ void Application::run() {
 				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
 				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				if (m_adaptive_iterations) {
+					int final_iterations = m_base_iterations;
+					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+					}
+					ourShader->setInt("u_max_iterations", final_iterations);
+				}
+				else {
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				}
 				if (!m_apply_common_color_palette) {
 					ourShader->setVec3("u_palette_a", m_palette_burning_ship_a.x, m_palette_burning_ship_a.y, m_palette_burning_ship_a.z);
 					ourShader->setVec3("u_palette_b", m_palette_burning_ship_b.x, m_palette_burning_ship_b.y, m_palette_burning_ship_b.z);
@@ -789,6 +849,16 @@ void Application::run() {
 				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
 				ourShader->setDouble("u_zoom", m_mandel_zoom);
 				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				if (m_adaptive_iterations) {
+					int final_iterations = m_base_iterations;
+					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+					}
+					ourShader->setInt("u_max_iterations", final_iterations);
+				}
+				else {
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				}
 				if (!m_apply_common_color_palette) {
 					ourShader->setVec3("u_palette_a", m_palette_tricorn_a.x, m_palette_tricorn_a.y, m_palette_tricorn_a.z);
 					ourShader->setVec3("u_palette_b", m_palette_tricorn_b.x, m_palette_tricorn_b.y, m_palette_tricorn_b.z);
