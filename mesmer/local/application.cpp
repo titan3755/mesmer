@@ -96,24 +96,24 @@ void Application::run() {
 			else {
 				m_apply_common_color_palette = false;
 			}
-			spdlog::info("Loaded apply_common_color_palette from settings: {}", bool_str);
+			spdlog::info("Loaded fractal_apply_common_color_palette from settings: {}", bool_str);
 		}
 
 		if (app_settings.getSetting("fractal_palette_a") != "") {
-			std::string color_str = app_settings.getSetting("palette_a");
+			std::string color_str = app_settings.getSetting("fractal_palette_a");
 			float r, g, b, a;
 			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
 				m_palette_a = ImVec4(r, g, b, a);
-				spdlog::info("Loaded palette_a from settings: {}", color_str);
+				spdlog::info("Loaded fractal_palette_a from settings: {}", color_str);
 			}
 		}
 
 		if (app_settings.getSetting("fractal_palette_b") != "") {
-			std::string color_str = app_settings.getSetting("palette_b");
+			std::string color_str = app_settings.getSetting("fractal_palette_b");
 			float r, g, b, a;
 			if (sscanf_s(color_str.c_str(), "%f,%f,%f,%f", &r, &g, &b, &a) == 4) {
 				m_palette_b = ImVec4(r, g, b, a);
-				spdlog::info("Loaded palette_b from settings: {}", color_str);
+				spdlog::info("Loaded fractal_palette_b from settings: {}", color_str);
 			}
 		}
 
