@@ -844,7 +844,7 @@ void Application::run() {
 						ImVec2((float)screenWidth / 2 - 170, 20),
 						IM_COL32(255, 255, 255, 255),
 						IM_COL32(0, 0, 0, 255),
-						1.0f,
+						2.0f,
 						"Press Space Bar to exit to main menu"
 					);
 				}
