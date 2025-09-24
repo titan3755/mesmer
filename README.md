@@ -22,7 +22,6 @@
 -> (...) <br>
 
 ### More fractal ideas to implement
--> Tricorn fractal [DONE] <br>
--> Burning Ship fractal [DONE] <br>
--> Julia fractal [DONE] <br>
+-> Lyapunov Fractals <br>
+-> (...) <br>
 
