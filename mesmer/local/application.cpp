@@ -902,7 +902,7 @@ void Application::run() {
 				}
 				ImGui::PopStyleColor(3);
 
-				// phoenix
+				// phoenix (row - 3)
 				ImGui::NewLine();
 				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - button_width) * 0.5f);
 
@@ -930,7 +930,24 @@ void Application::run() {
 				}
 				ImGui::PopStyleColor(3);
 
-				// lyapunov (coming soon)
+				// lyapunov (row - 3)
+				ImGui::SameLine(0.0f, spacing);
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.6f, 0.2f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.7f, 0.3f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.5f, 0.1f, 1.0f));
+				if (ImGui::Button("Lyapunov", ImVec2(button_width, 80))) {
+					m_currentFractal = FractalType::LYAPUNOV;
+
+					if (ourShader != nullptr) {
+						delete ourShader;
+					}
+
+					ourShader = new Shader("shaders/lyapunov.vert", "shaders/lyapunov.frag");
+					spdlog::info("Loaded Lyapunov shader.");
+
+					sub = "Mesmer - Lyapunov";
+					
+				}
 
 				ImGui::PopFont();
 				ImGui::End();
