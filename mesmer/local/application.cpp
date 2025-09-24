@@ -784,6 +784,13 @@ void Application::run() {
 						ImGui::Text("Lyapunov Controls");
 						ImGui::Separator();
 
+						ImGui::Text("Lyapunov Set Fractal Color Palette");
+						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_lyapunov_a);
+						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_lyapunov_b);
+						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_lyapunov_c, 0.0f, 2.0f);
+						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_lyapunov_d, 0.0f, 1.0f);
+						ImGui::Separator();
+
 						ImGui::Text("View is of (a, b) parameter space.");
 						ImGui::InputDouble("Zoom", &m_lyapunov_zoom, 0.1, 0.0, "%.8f");
 						ImGui::InputDouble("Center A", &m_lyapunov_center_a, 0.01, 0.0, "%.8f");
@@ -1216,6 +1223,12 @@ void Application::run() {
 			{
 				ourShader->setDVec2("u_lyapunov_center", m_lyapunov_center_a, m_lyapunov_center_b);
 				ourShader->setDouble("u_lyapunov_zoom", m_lyapunov_zoom);
+				if (!m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_lyapunov_a.x, m_palette_lyapunov_a.y, m_palette_lyapunov_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_lyapunov_b.x, m_palette_lyapunov_b.y, m_palette_lyapunov_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_lyapunov_c.x, m_palette_lyapunov_c.y, m_palette_lyapunov_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_lyapunov_d.x, m_palette_lyapunov_d.y, m_palette_lyapunov_d.z);
+				}
 			}
 			else {
 				// no fractal selected
