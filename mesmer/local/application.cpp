@@ -796,11 +796,27 @@ void Application::run() {
 						ImGui::InputDouble("Center A", &m_lyapunov_center_a, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Center B", &m_lyapunov_center_b, 0.01, 0.0, "%.8f");
 						ImGui::Separator();
+
+						if (m_adaptive_iterations) {
+							ImGui::BeginDisabled();
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+							ImGui::EndDisabled();
+						}
+						else {
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						}
 						
+						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
+						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						ImGui::TextWrapped(("Current Adaptive Iterations: " + std::to_string(final_adaptive_iterations)).c_str());
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
+						}
 						if (ImGui::Button("Reset View")) {
 							m_lyapunov_zoom = 1.10000000;
 							m_lyapunov_center_a = 2.76486681;
 							m_lyapunov_center_b = 4.05390855;
+							m_mandel_max_iterations = 200;
 						}
 					}
 					else
@@ -1223,6 +1239,18 @@ void Application::run() {
 			{
 				ourShader->setDVec2("u_lyapunov_center", m_lyapunov_center_a, m_lyapunov_center_b);
 				ourShader->setDouble("u_lyapunov_zoom", m_lyapunov_zoom);
+				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				if (m_adaptive_iterations) {
+					int final_iterations = m_base_iterations;
+					if (m_adaptive_iterations && m_lyapunov_zoom > 1.0) {
+						final_iterations += static_cast<int>(500.0 * log(m_lyapunov_zoom));
+					}
+					final_adaptive_iterations = final_iterations;
+					ourShader->setInt("u_max_iterations", final_iterations);
+				}
+				else {
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				}
 				if (!m_apply_common_color_palette) {
 					ourShader->setVec3("u_palette_a", m_palette_lyapunov_a.x, m_palette_lyapunov_a.y, m_palette_lyapunov_a.z);
 					ourShader->setVec3("u_palette_b", m_palette_lyapunov_b.x, m_palette_lyapunov_b.y, m_palette_lyapunov_b.z);
