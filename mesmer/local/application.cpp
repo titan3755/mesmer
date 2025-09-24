@@ -945,8 +945,17 @@ void Application::run() {
 					ourShader = new Shader("shaders/lyapunov.vert", "shaders/lyapunov.frag");
 					spdlog::info("Loaded Lyapunov shader.");
 
+					show_fractal_selection = false;
+					show_main_buttons = false;
 					sub = "Mesmer - Lyapunov";
+					title_text_toggle = false;
 					
+					m_mandel_zoom = 0.5;
+					m_mandel_center_x = 0.0;
+					m_mandel_center_y = 0.0;
+					m_lyapunov_center_a = 2.0;
+					m_lyapunov_center_b = 3.0;
+					m_lyapunov_zoom = 1.5;
 				}
 
 				ImGui::PopFont();
