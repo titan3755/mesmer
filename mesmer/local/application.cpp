@@ -746,10 +746,9 @@ void Application::run() {
 						ImGui::Separator();
 						
 						if (ImGui::Button("Reset View")) {
-							m_mandel_zoom = 1.0;
-							m_mandel_center_x = -0.75;
-							m_mandel_center_y = 0.0;
-							m_mandel_max_iterations = 200;
+							m_lyapunov_zoom = 1.0;
+							m_lyapunov_center_a = -0.75;
+							m_lyapunov_center_b = 0.0;
 						}
 					}
 					else
@@ -1166,6 +1165,11 @@ void Application::run() {
 					ourShader->setVec3("u_palette_d", m_palette_phoenix_d.x, m_palette_phoenix_d.y, m_palette_phoenix_d.z);
 				}
 
+			}
+			else if (m_currentFractal == FractalType::LYAPUNOV)
+			{
+				ourShader->setDVec2("u_lyapunov_center", m_lyapunov_center_a, m_lyapunov_center_b);
+				ourShader->setDouble("u_lyapunov_zoom", m_lyapunov_zoom);
 			}
 			else {
 				// no fractal selected
