@@ -798,9 +798,9 @@ void Application::run() {
 						ImGui::Separator();
 						
 						if (ImGui::Button("Reset View")) {
-							m_lyapunov_zoom = 1.0;
-							m_lyapunov_center_a = -0.75;
-							m_lyapunov_center_b = 0.0;
+							m_lyapunov_zoom = 1.10000000;
+							m_lyapunov_center_a = 2.76486681;
+							m_lyapunov_center_b = 4.05390855;
 						}
 					}
 					else
@@ -1022,9 +1022,9 @@ void Application::run() {
 					m_mandel_zoom = 0.5;
 					m_mandel_center_x = 0.0;
 					m_mandel_center_y = 0.0;
-					m_lyapunov_center_a = 2.0;
-					m_lyapunov_center_b = 3.0;
-					m_lyapunov_zoom = 1.5;
+					m_lyapunov_zoom = 1.10000000;
+					m_lyapunov_center_a = 2.76486681;
+					m_lyapunov_center_b = 4.05390855;
 				}
 				ImGui::PopStyleColor(3);
 
