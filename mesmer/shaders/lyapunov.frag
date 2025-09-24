@@ -12,8 +12,18 @@ uniform vec2 iResolution;
 uniform dvec2 u_lyapunov_center;
 uniform double u_lyapunov_zoom;
 
+uniform vec3 u_palette_a;
+uniform vec3 u_palette_b;
+uniform vec3 u_palette_c;
+uniform vec3 u_palette_d;
+uniform float u_color_density;
+
 const int sequence[4] = int[4](0, 1, 0, 1);
 const int sequence_len = 4;
+
+vec3 palette(float t) {
+    return u_palette_a + u_palette_b * cos(6.28318 * (u_palette_c * t + u_palette_d));
+}
 
 void main()
 {
@@ -39,9 +49,10 @@ void main()
 
     lambda /= double(n_sum);
 
-    if (lambda > 0.0) {
-        FragColor = vec4(float(lambda), 0.5 * float(lambda), 0.1, 1.0);
-    } else {
-        FragColor = vec4(0.0, 0.1, 0.5 - float(lambda) * 0.2, 1.0);
+    if (lambda > 0.0) { 
+        FragColor = vec4(palette(float(lambda) * 2.5f), 1.0);
+    } else { 
+        float stability = clamp(abs(float(lambda)) * 2.0, 0.0, 1.0);
+        FragColor = vec4(vec3(0.0, 0.1, 0.5) * stability, 1.0);
     }
 }
