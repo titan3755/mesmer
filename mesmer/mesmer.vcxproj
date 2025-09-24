@@ -303,6 +303,7 @@
     <None Include="shaders\julia.frag" />
     <None Include="shaders\julia.vert" />
     <None Include="shaders\lyapunov.frag" />
+    <None Include="shaders\lyapunov.vert" />
     <None Include="shaders\mandelbrot.frag" />
     <None Include="shaders\mandelbrot.vert" />
     <None Include="shaders\phoenix.frag" />

@@ -495,6 +495,7 @@
     <None Include="shaders\phoenix.vert" />
     <None Include="shaders\phoenix.frag" />
     <None Include="shaders\lyapunov.frag" />
+    <None Include="shaders\lyapunov.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
