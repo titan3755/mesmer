@@ -733,6 +733,24 @@ void Application::run() {
 							m_mandel_center_y = 0.0;
 							m_mandel_max_iterations = 200;
 						}
+					} 
+					else if (m_currentFractal == FractalType::LYAPUNOV) 
+					{
+						ImGui::Text("Lyapunov Controls");
+						ImGui::Separator();
+
+						ImGui::Text("View is of (a, b) parameter space.");
+						ImGui::InputDouble("Zoom", &m_lyapunov_zoom, 0.1, 0.0, "%.8f");
+						ImGui::InputDouble("Center A", &m_lyapunov_center_a, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Center B", &m_lyapunov_center_b, 0.01, 0.0, "%.8f");
+						ImGui::Separator();
+						
+						if (ImGui::Button("Reset View")) {
+							m_mandel_zoom = 1.0;
+							m_mandel_center_x = -0.75;
+							m_mandel_center_y = 0.0;
+							m_mandel_max_iterations = 200;
+						}
 					}
 					else
 					{
