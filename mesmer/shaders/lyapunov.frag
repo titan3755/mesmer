@@ -11,6 +11,7 @@ in vec2 TexCoords;
 uniform vec2 iResolution;
 uniform dvec2 u_lyapunov_center;
 uniform double u_lyapunov_zoom;
+uniform int u_max_iterations;
 
 uniform vec3 u_palette_a;
 uniform vec3 u_palette_b;
