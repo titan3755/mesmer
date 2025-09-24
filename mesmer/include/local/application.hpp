@@ -96,6 +96,9 @@ private:
     double m_phoenix_c_x = 0.5067;
     double m_phoenix_c_y = 0.0200;
     double m_phoenix_p = -0.9900;
+    double m_lyapunov_center_a = 3.4;
+    double m_lyapunov_center_b = 3.4;
+    double m_lyapunov_zoom = 0.25;
 
     // color density
     float m_color_density = 0.05f;
