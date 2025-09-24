@@ -466,6 +466,51 @@ void Application::run() {
 						title_text_toggle = true;
 					}
 				}
+				if (m_currentFractal == FractalType::LYAPUNOV && !io.WantCaptureMouse)
+				{
+					if (event.type == SDL_MOUSEWHEEL)
+					{
+						if (event.wheel.y > 0)
+							m_lyapunov_zoom *= 1.1;
+						else if (event.wheel.y < 0)
+							m_lyapunov_zoom /= 1.1;
+					}
+					if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = true;
+						m_drag_start_pos = ImGui::GetMousePos();
+					}
+					if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = false;
+					}
+					if (event.type == SDL_MOUSEMOTION && m_is_dragging)
+					{
+						ImVec2 current_pos = ImGui::GetMousePos();
+						ImVec2 delta = ImVec2(current_pos.x - m_drag_start_pos.x, current_pos.y - m_drag_start_pos.y);
+
+						double da = -delta.x / (0.5 * m_lyapunov_zoom * screenWidth);
+						double db = delta.y / (0.5 * m_lyapunov_zoom * screenHeight);
+
+						m_lyapunov_center_a += da;
+						m_lyapunov_center_b += db;
+
+						m_drag_start_pos = current_pos;
+					}
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+						show_main_buttons = !show_main_buttons;
+						show_fractal_selection = false;
+						spdlog::info("'Space' key pressed - toggling main buttons.");
+						Application::m_currentFractal = FractalType::NONE;
+						if (ourShader != nullptr) {
+							delete ourShader;
+						}
+						ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
+						spdlog::info("Reverted to background shader.");
+						sub = "Mesmer - Main Menu";
+						title_text_toggle = true;
+					}
+				}
 				if (event.type == SDL_QUIT) {
 					done = true;
 				}
@@ -921,7 +966,7 @@ void Application::run() {
 
 				// phoenix (row - 3)
 				ImGui::NewLine();
-				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - button_width) * 0.5f);
+				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
 
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.4f, 0.1f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.5f, 0.2f, 1.0f));
@@ -974,6 +1019,7 @@ void Application::run() {
 					m_lyapunov_center_b = 3.0;
 					m_lyapunov_zoom = 1.5;
 				}
+				ImGui::PopStyleColor(3);
 
 				ImGui::PopFont();
 				ImGui::End();
