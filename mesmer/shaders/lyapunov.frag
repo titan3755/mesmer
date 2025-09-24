@@ -34,8 +34,8 @@ void main()
     dvec2 r_params = dvec2(ab.x, ab.y);
     double x = 0.5;
     double lambda = 0.0;
-    int n_warmup = 100;
-    int n_sum = 400;
+    int n_warmup = u_max_iterations / 5;
+    int n_sum = u_max_iterations;
 
     for (int i = 0; i < n_warmup + n_sum; i++) {
         int r_index = sequence[i % sequence_len];
