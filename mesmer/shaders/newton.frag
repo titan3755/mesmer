@@ -25,7 +25,8 @@ vec3 palette(float t)
     return u_palette_a + u_palette_b * cos(6.28318 * (u_palette_c * t + u_palette_d));
 }
 
-void main() {
+void main()
+{
     dvec2 uv = (dvec2(TexCoords) * 2.0 - 1.0);
     uv.x *= double(iResolution.x) / double(iResolution.y);
     dvec2 z = uv / u_zoom + u_center;
@@ -46,11 +47,16 @@ void main() {
         }
     }
 
-    float brightness = 1.0 - float(i) / float(u_max_iterations);
+    float base_hue = 0.0;
+    if (distance(z, root1) < tolerance)      base_hue = u_palette_a.x;
+    else if (distance(z, root2) < tolerance) base_hue = u_palette_b.y;
+    else if (distance(z, root3) < tolerance) base_hue = u_palette_c.z;
+    
     vec3 color = vec3(0.0);
-    if (distance(z, root1) < tolerance) color = vec3(1.0, 0.2, 0.2);
-    else if (distance(z, root2) < tolerance) color = vec3(0.2, 1.0, 0.2);
-    else if (distance(z, root3) < tolerance) color = vec3(0.2, 0.2, 1.0);
+    if (base_hue > 0.0) {
+        float color_val = base_hue - float(i) * u_color_density * 2.0;
+        color = palette(color_val);
+    }
 
-    FragColor = vec4(color * brightness, 1.0);
+    FragColor = vec4(color, 1.0);
 }
