@@ -1284,6 +1284,7 @@ void Application::run() {
 					m_mandel_center_y = 0.0;
 					m_multibrot_power = 3.0;
 				}
+				ImGui::PopStyleColor(3);
 
 				ImGui::PopFont();
 				ImGui::End();
