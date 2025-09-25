@@ -498,6 +498,7 @@
     <None Include="shaders\lyapunov.vert" />
     <None Include="shaders\newton.vert" />
     <None Include="shaders\newton.frag" />
+    <None Include="shaders\multibrot.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
