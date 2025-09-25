@@ -564,6 +564,59 @@ void Application::run() {
 						title_text_toggle = true;
 					}
 				}
+				if (m_currentFractal == FractalType::MULTIBROT && !io.WantCaptureMouse)
+				{
+					if (event.type == SDL_MOUSEWHEEL)
+					{
+						int mouseX, mouseY;
+						SDL_GetMouseState(&mouseX, &mouseY);
+						double mouse_real_before = (double)(mouseX - screenWidth / 2) / (0.5 * m_mandel_zoom * screenWidth) + m_mandel_center_x;
+						double mouse_imag_before = (double)(screenHeight / 2 - mouseY) / (0.5 * m_mandel_zoom * screenHeight) + m_mandel_center_y;
+						if (event.wheel.y > 0)
+							m_mandel_zoom *= 1.1;
+						else if (event.wheel.y < 0)
+							m_mandel_zoom /= 1.1;
+						double mouse_real_after = (double)(mouseX - screenWidth / 2) / (0.5 * m_mandel_zoom * screenWidth) + m_mandel_center_x;
+						double mouse_imag_after = (double)(screenHeight / 2 - mouseY) / (0.5 * m_mandel_zoom * screenHeight) + m_mandel_center_y;
+						m_mandel_center_x += mouse_real_before - mouse_real_after;
+						m_mandel_center_y += mouse_imag_before - mouse_imag_after;
+					}
+					if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = true;
+						m_drag_start_pos = ImGui::GetMousePos();
+					}
+					if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = false;
+					}
+					if (event.type == SDL_MOUSEMOTION && m_is_dragging)
+					{
+						ImVec2 current_pos = ImGui::GetMousePos();
+						ImVec2 delta = ImVec2(current_pos.x - m_drag_start_pos.x, current_pos.y - m_drag_start_pos.y);
+
+						double dx = -delta.x / (0.5 * m_mandel_zoom * screenWidth);
+						double dy = delta.y / (0.5 * m_mandel_zoom * screenHeight);
+
+						m_mandel_center_x += dx;
+						m_mandel_center_y += dy;
+
+						m_drag_start_pos = current_pos;
+					}
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+						show_main_buttons = !show_main_buttons;
+						show_fractal_selection = false;
+						spdlog::info("'Space' key pressed - toggling main buttons.");
+						Application::m_currentFractal = FractalType::NONE;
+						if (ourShader != nullptr) {
+							delete ourShader;
+						}
+						ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
+						spdlog::info("Reverted to background shader.");
+						sub = "Mesmer - Main Menu";
+						title_text_toggle = true;
+					}
+				}
 				if (event.type == SDL_QUIT) {
 					done = true;
 				}
@@ -914,6 +967,46 @@ void Application::run() {
 							m_mandel_max_iterations = 200;
 						}
 					}
+					else if (m_currentFractal == FractalType::MULTIBROT)
+					{
+						ImGui::Text("Multibrot Controls");
+						ImGui::Separator();
+
+						ImGui::Text("Multibrot Set Fractal Color Palette");
+						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_multibrot_a);
+						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_multibrot_b);
+						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_multibrot_c, 0.0f, 2.0f);
+						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_multibrot_d, 0.0f, 1.0f);
+						ImGui::Separator();
+
+						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
+						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Power", &m_multibrot_power, -10.0f, 10.0f);
+
+						if (m_adaptive_iterations) {
+							ImGui::BeginDisabled();
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+							ImGui::EndDisabled();
+						}
+						else {
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						}
+						ImGui::Separator();
+						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
+						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						ImGui::TextWrapped(("Current Adaptive Iterations: " + std::to_string(final_adaptive_iterations)).c_str());
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
+						}
+
+						if (ImGui::Button("Reset View")) {
+							m_mandel_zoom = 1.0;
+							m_mandel_center_x = -0.75;
+							m_mandel_center_y = 0.0;
+							m_mandel_max_iterations = 200;
+						}
+					}
 					else
 					{
 						ImGui::Text("No fractal selected.");
@@ -1166,6 +1259,32 @@ void Application::run() {
 				}
 				ImGui::PopStyleColor(3);
 
+				// multibrot (row - 4 right side)
+				ImGui::SameLine(0.0f, spacing);
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.3f, 0.7f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.4f, 0.8f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.2f, 0.6f, 1.0f));
+				if (ImGui::Button("Multibrot", ImVec2(button_width, 80))) {
+					m_currentFractal = FractalType::MULTIBROT;
+
+					if (ourShader != nullptr) {
+						delete ourShader;
+					}
+
+					ourShader = new Shader("shaders/multibrot.vert", "shaders/multibrot.frag");
+					spdlog::info("Loaded Multibrot shader.");
+
+					show_fractal_selection = false;
+					show_main_buttons = false;
+					sub = "Mesmer - Multibrot";
+					title_text_toggle = false;
+
+					m_mandel_zoom = 1.0;
+					m_mandel_center_x = -0.75;
+					m_mandel_center_y = 0.0;
+					m_multibrot_power = 3.0;
+				}
+
 				ImGui::PopFont();
 				ImGui::End();
 			}
@@ -1401,6 +1520,29 @@ void Application::run() {
 					ourShader->setVec3("u_palette_b", m_palette_newton_b.x, m_palette_newton_b.y, m_palette_newton_b.z);
 					ourShader->setVec3("u_palette_c", m_palette_newton_c.x, m_palette_newton_c.y, m_palette_newton_c.z);
 					ourShader->setVec3("u_palette_d", m_palette_newton_d.x, m_palette_newton_d.y, m_palette_newton_d.z);
+				}
+			}
+			else if (m_currentFractal == FractalType::MULTIBROT)
+			{
+				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+				ourShader->setDouble("u_zoom", m_mandel_zoom);
+				ourShader->setDouble("u_power", m_multibrot_power);
+				if (m_adaptive_iterations) {
+					int final_iterations = m_base_iterations;
+					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+					}
+					final_adaptive_iterations = final_iterations;
+					ourShader->setInt("u_max_iterations", final_iterations);
+				}
+				else {
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				}
+				if (!m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
 				}
 			}
 			else {
