@@ -53,7 +53,7 @@ private:
 
     ImFont* m_font_regular;
     ImFont* m_font_large;
-    enum class FractalType { NONE, MANDELBROT, JULIA, BURNING_SHIP, TRICORN, PHOENIX, LYAPUNOV};
+    enum class FractalType { NONE, MANDELBROT, JULIA, BURNING_SHIP, TRICORN, PHOENIX, LYAPUNOV, NEWTON, MULTIBROT};
     FractalType m_currentFractal = FractalType::NONE;
     int max_iterations_default = 10000;
     bool m_adaptive_iterations = true;
