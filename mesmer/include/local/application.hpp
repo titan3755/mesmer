@@ -97,16 +97,21 @@ private:
     ImVec4 m_palette_lyapunov_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
     ImVec4 m_palette_lyapunov_c = ImVec4(1.0f, 0.5f, 0.2f, 1.0f);
     ImVec4 m_palette_lyapunov_d = ImVec4(0.0f, 0.15f, 0.20f, 1.0f);
-	ImVec4 m_palette_newton_a = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
-	ImVec4 m_palette_newton_b = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
-	ImVec4 m_palette_newton_c = ImVec4(1.0f, 0.5f, 0.2f, 1.0f);
-	ImVec4 m_palette_newton_d = ImVec4(0.0f, 0.15f, 0.20f, 1.0f);
+    ImVec4 m_palette_newton_a = ImVec4(0.1f, 0.1f, 0.2f, 1.0f);
+    ImVec4 m_palette_newton_b = ImVec4(0.8f, 0.1f, 0.1f, 1.0f);
+    ImVec4 m_palette_newton_c = ImVec4(0.2f, 0.7f, 0.3f, 1.0f);
+    ImVec4 m_palette_newton_d = ImVec4(0.9f, 0.9f, 0.2f, 1.0f);
+    ImVec4 m_palette_multibrot_a = ImVec4(0.0f, 0.0f, 0.3f, 1.0f);
+    ImVec4 m_palette_multibrot_b = ImVec4(0.2f, 0.4f, 0.9f, 1.0f);
+    ImVec4 m_palette_multibrot_c = ImVec4(0.9f, 0.3f, 0.6f, 1.0f);
+    ImVec4 m_palette_multibrot_d = ImVec4(1.0f, 0.9f, 0.4f, 1.0f);
     double m_phoenix_c_x = 0.5067;
     double m_phoenix_c_y = 0.0200;
     double m_phoenix_p = -0.9900;
     double m_lyapunov_center_a = 3.4;
     double m_lyapunov_center_b = 3.4;
     double m_lyapunov_zoom = 0.25;
+    double m_multibrot_power = 2.0;
 
     // color density
     float m_color_density = 0.05f;
