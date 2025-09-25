@@ -51,7 +51,7 @@ void main()
     lambda /= double(n_sum);
 
     if (lambda > 0.0) { 
-        FragColor = vec4(palette(float(lambda) * 2.5f), 1.0);
+        FragColor = vec4(palette(float(lambda) * u_color_density * 50.0), 1.0);
     } else { 
         float stability = clamp(abs(float(lambda)) * 2.0, 0.0, 1.0);
         FragColor = vec4(vec3(0.0, 0.1, 0.5) * stability, 1.0);
