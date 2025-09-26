@@ -617,6 +617,59 @@ void Application::run() {
 						title_text_toggle = true;
 					}
 				}
+				if (m_currentFractal == FractalType::NOVA && !io.WantCaptureMouse)
+				{
+					if (event.type == SDL_MOUSEWHEEL)
+					{
+						int mouseX, mouseY;
+						SDL_GetMouseState(&mouseX, &mouseY);
+						double mouse_real_before = (double)(mouseX - screenWidth / 2) / (0.5 * m_mandel_zoom * screenWidth) + m_mandel_center_x;
+						double mouse_imag_before = (double)(screenHeight / 2 - mouseY) / (0.5 * m_mandel_zoom * screenHeight) + m_mandel_center_y;
+						if (event.wheel.y > 0)
+							m_mandel_zoom *= 1.1;
+						else if (event.wheel.y < 0)
+							m_mandel_zoom /= 1.1;
+						double mouse_real_after = (double)(mouseX - screenWidth / 2) / (0.5 * m_mandel_zoom * screenWidth) + m_mandel_center_x;
+						double mouse_imag_after = (double)(screenHeight / 2 - mouseY) / (0.5 * m_mandel_zoom * screenHeight) + m_mandel_center_y;
+						m_mandel_center_x += mouse_real_before - mouse_real_after;
+						m_mandel_center_y += mouse_imag_before - mouse_imag_after;
+					}
+					if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = true;
+						m_drag_start_pos = ImGui::GetMousePos();
+					}
+					if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = false;
+					}
+					if (event.type == SDL_MOUSEMOTION && m_is_dragging)
+					{
+						ImVec2 current_pos = ImGui::GetMousePos();
+						ImVec2 delta = ImVec2(current_pos.x - m_drag_start_pos.x, current_pos.y - m_drag_start_pos.y);
+
+						double dx = -delta.x / (0.5 * m_mandel_zoom * screenWidth);
+						double dy = delta.y / (0.5 * m_mandel_zoom * screenHeight);
+
+						m_mandel_center_x += dx;
+						m_mandel_center_y += dy;
+
+						m_drag_start_pos = current_pos;
+					}
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+						show_main_buttons = !show_main_buttons;
+						show_fractal_selection = false;
+						spdlog::info("'Space' key pressed - toggling main buttons.");
+						Application::m_currentFractal = FractalType::NONE;
+						if (ourShader != nullptr) {
+							delete ourShader;
+						}
+						ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
+						spdlog::info("Reverted to background shader.");
+						sub = "Mesmer - Main Menu";
+						title_text_toggle = true;
+					}
+				}
 				if (event.type == SDL_QUIT) {
 					done = true;
 				}
@@ -1024,7 +1077,31 @@ void Application::run() {
 						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
 						ImGui::SliderFloat("Power", (float*)&m_nova_power, 1.0f, 10.0f);
 						ImGui::SliderFloat("Relaxation", (float*)&m_nova_relaxation, 0.1f, 2.0f);
-						// ... (add a Reset button) ...
+						
+						if (m_adaptive_iterations) {
+							ImGui::BeginDisabled();
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+							ImGui::EndDisabled();
+						}
+						else {
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						}
+						ImGui::Separator();
+						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
+						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						ImGui::TextWrapped(("Current Adaptive Iterations: " + std::to_string(final_adaptive_iterations)).c_str());
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
+						}
+
+						if (ImGui::Button("Reset View")) {
+							m_mandel_zoom = 1.0;
+							m_mandel_center_x = -0.75;
+							m_mandel_center_y = 0.0;
+							m_mandel_max_iterations = 200;
+							m_nova_power = 3.0f;
+							m_nova_relaxation = 1.0f;
+						}
 					}
 					else
 					{
