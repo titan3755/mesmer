@@ -1007,6 +1007,25 @@ void Application::run() {
 							m_mandel_max_iterations = 200;
 						}
 					}
+					else if (m_currentFractal == FractalType::NOVA) 
+					{
+						ImGui::Text("Nova Controls");
+						ImGui::Separator();
+						
+						ImGui::Text("Nova Set Fractal Color Palette");
+						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_nova_a);
+						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_nova_b);
+						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_nova_c, 0.0f, 2.0f);
+						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_nova_d, 0.0f, 1.0f);
+						ImGui::Separator();
+
+						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
+						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
+						ImGui::SliderFloat("Power", (float*)&m_nova_power, 1.0f, 10.0f);
+						ImGui::SliderFloat("Relaxation", (float*)&m_nova_relaxation, 0.1f, 2.0f);
+						// ... (add a Reset button) ...
+					}
 					else
 					{
 						ImGui::Text("No fractal selected.");
