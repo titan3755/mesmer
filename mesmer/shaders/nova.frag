@@ -5,10 +5,8 @@
 */
 
 #version 460 core
-
 out vec4 FragColor;
 in vec2 TexCoords;
-
 uniform dvec2 u_center;
 uniform double u_zoom;
 uniform int u_max_iterations;
