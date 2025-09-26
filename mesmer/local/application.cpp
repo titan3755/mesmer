@@ -1699,6 +1699,30 @@ void Application::run() {
 					ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
 				}
 			}
+			else if (m_currentFractal == FractalType::NOVA)
+			{
+				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+				ourShader->setDouble("u_zoom", m_mandel_zoom);
+				ourShader->setDouble("u_power", m_nova_power);
+				ourShader->setDouble("u_relaxation", m_nova_relaxation);
+				if (m_adaptive_iterations) {
+					int final_iterations = m_base_iterations;
+					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+					}
+					final_adaptive_iterations = final_iterations;
+					ourShader->setInt("u_max_iterations", final_iterations);
+				}
+				else {
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				}
+				if (!m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_nova_a.x, m_palette_nova_a.y, m_palette_nova_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_nova_b.x, m_palette_nova_b.y, m_palette_nova_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_nova_c.x, m_palette_nova_c.y, m_palette_nova_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_nova_d.x, m_palette_nova_d.y, m_palette_nova_d.z);
+				}
+			}
 			else {
 				// no fractal selected
 			}
