@@ -1286,6 +1286,63 @@ void Application::run() {
 				}
 				ImGui::PopStyleColor(3);
 
+				// nova (row - 5 left side)
+				ImGui::NewLine();
+				ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total_width) * 0.5f);
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.2f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.6f, 0.3f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.1f, 1.0f));
+				if (ImGui::Button("Nova", ImVec2(button_width, 80))) {
+					m_currentFractal = FractalType::NOVA;
+
+					if (ourShader != nullptr) {
+						delete ourShader;
+					}
+
+					ourShader = new Shader("shaders/nova.vert", "shaders/nova.frag");
+					spdlog::info("Loaded Nova shader.");
+
+					show_fractal_selection = false;
+					show_main_buttons = false;
+					sub = "Mesmer - Nova";
+					title_text_toggle = false;
+
+					m_mandel_zoom = 1.0;
+					m_mandel_center_x = 0.0;
+					m_mandel_center_y = 0.0;
+					m_nova_power = 3.0;
+					m_nova_relaxation = 1.0;
+				}
+				ImGui::PopStyleColor(3);
+
+				// spider (row - 5 right side)
+				ImGui::SameLine(0.0f, spacing);
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+				if (ImGui::Button("Spider", ImVec2(button_width, 80))) {
+					m_currentFractal = FractalType::SPIDER;
+
+					if (ourShader != nullptr) {
+						delete ourShader;
+					}
+
+					ourShader = new Shader("shaders/spider.vert", "shaders/spider.frag");
+					spdlog::info("Loaded Spider shader.");
+
+					show_fractal_selection = false;
+					show_main_buttons = false;
+					sub = "Mesmer - Spider";
+					title_text_toggle = false;
+
+					m_mandel_zoom = 1.0;
+					m_mandel_center_x = -0.5;
+					m_mandel_center_y = 0.0;
+					// to do
+				}
+				ImGui::PopStyleColor(3);
+				// to add more fractals
+
 				ImGui::PopFont();
 				ImGui::End();
 			}
