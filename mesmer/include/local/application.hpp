@@ -120,6 +120,8 @@ private:
     double m_lyapunov_center_b = 3.4;
     double m_lyapunov_zoom = 0.25;
     double m_multibrot_power = 2.0;
+    double m_nova_power = 3.0;
+    double m_nova_relaxation = 1.0;
 
     // color density
     float m_color_density = 0.05f;
