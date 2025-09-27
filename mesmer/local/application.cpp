@@ -1257,6 +1257,7 @@ void Application::run() {
 				ImGui::PopFont();
 				ImGui::End();
 			}
+			// main fractal buttons ------------------------------------------------------------------
 			if (show_fractal_selection)
 			{
 				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
