@@ -502,6 +502,7 @@
     <None Include="shaders\multibrot.frag" />
     <None Include="shaders\nova.vert" />
     <None Include="shaders\nova.frag" />
+    <None Include="shaders\spider.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
