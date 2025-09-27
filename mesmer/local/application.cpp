@@ -1281,15 +1281,21 @@ void Application::run() {
 				if (ImGui::Button("Mandelbrot", ImVec2(button_width, 80))) {
 					spdlog::info("'Mandelbrot' button clicked!");
 					m_currentFractal = FractalType::MANDELBROT;
+					
+					if (m_pre_render_enabled) {
+						m_is_pre_rendering = true;
+					}
+					else
+					{
+						if (ourShader != nullptr) delete ourShader;
+						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
+						spdlog::info("Loaded Mandelbrot shader.");
 
-					if (ourShader != nullptr) delete ourShader;
-					ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
-					spdlog::info("Loaded Mandelbrot shader.");
-
-					show_fractal_selection = false;
-					show_main_buttons = false;
-					sub = "Mesmer - Mandelbrot Set";
-					title_text_toggle = false;
+						show_fractal_selection = false;
+						show_main_buttons = false;
+						sub = "Mesmer - Mandelbrot Set";
+						title_text_toggle = false;
+					}
 				}
 				ImGui::PopStyleColor(3);
 
