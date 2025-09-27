@@ -738,7 +738,7 @@ void Application::run() {
 			ImGui_ImplSDL2_NewFrame();
 			ImGui::NewFrame();
 
-			// control panel
+			//---------------------------------- control panel ----------------------------------
 
 			if (hud_toggle) 
 			{
@@ -1229,6 +1229,9 @@ void Application::run() {
 				ImGui::End();
 			}
 
+			//---------------------------------- control panel ---------------------------------- (end)
+			// Main Buttons
+
 			if (show_main_buttons) {
 				const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
 				ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + screenWidth / 2 - 270, main_viewport->WorkPos.y + screenHeight / 2 - 100));
@@ -1535,7 +1538,11 @@ void Application::run() {
 
 				ImGui::PopFont();
 				ImGui::End();
+				// ---------------------------------- Main Buttons ---------------------------------- (end)
 			}
+			// ---------------------------------- HUD / Text Overlay ----------------------------------
+				// ImGui::GetBackgroundDrawList() to draw behind everything
+				// ImGui::GetForegroundDrawList() to draw in front of everything
 
 
 			ImGuiIO& io = ImGui::GetIO();
