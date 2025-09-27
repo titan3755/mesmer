@@ -135,12 +135,14 @@ private:
     bool m_pre_render_enabled = false;
     bool m_is_pre_rendering = false;
     bool m_pre_render_complete = false;
-
-    unsigned int m_pre_render_fbo;
-    unsigned int m_pre_render_texture;
-    const int m_pre_render_resolution = 8192; // 8K
-
-    Shader* m_texture_view_shader;
+    int m_pre_render_frame_count = 0;
+    unsigned int m_pre_render_fbo = 0;
+    unsigned int m_pre_render_texture = 0;
+    const int m_pre_render_resolution = 8192;
+    Shader* m_texture_view_shader = nullptr;
+    double m_view_center_x = 0.0;
+	double m_view_center_y = 0.0;
+    double m_view_zoom = 1.0;
 };
 
 #endif
