@@ -178,6 +178,7 @@ void Application::run() {
 				{
 					hud_toggle = !hud_toggle;
 				}
+				// fractal-specific event handling (to clean up)
 				if (m_currentFractal == FractalType::MANDELBROT && !io.WantCaptureMouse)
 				{
 					if (event.type == SDL_MOUSEWHEEL)
@@ -723,6 +724,7 @@ void Application::run() {
 						title_text_toggle = true;
 					}
 				}
+				// --- fractal-specific event handling end ---
 				if (event.type == SDL_QUIT) {
 					done = true;
 				}
