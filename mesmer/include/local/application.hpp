@@ -132,6 +132,15 @@ private:
     ImVec4 m_menu_bg_accent_color = ImVec4(0.95f, 0.35f, 0.65f, 1.0f);
 
     // pre-rendering variables
+    bool m_pre_render_enabled = false;
+    bool m_is_pre_rendering = false;
+    bool m_pre_render_complete = false;
+
+    unsigned int m_pre_render_fbo;
+    unsigned int m_pre_render_texture;
+    const int m_pre_render_resolution = 8192; // 8K
+
+    Shader* m_texture_view_shader;
 };
 
 #endif
