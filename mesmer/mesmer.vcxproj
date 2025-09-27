@@ -314,6 +314,7 @@
     <None Include="shaders\nova.vert" />
     <None Include="shaders\phoenix.frag" />
     <None Include="shaders\phoenix.vert" />
+    <None Include="shaders\spider.frag" />
     <None Include="shaders\spider.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="shaders\triangle.vert" />
