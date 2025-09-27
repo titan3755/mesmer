@@ -1156,6 +1156,45 @@ void Application::run() {
 							m_nova_relaxation = 1.0f;
 						}
 					}
+					else if (m_currentFractal == FractalType::SPIDER)
+					{
+						ImGui::Text("Spider Controls");
+						ImGui::Separator();
+
+						ImGui::Text("Spider Set Fractal Color Palette");
+						ImGui::ColorEdit3("Brightness (a)", (float*)&m_palette_spider_a);
+						ImGui::ColorEdit3("Contrast (b)", (float*)&m_palette_spider_b);
+						ImGui::SliderFloat3("Frequency (c)", (float*)&m_palette_spider_c, 0.0f, 2.0f);
+						ImGui::SliderFloat3("Phase (d)", (float*)&m_palette_spider_d, 0.0f, 1.0f);
+						ImGui::Separator();
+
+						ImGui::InputDouble("Zoom", &m_mandel_zoom, 0.1, 0.0, "%.8f");
+						ImGui::InputDouble("Center X", &m_mandel_center_x, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Center Y", &m_mandel_center_y, 0.01, 0.0, "%.8f");
+
+						if (m_adaptive_iterations) {
+							ImGui::BeginDisabled();
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+							ImGui::EndDisabled();
+						}
+						else {
+							ImGui::SliderInt("Max Iterations", &m_mandel_max_iterations, 50, 5000);
+						}
+						ImGui::Separator();
+						ImGui::Checkbox("Adaptive Iterations", &m_adaptive_iterations);
+						ImGui::SliderInt("Base Iterations", &m_base_iterations, 50, 1000);
+						ImGui::TextWrapped(("Current Adaptive Iterations: " + std::to_string(final_adaptive_iterations)).c_str());
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Max iterations will increase with zoom when 'Adaptive' is checked.");
+						}
+
+						if (ImGui::Button("Reset View")) {
+							m_mandel_zoom = 1.0;
+							m_mandel_center_x = -0.75;
+							m_mandel_center_y = 0.0;
+							m_mandel_max_iterations = 200;
+						}
+					}
 					else
 					{
 						ImGui::Text("No fractal selected.");
@@ -1774,6 +1813,28 @@ void Application::run() {
 					ourShader->setVec3("u_palette_b", m_palette_nova_b.x, m_palette_nova_b.y, m_palette_nova_b.z);
 					ourShader->setVec3("u_palette_c", m_palette_nova_c.x, m_palette_nova_c.y, m_palette_nova_c.z);
 					ourShader->setVec3("u_palette_d", m_palette_nova_d.x, m_palette_nova_d.y, m_palette_nova_d.z);
+				}
+			}
+			else if (m_currentFractal == FractalType::SPIDER)
+			{
+				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+				ourShader->setDouble("u_zoom", m_mandel_zoom);
+				if (m_adaptive_iterations) {
+					int final_iterations = m_base_iterations;
+					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+					}
+					final_adaptive_iterations = final_iterations;
+					ourShader->setInt("u_max_iterations", final_iterations);
+				}
+				else {
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+				}
+				if (!m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_spider_a.x, m_palette_spider_a.y, m_palette_spider_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_spider_b.x, m_palette_spider_b.y, m_palette_spider_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_spider_c.x, m_palette_spider_c.y, m_palette_spider_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_spider_d.x, m_palette_spider_d.y, m_palette_spider_d.z);
 				}
 			}
 			else {
