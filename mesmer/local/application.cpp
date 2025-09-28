@@ -1350,17 +1350,17 @@ void Application::run() {
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
 						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Mandelbrot shader.");
 					}
 					else
 					{
 						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
 						spdlog::info("Loaded Mandelbrot shader.");
-
-						show_fractal_selection = false;
-						show_main_buttons = false;
-						sub = "Mesmer - Mandelbrot Set";
-						title_text_toggle = false;
 					}
+					show_fractal_selection = false;
+					show_main_buttons = false;
+					sub = "Mesmer - Mandelbrot Set";
+					title_text_toggle = false;
 				}
 				ImGui::PopStyleColor(3);
 
