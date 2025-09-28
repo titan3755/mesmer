@@ -2005,3 +2005,25 @@ void Application::addTextWithStroke(ImDrawList* draw_list, ImFont* font, float s
 	draw_list->AddText(font, size, ImVec2(pos.x, pos.y + thickness), outline_col, text);
 	draw_list->AddText(font, size, pos, fill_col, text);
 }
+
+void Application::performPreRender() {
+	spdlog::info("Starting 8K pre-render...");
+	glGenFramebuffers(1, &m_pre_render_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_pre_render_fbo);
+	glGenTextures(1, &m_pre_render_texture);
+	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_pre_render_resolution, m_pre_render_resolution, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pre_render_texture, 0);
+	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
+	glClear(GL_COLOR_BUFFER_BIT);
+	ourShader->use();
+	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
+	ourShader->setInt("u_max_iterations", 5000);
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	m_texture_view_shader = new Shader("shaders/texture_view.vert", "shaders/texture_view.frag");
+	spdlog::info("Pre-render complete.");
+}
