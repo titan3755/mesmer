@@ -1670,264 +1670,274 @@ void Application::run() {
 			ImGui::Render();
 			int drawable_w, drawable_h;
 			SDL_GL_GetDrawableSize(window, &drawable_w, &drawable_h);
-			glViewport(0, 0, drawable_w, drawable_h);
-			glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-			glClear(GL_COLOR_BUFFER_BIT);
 
-			ourShader->use();
-			ourShader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
-			ourShader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
-			ourShader->setVec3("iColorOne", m_menu_bg_color_one.x, m_menu_bg_color_one.y, m_menu_bg_color_one.z);
-			ourShader->setVec3("iColorTwo", m_menu_bg_color_two.x, m_menu_bg_color_two.y, m_menu_bg_color_two.z);
-			ourShader->setVec3("iAccentColor", m_menu_bg_accent_color.x, m_menu_bg_accent_color.y, m_menu_bg_accent_color.z);
-			ourShader->setFloat("u_color_density", m_color_density);
-			if (m_apply_common_color_palette) {
-				ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
-				ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
-				ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
-				ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
-			}
-			if (m_currentFractal == FractalType::MANDELBROT) {
-				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
-				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
-						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
-				}
-			}
-			else if (m_currentFractal == FractalType::JULIA)
-			{
-				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
-				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				ourShader->setDVec2("u_julia_c", m_julia_c_x, m_julia_c_y);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
-						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_julia_a.x, m_palette_julia_a.y, m_palette_julia_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_julia_b.x, m_palette_julia_b.y, m_palette_julia_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_julia_c.x, m_palette_julia_c.y, m_palette_julia_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_julia_d.x, m_palette_julia_d.y, m_palette_julia_d.z);
-				}
-			}
-			else if (m_currentFractal == FractalType::BURNING_SHIP) 
-			{
-				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
-				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
-						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_burning_ship_a.x, m_palette_burning_ship_a.y, m_palette_burning_ship_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_burning_ship_b.x, m_palette_burning_ship_b.y, m_palette_burning_ship_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_burning_ship_c.x, m_palette_burning_ship_c.y, m_palette_burning_ship_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_burning_ship_d.x, m_palette_burning_ship_d.y, m_palette_burning_ship_d.z);
-				}
-			}
-			else if (m_currentFractal == FractalType::TRICORN)
-			{
-				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
-				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
-						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_tricorn_a.x, m_palette_tricorn_a.y, m_palette_tricorn_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_tricorn_b.x, m_palette_tricorn_b.y, m_palette_tricorn_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_tricorn_c.x, m_palette_tricorn_c.y, m_palette_tricorn_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_tricorn_d.x, m_palette_tricorn_d.y, m_palette_tricorn_d.z);
-				}
-			}
-			else if (m_currentFractal == FractalType::PHOENIX)
-			{
-				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
-				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				ourShader->setDVec2("u_phoenix_c", m_phoenix_c_x, m_phoenix_c_y);
-				ourShader->setDouble("u_phoenix_p", m_phoenix_p);
-				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
-						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_phoenix_a.x, m_palette_phoenix_a.y, m_palette_phoenix_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_phoenix_b.x, m_palette_phoenix_b.y, m_palette_phoenix_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_phoenix_c.x, m_palette_phoenix_c.y, m_palette_phoenix_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_phoenix_d.x, m_palette_phoenix_d.y, m_palette_phoenix_d.z);
-				}
+			if (m_is_pre_rendering) {
 
 			}
-			else if (m_currentFractal == FractalType::LYAPUNOV)
-			{
-				ourShader->setDVec2("u_lyapunov_center", m_lyapunov_center_a, m_lyapunov_center_b);
-				ourShader->setDouble("u_lyapunov_zoom", m_lyapunov_zoom);
-				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_lyapunov_zoom > 1.0) {
-						final_iterations += static_cast<int>(500.0 * log(m_lyapunov_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_lyapunov_a.x, m_palette_lyapunov_a.y, m_palette_lyapunov_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_lyapunov_b.x, m_palette_lyapunov_b.y, m_palette_lyapunov_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_lyapunov_c.x, m_palette_lyapunov_c.y, m_palette_lyapunov_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_lyapunov_d.x, m_palette_lyapunov_d.y, m_palette_lyapunov_d.z);
-				}
-			}
-			else if (m_currentFractal == FractalType::NEWTON)
-			{
-				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
-				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
-						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_newton_a.x, m_palette_newton_a.y, m_palette_newton_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_newton_b.x, m_palette_newton_b.y, m_palette_newton_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_newton_c.x, m_palette_newton_c.y, m_palette_newton_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_newton_d.x, m_palette_newton_d.y, m_palette_newton_d.z);
-				}
-			}
-			else if (m_currentFractal == FractalType::MULTIBROT)
-			{
-				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
-				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				ourShader->setDouble("u_power", m_multibrot_power);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
-						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
-				}
-			}
-			else if (m_currentFractal == FractalType::NOVA)
-			{
-				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
-				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				ourShader->setDouble("u_power", m_nova_power);
-				ourShader->setDouble("u_relaxation", m_nova_relaxation);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
-						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_nova_a.x, m_palette_nova_a.y, m_palette_nova_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_nova_b.x, m_palette_nova_b.y, m_palette_nova_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_nova_c.x, m_palette_nova_c.y, m_palette_nova_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_nova_d.x, m_palette_nova_d.y, m_palette_nova_d.z);
-				}
-			}
-			else if (m_currentFractal == FractalType::SPIDER)
-			{
-				ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
-				ourShader->setDouble("u_zoom", m_mandel_zoom);
-				if (m_adaptive_iterations) {
-					int final_iterations = m_base_iterations;
-					if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
-						final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
-					}
-					final_adaptive_iterations = final_iterations;
-					ourShader->setInt("u_max_iterations", final_iterations);
-				}
-				else {
-					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
-				}
-				if (!m_apply_common_color_palette) {
-					ourShader->setVec3("u_palette_a", m_palette_spider_a.x, m_palette_spider_a.y, m_palette_spider_a.z);
-					ourShader->setVec3("u_palette_b", m_palette_spider_b.x, m_palette_spider_b.y, m_palette_spider_b.z);
-					ourShader->setVec3("u_palette_c", m_palette_spider_c.x, m_palette_spider_c.y, m_palette_spider_c.z);
-					ourShader->setVec3("u_palette_d", m_palette_spider_d.x, m_palette_spider_d.y, m_palette_spider_d.z);
-				}
+			else if (m_pre_render_complete) {
+
 			}
 			else {
-				// no fractal selected
-			}
+				glViewport(0, 0, drawable_w, drawable_h);
+				glClearColor(clear_color.x* clear_color.w, clear_color.y* clear_color.w, clear_color.z* clear_color.w, clear_color.w);
+				glClear(GL_COLOR_BUFFER_BIT);
 
-			glBindVertexArray(VAO);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				ourShader->use();
+				ourShader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
+				ourShader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
+				ourShader->setVec3("iColorOne", m_menu_bg_color_one.x, m_menu_bg_color_one.y, m_menu_bg_color_one.z);
+				ourShader->setVec3("iColorTwo", m_menu_bg_color_two.x, m_menu_bg_color_two.y, m_menu_bg_color_two.z);
+				ourShader->setVec3("iAccentColor", m_menu_bg_accent_color.x, m_menu_bg_accent_color.y, m_menu_bg_accent_color.z);
+				ourShader->setFloat("u_color_density", m_color_density);
+				if (m_apply_common_color_palette) {
+					ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+					ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+					ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+					ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+				}
+				if (m_currentFractal == FractalType::MANDELBROT) {
+					ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+					ourShader->setDouble("u_zoom", m_mandel_zoom);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+							final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+					}
+				}
+				else if (m_currentFractal == FractalType::JULIA)
+				{
+					ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+					ourShader->setDouble("u_zoom", m_mandel_zoom);
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					ourShader->setDVec2("u_julia_c", m_julia_c_x, m_julia_c_y);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+							final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_julia_a.x, m_palette_julia_a.y, m_palette_julia_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_julia_b.x, m_palette_julia_b.y, m_palette_julia_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_julia_c.x, m_palette_julia_c.y, m_palette_julia_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_julia_d.x, m_palette_julia_d.y, m_palette_julia_d.z);
+					}
+				}
+				else if (m_currentFractal == FractalType::BURNING_SHIP)
+				{
+					ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+					ourShader->setDouble("u_zoom", m_mandel_zoom);
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+							final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_burning_ship_a.x, m_palette_burning_ship_a.y, m_palette_burning_ship_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_burning_ship_b.x, m_palette_burning_ship_b.y, m_palette_burning_ship_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_burning_ship_c.x, m_palette_burning_ship_c.y, m_palette_burning_ship_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_burning_ship_d.x, m_palette_burning_ship_d.y, m_palette_burning_ship_d.z);
+					}
+				}
+				else if (m_currentFractal == FractalType::TRICORN)
+				{
+					ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+					ourShader->setDouble("u_zoom", m_mandel_zoom);
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+							final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_tricorn_a.x, m_palette_tricorn_a.y, m_palette_tricorn_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_tricorn_b.x, m_palette_tricorn_b.y, m_palette_tricorn_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_tricorn_c.x, m_palette_tricorn_c.y, m_palette_tricorn_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_tricorn_d.x, m_palette_tricorn_d.y, m_palette_tricorn_d.z);
+					}
+				}
+				else if (m_currentFractal == FractalType::PHOENIX)
+				{
+					ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+					ourShader->setDouble("u_zoom", m_mandel_zoom);
+					ourShader->setDVec2("u_phoenix_c", m_phoenix_c_x, m_phoenix_c_y);
+					ourShader->setDouble("u_phoenix_p", m_phoenix_p);
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+							final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_phoenix_a.x, m_palette_phoenix_a.y, m_palette_phoenix_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_phoenix_b.x, m_palette_phoenix_b.y, m_palette_phoenix_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_phoenix_c.x, m_palette_phoenix_c.y, m_palette_phoenix_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_phoenix_d.x, m_palette_phoenix_d.y, m_palette_phoenix_d.z);
+					}
+
+				}
+				else if (m_currentFractal == FractalType::LYAPUNOV)
+				{
+					ourShader->setDVec2("u_lyapunov_center", m_lyapunov_center_a, m_lyapunov_center_b);
+					ourShader->setDouble("u_lyapunov_zoom", m_lyapunov_zoom);
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_lyapunov_zoom > 1.0) {
+							final_iterations += static_cast<int>(500.0 * log(m_lyapunov_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_lyapunov_a.x, m_palette_lyapunov_a.y, m_palette_lyapunov_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_lyapunov_b.x, m_palette_lyapunov_b.y, m_palette_lyapunov_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_lyapunov_c.x, m_palette_lyapunov_c.y, m_palette_lyapunov_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_lyapunov_d.x, m_palette_lyapunov_d.y, m_palette_lyapunov_d.z);
+					}
+				}
+				else if (m_currentFractal == FractalType::NEWTON)
+				{
+					ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+					ourShader->setDouble("u_zoom", m_mandel_zoom);
+					ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+							final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_newton_a.x, m_palette_newton_a.y, m_palette_newton_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_newton_b.x, m_palette_newton_b.y, m_palette_newton_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_newton_c.x, m_palette_newton_c.y, m_palette_newton_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_newton_d.x, m_palette_newton_d.y, m_palette_newton_d.z);
+					}
+				}
+				else if (m_currentFractal == FractalType::MULTIBROT)
+				{
+					ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+					ourShader->setDouble("u_zoom", m_mandel_zoom);
+					ourShader->setDouble("u_power", m_multibrot_power);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+							final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+					}
+				}
+				else if (m_currentFractal == FractalType::NOVA)
+				{
+					ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+					ourShader->setDouble("u_zoom", m_mandel_zoom);
+					ourShader->setDouble("u_power", m_nova_power);
+					ourShader->setDouble("u_relaxation", m_nova_relaxation);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+							final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_nova_a.x, m_palette_nova_a.y, m_palette_nova_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_nova_b.x, m_palette_nova_b.y, m_palette_nova_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_nova_c.x, m_palette_nova_c.y, m_palette_nova_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_nova_d.x, m_palette_nova_d.y, m_palette_nova_d.z);
+					}
+				}
+				else if (m_currentFractal == FractalType::SPIDER)
+				{
+					ourShader->setDVec2("u_center", m_mandel_center_x, m_mandel_center_y);
+					ourShader->setDouble("u_zoom", m_mandel_zoom);
+					if (m_adaptive_iterations) {
+						int final_iterations = m_base_iterations;
+						if (m_adaptive_iterations && m_mandel_zoom > 1.0) {
+							final_iterations += static_cast<int>(150.0 * log(m_mandel_zoom));
+						}
+						final_adaptive_iterations = final_iterations;
+						ourShader->setInt("u_max_iterations", final_iterations);
+					}
+					else {
+						ourShader->setInt("u_max_iterations", m_mandel_max_iterations);
+					}
+					if (!m_apply_common_color_palette) {
+						ourShader->setVec3("u_palette_a", m_palette_spider_a.x, m_palette_spider_a.y, m_palette_spider_a.z);
+						ourShader->setVec3("u_palette_b", m_palette_spider_b.x, m_palette_spider_b.y, m_palette_spider_b.z);
+						ourShader->setVec3("u_palette_c", m_palette_spider_c.x, m_palette_spider_c.y, m_palette_spider_c.z);
+						ourShader->setVec3("u_palette_d", m_palette_spider_d.x, m_palette_spider_d.y, m_palette_spider_d.z);
+					}
+				}
+				else {
+					// no fractal selected
+				}
+
+				glBindVertexArray(VAO);
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			}
 
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			SDL_GL_SwapWindow(window);
+
 		}
 	}
 	catch (const std::exception& e) {
