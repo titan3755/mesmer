@@ -2115,7 +2115,8 @@ void Application::performPreRender() {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pre_render_fbo);
 	glGenTextures(1, &m_pre_render_texture);
 	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pre_render_resolution, m_pre_render_resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_pre_render_resolution, m_pre_render_resolution, 0, GL_RGBA, GL_FLOAT, NULL);
+	glGenerateMipmap(GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pre_render_texture, 0);
@@ -2134,11 +2135,34 @@ void Application::performPreRender() {
 	ourShader->use();
 	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
 	ourShader->setInt("u_max_iterations", 5000);
-	ourShader->setDVec2("u_center", m_view_center_x, m_view_center_y);
-	ourShader->setDouble("u_zoom", m_view_zoom);
+	if (m_currentFractal == FractalType::MANDELBROT) {
+		// Use the Mandelbrot's default view, NOT the viewer's variables
+		ourShader->setDVec2("u_center", -0.75, 0.0);
+		ourShader->setDouble("u_zoom", 1.0);
+
+		// Send the Mandelbrot's specific palette
+		if (!m_apply_common_color_palette) {
+			ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+		}
+		else {
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	// else if (m_currentFractal == FractalType::BURNING_SHIP) { ... send its defaults ... }
+
+	ourShader->setFloat("u_color_density", m_color_density);
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	if (ourShader != nullptr) {
+		delete ourShader;
+	}
 	m_texture_view_shader = new Shader("shaders/texture_view.vert", "shaders/texture_view.frag");
 	spdlog::info("Pre-render complete.");
 }
