@@ -178,6 +178,13 @@ void Application::run() {
 				{
 					hud_toggle = !hud_toggle;
 				}
+				// prerender event handling
+				if (m_pre_render_complete && !io.WantCaptureMouse)
+				{
+					// Add logic for scroll wheel to change m_view_zoom
+					// Add logic for mouse drag to change m_view_center
+					// This will be almost identical to your Lyapunov panning/zooming logic
+				}
 				// fractal-specific event handling (to clean up)
 				if (m_currentFractal == FractalType::MANDELBROT && !io.WantCaptureMouse)
 				{
