@@ -1267,7 +1267,7 @@ void Application::run() {
 					}
 				}
 				ImGui::Checkbox("Toggle info window", &info_gui_window_toggle);
-				ImGui::Checkbox("Toggle pre-rendering system", &m_pre_render_enabled);
+				ImGui::Checkbox("Toggle pre-rendering system (EXPERIMENTAL - MAY CAUSE CRASHES)", &m_pre_render_enabled);
 				ImGui::End();
 			}
 
