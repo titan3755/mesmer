@@ -222,10 +222,12 @@ void Application::run() {
 						if (m_pre_render_complete) {
 							glDeleteTextures(1, &m_pre_render_texture);
 							glDeleteFramebuffers(1, &m_pre_render_fbo);
-							delete m_texture_view_shader;
+							if (m_texture_view_shader != nullptr) {
+								delete m_texture_view_shader;
+								m_texture_view_shader = nullptr;
+							}
 							m_pre_render_texture = 0;
 							m_pre_render_fbo = 0;
-							m_texture_view_shader = nullptr;
 						}
 						m_pre_render_enabled = false;
 						m_pre_render_complete = false;
@@ -235,6 +237,7 @@ void Application::run() {
 						Application::m_currentFractal = FractalType::NONE;
 						if (ourShader != nullptr) {
 							delete ourShader;
+							ourShader = nullptr;
 						}
 						ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
 						spdlog::info("Reverted to background shader.");
@@ -2162,6 +2165,7 @@ void Application::performPreRender() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	if (ourShader != nullptr) {
 		delete ourShader;
+		ourShader = nullptr;
 	}
 	m_texture_view_shader = new Shader("shaders/texture_view.vert", "shaders/texture_view.frag");
 	spdlog::info("Pre-render complete.");
