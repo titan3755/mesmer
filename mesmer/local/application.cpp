@@ -219,6 +219,16 @@ void Application::run() {
 						m_drag_start_pos = current_pos;
 					}
 					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+						if (m_pre_render_complete) {
+							glDeleteTextures(1, &m_pre_render_texture);
+							glDeleteFramebuffers(1, &m_pre_render_fbo);
+							delete m_texture_view_shader;
+							m_pre_render_texture = 0;
+							m_pre_render_fbo = 0;
+							m_texture_view_shader = nullptr;
+						}
+						m_pre_render_enabled = false;
+						m_pre_render_complete = false;
 						show_main_buttons = !show_main_buttons;
 						show_fractal_selection = false;
 						spdlog::info("'Space' key pressed - toggling main buttons.");
