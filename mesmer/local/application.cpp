@@ -1667,15 +1667,42 @@ void Application::run() {
 				ImGui::ShowDemoWindow(&show_demo_window);
 			}
 
-			ImGui::Render();
 			int drawable_w, drawable_h;
 			SDL_GL_GetDrawableSize(window, &drawable_w, &drawable_h);
 
 			if (m_is_pre_rendering) {
+				glViewport(0, 0, drawable_w, drawable_h);
+				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT);
 
+				// Frame 1: Show a loading screen.
+				if (m_pre_render_frame_count == 0) {
+					ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
+					draw_list->AddText(m_font_large, 48.0f, ImVec2(screenWidth / 2 - 250, screenHeight / 2), IM_COL32_WHITE, "Pre-rendering, please wait...");
+					m_pre_render_frame_count++;
+				}
+				// Frame 2: Do the actual heavy rendering.
+				else {
+					performPreRender();
+					m_is_pre_rendering = false;
+					m_pre_render_complete = true;
+					m_pre_render_frame_count = 0; // Reset for next time
+				}
 			}
 			else if (m_pre_render_complete) {
+				glViewport(0, 0, drawable_w, drawable_h);
+				glClearColor(clear_color.x* clear_color.w, clear_color.y* clear_color.w, clear_color.z* clear_color.w, clear_color.w);
+				glClear(GL_COLOR_BUFFER_BIT);
 
+				m_texture_view_shader->use();
+				m_texture_view_shader->setDVec2("u_center", m_view_center_x, m_view_center_y);
+				m_texture_view_shader->setDouble("u_zoom", m_view_zoom);
+
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+
+				glBindVertexArray(VAO);
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			}
 			else {
 				glViewport(0, 0, drawable_w, drawable_h);
@@ -1935,6 +1962,7 @@ void Application::run() {
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			}
 
+			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			SDL_GL_SwapWindow(window);
 
@@ -2091,11 +2119,23 @@ void Application::performPreRender() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pre_render_texture, 0);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		spdlog::critical("Framebuffer is not complete!");
+		// Clean up and abort
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteTextures(1, &m_pre_render_texture);
+		glDeleteFramebuffers(1, &m_pre_render_fbo);
+		m_pre_render_texture = 0;
+		m_pre_render_fbo = 0;
+		return; // Abort the pre-render
+	}
 	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
 	glClear(GL_COLOR_BUFFER_BIT);
 	ourShader->use();
 	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
 	ourShader->setInt("u_max_iterations", 5000);
+	ourShader->setDVec2("u_center", m_view_center_x, m_view_center_y);
+	ourShader->setDouble("u_zoom", m_view_zoom);
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
