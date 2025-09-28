@@ -12,7 +12,7 @@ const char* SETTINGS_FILE = "settings.mesmer";
 // application metadata
 std::map<std::string, std::string> app_metadata = {
 	{"name", "Mesmer"},
-	{"version", "Version: 0.7.0 Alpha (Dev)"},
+	{"version", "Version: 0.7.5 Beta (Dev-PreRelease)"},
 	{"author_desc", "Made by Titan // GH: https://github.com/titan3755/mesmer"},
 	{"build", "Build Date: September 2025"},
 	{"description", "Mesmer - Fractal Generator and Explorer"},
