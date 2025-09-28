@@ -188,16 +188,49 @@ void Application::run() {
 						double mouse_real_before = (double)(mouseX - screenWidth / 2) / (0.5 * m_view_zoom * screenWidth) + m_view_center_x;
 						double mouse_imag_before = (double)(screenHeight / 2 - mouseY) / (0.5 * m_view_zoom * screenHeight) + m_view_center_y;
 						if (event.wheel.y > 0)
-							m_mandel_zoom *= 1.1;
+							m_view_zoom *= 1.1;
 						else if (event.wheel.y < 0)
-							m_mandel_zoom /= 1.1;
+							m_view_zoom /= 1.1;
 						double mouse_real_after = (double)(mouseX - screenWidth / 2) / (0.5 * m_view_zoom * screenWidth) + m_view_center_x;
 						double mouse_imag_after = (double)(screenHeight / 2 - mouseY) / (0.5 * m_view_zoom * screenHeight) + m_view_center_y;
-						m_mandel_center_x += mouse_real_before - mouse_real_after;
-						m_mandel_center_y += mouse_imag_before - mouse_imag_after;
+						m_view_center_x += mouse_real_before - mouse_real_after;
+						m_view_center_y += mouse_imag_before - mouse_imag_after;
 					}
-					// Add logic for mouse drag to change m_view_center
-					// This will be almost identical to your Lyapunov panning/zooming logic
+					if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = true;
+						m_drag_start_pos = ImGui::GetMousePos();
+					}
+					if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+					{
+						m_is_dragging = false;
+					}
+					if (event.type == SDL_MOUSEMOTION && m_is_dragging)
+					{
+						ImVec2 current_pos = ImGui::GetMousePos();
+						ImVec2 delta = ImVec2(current_pos.x - m_drag_start_pos.x, current_pos.y - m_drag_start_pos.y);
+
+						double dx = -delta.x / (0.5 * m_view_zoom * screenWidth);
+						double dy = delta.y / (0.5 * m_view_zoom * screenHeight);
+
+						m_view_center_x += dx;
+						m_view_center_y += dy;
+
+						m_drag_start_pos = current_pos;
+					}
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+						show_main_buttons = !show_main_buttons;
+						show_fractal_selection = false;
+						spdlog::info("'Space' key pressed - toggling main buttons.");
+						Application::m_currentFractal = FractalType::NONE;
+						if (ourShader != nullptr) {
+							delete ourShader;
+						}
+						ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
+						spdlog::info("Reverted to background shader.");
+						sub = "Mesmer - Main Menu";
+						title_text_toggle = true;
+					}
 				}
 				// fractal-specific event handling (to clean up)
 				if (m_currentFractal == FractalType::MANDELBROT && !io.WantCaptureMouse)
