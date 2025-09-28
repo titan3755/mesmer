@@ -316,6 +316,8 @@
     <None Include="shaders\phoenix.vert" />
     <None Include="shaders\spider.frag" />
     <None Include="shaders\spider.vert" />
+    <None Include="shaders\texture_view.frag" />
+    <None Include="shaders\texture_view.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="shaders\triangle.vert" />
     <None Include="shaders\tricorn.frag" />
