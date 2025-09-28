@@ -181,7 +181,21 @@ void Application::run() {
 				// prerender event handling
 				if (m_pre_render_complete && !io.WantCaptureMouse)
 				{
-					// Add logic for scroll wheel to change m_view_zoom
+					if (event.type == SDL_MOUSEWHEEL)
+					{
+						int mouseX, mouseY;
+						SDL_GetMouseState(&mouseX, &mouseY);
+						double mouse_real_before = (double)(mouseX - screenWidth / 2) / (0.5 * m_view_zoom * screenWidth) + m_view_center_x;
+						double mouse_imag_before = (double)(screenHeight / 2 - mouseY) / (0.5 * m_view_zoom * screenHeight) + m_view_center_y;
+						if (event.wheel.y > 0)
+							m_mandel_zoom *= 1.1;
+						else if (event.wheel.y < 0)
+							m_mandel_zoom /= 1.1;
+						double mouse_real_after = (double)(mouseX - screenWidth / 2) / (0.5 * m_view_zoom * screenWidth) + m_view_center_x;
+						double mouse_imag_after = (double)(screenHeight / 2 - mouseY) / (0.5 * m_view_zoom * screenHeight) + m_view_center_y;
+						m_mandel_center_x += mouse_real_before - mouse_real_after;
+						m_mandel_center_y += mouse_imag_before - mouse_imag_after;
+					}
 					// Add logic for mouse drag to change m_view_center
 					// This will be almost identical to your Lyapunov panning/zooming logic
 				}
