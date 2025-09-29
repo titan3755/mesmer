@@ -2121,6 +2121,7 @@ void Application::addTextWithStroke(ImDrawList* draw_list, ImFont* font, float s
 
 void Application::performPreRender() {
 	spdlog::info("Starting 16K pre-render...");
+	spdlog::info("Initializing framebuffers and textures...");
 	glGenFramebuffers(1, &m_pre_render_fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pre_render_fbo);
 	glGenTextures(1, &m_pre_render_texture);
@@ -2142,6 +2143,7 @@ void Application::performPreRender() {
 	}
 	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
 	glClear(GL_COLOR_BUFFER_BIT);
+	spdlog::info("Setting shader uniforms...");
 	ourShader->use();
 	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
 	ourShader->setInt("u_max_iterations", 5000);
