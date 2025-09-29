@@ -2029,6 +2029,13 @@ void Application::initOpenGL() {
 		throw std::runtime_error("Failed to initialize GLAD.");
 	}
 
+	int max_texture_size;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+	spdlog::info("Max texture size supported: {}x{}", max_texture_size, max_texture_size);
+	if (m_pre_render_resolution > max_texture_size) {
+		spdlog::warn("Requested pre-render resolution ({}) exceeds the maximum supported size ({}).", m_pre_render_resolution, max_texture_size);
+	}
+
 	spdlog::info("OpenGL Vendor: {}", (const char*)glGetString(GL_VENDOR));
 	spdlog::info("OpenGL Renderer: {}", (const char*)glGetString(GL_RENDERER));
 	spdlog::info("OpenGL Version: {}", (const char*)glGetString(GL_VERSION));
@@ -2113,15 +2120,16 @@ void Application::addTextWithStroke(ImDrawList* draw_list, ImFont* font, float s
 }
 
 void Application::performPreRender() {
-	spdlog::info("Starting 8K pre-render...");
+	spdlog::info("Starting 16K pre-render...");
 	glGenFramebuffers(1, &m_pre_render_fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pre_render_fbo);
 	glGenTextures(1, &m_pre_render_texture);
 	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_pre_render_resolution, m_pre_render_resolution, 0, GL_RGBA, GL_FLOAT, NULL);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pre_render_resolution, m_pre_render_resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Use simple linear for now
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pre_render_texture, 0);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		spdlog::critical("Framebuffer is not complete!");
@@ -2158,6 +2166,9 @@ void Application::performPreRender() {
 	ourShader->setFloat("u_color_density", m_color_density);
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	if (ourShader != nullptr) {
 		delete ourShader;
