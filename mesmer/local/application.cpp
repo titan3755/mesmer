@@ -2125,13 +2125,12 @@ void Application::performPreRender() {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pre_render_texture, 0);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		spdlog::critical("Framebuffer is not complete!");
-		// Clean up and abort
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDeleteTextures(1, &m_pre_render_texture);
 		glDeleteFramebuffers(1, &m_pre_render_fbo);
 		m_pre_render_texture = 0;
 		m_pre_render_fbo = 0;
-		return; // Abort the pre-render
+		return;
 	}
 	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -2139,11 +2138,8 @@ void Application::performPreRender() {
 	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
 	ourShader->setInt("u_max_iterations", 5000);
 	if (m_currentFractal == FractalType::MANDELBROT) {
-		// Use the Mandelbrot's default view, NOT the viewer's variables
 		ourShader->setDVec2("u_center", -0.75, 0.0);
 		ourShader->setDouble("u_zoom", 1.0);
-
-		// Send the Mandelbrot's specific palette
 		if (!m_apply_common_color_palette) {
 			ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
 			ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
