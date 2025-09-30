@@ -1278,6 +1278,7 @@ void Application::run() {
 						ImGui::InputDouble("Pre-Render Zoom", &m_pre_render_zoom_threshold, 0.1, 0.0, "%.8f");
 						ImGui::InputDouble("Pre-Render Center X", &m_pre_render_center_x, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Pre-Render Center Y", &m_pre_render_center_y, 0.01, 0.0, "%.8f");
+						ImGui::TextWrapped("Adjust the settings in the fractal display settings tab to change color and color density");
 					}
 					else {
 						ImGui::Text("Enable Pre-Rendering to adjust these settings.");
