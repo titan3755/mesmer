@@ -22,6 +22,8 @@
 -> (...) <br>
 
 ### More fractal ideas to implement
--> Lyapunov Fractals <br>
--> (...) <br>
+-> Lyapunov Fractal [DONE] <br>
+-> Phoenix Fractal [DONE] <br>
+-> Newton Fractal [DONE] <br>
+-> Nova Fractal [DONE] <br>
 
