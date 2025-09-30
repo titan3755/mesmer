@@ -19,6 +19,7 @@
 -> Add fractal rendering system for Julia set [HIGH PRIORITY] [DONE] <br>
 -> Tidy up the GUI [DONE] <br>
 -> Fix the spaghetti code in application.cpp [HIGH PRIORITY] <br>
+-> Finish adding pre-rendering system and refine the processing method [HIGH PRIORITY] <br>
 -> (...) <br>
 
 ### More fractal ideas to implement
