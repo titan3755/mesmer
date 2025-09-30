@@ -1691,7 +1691,8 @@ void Application::run() {
 					ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
 					draw_list->AddText(m_font_large, 48.0f, ImVec2((float)screenWidth / 2 - 250, (float)screenHeight / 2), IM_COL32_WHITE, "Pre-rendering, please wait...");
 					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 50), IM_COL32_WHITE, "-May take several seconds to a minute");
-					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 80), IM_COL32_WHITE, "-Don't do any other task while pre-rendering");
+					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 80), IM_COL32_WHITE, "-Pre-Rendering is a very GPU heavy task");
+					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 110), IM_COL32_WHITE, "-Don't do any other task while pre-rendering");
 					// turn off explore button
 					show_main_buttons = false;
 					show_demo_window = false;
