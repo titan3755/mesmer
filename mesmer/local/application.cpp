@@ -1698,6 +1698,7 @@ void Application::run() {
 				glClear(GL_COLOR_BUFFER_BIT);
 
 				m_texture_view_shader->use();
+				m_texture_view_shader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
 				m_texture_view_shader->setDVec2("u_center", m_view_center_x, m_view_center_y);
 				m_texture_view_shader->setDouble("u_zoom", m_view_zoom);
 

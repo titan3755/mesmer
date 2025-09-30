@@ -139,7 +139,7 @@ private:
     int m_pre_render_frame_count = 0;
     unsigned int m_pre_render_fbo = 0;
     unsigned int m_pre_render_texture = 0;
-    const int m_pre_render_resolution = 16384;
+    const int m_pre_render_resolution = 32768;
     Shader* m_texture_view_shader = nullptr;
     double m_view_center_x = 0.0;
 	double m_view_center_y = 0.0;

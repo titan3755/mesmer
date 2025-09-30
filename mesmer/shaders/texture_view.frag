@@ -14,6 +14,15 @@ uniform vec2 iResolution;
 
 void main()
 {
-    dvec2 uv = (TexCoords - 0.5) / u_zoom + 0.5 + u_center;
+    float screenAspect = iResolution.x / iResolution.y;
+    dvec2 uv = TexCoords;
+    uv -= 0.5;
+    if (screenAspect > 1.0) {
+        uv.x *= screenAspect;
+    } else {
+        uv.y /= screenAspect;
+    }
+    uv = uv / u_zoom + u_center;
+    uv += 0.5;
     FragColor = texture(screenTexture, vec2(uv));
 }
