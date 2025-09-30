@@ -1276,6 +1276,8 @@ void Application::run() {
 				{
 					if (m_pre_render_enabled) {
 						ImGui::InputDouble("Pre-Render Zoom Threshold", &m_pre_render_zoom_threshold, 0.1, 0.0, "%.8f");
+						ImGui::InputDouble("Pre-Render Center X", &m_pre_render_center_x, 0.01, 0.0, "%.8f");
+						ImGui::InputDouble("Pre-Render Center Y", &m_pre_render_center_y, 0.01, 0.0, "%.8f");
 					}
 					else {
 						ImGui::Text("Enable Pre-Rendering to adjust these settings.");
