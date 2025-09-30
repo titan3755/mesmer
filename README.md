@@ -26,4 +26,6 @@
 -> Phoenix Fractal [DONE] <br>
 -> Newton Fractal [DONE] <br>
 -> Nova Fractal [DONE] <br>
+-> Spider Fractal [DONE] <br>
+-> 
 
