@@ -30,3 +30,6 @@
 -> Spider Fractal [DONE] <br>
 -> Multibrot Fractal [DONE] <br>
 
+### Immediate Tasks
+-> Get Mesmer ready for v-1.0 release [V.H.PRIORITY] <br>
+
