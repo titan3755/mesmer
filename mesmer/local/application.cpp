@@ -1687,12 +1687,16 @@ void Application::run() {
 				glClear(GL_COLOR_BUFFER_BIT);
 
 				// loading screen
-				if (m_pre_render_frame_count == 0) {
+				if (m_pre_render_frame_count == 0 || m_pre_render_frame_count == 1) {
 					ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
 					draw_list->AddText(m_font_large, 48.0f, ImVec2(screenWidth / 2 - 250, screenHeight / 2), IM_COL32_WHITE, "Pre-rendering, please wait...");
-					draw_list->AddText(m_font_large, 24.0f, ImVec2(screenWidth / 2 - 100, screenHeight / 2 + 50), IM_COL32_WHITE, "(May take several seconds to a minute)");
+					draw_list->AddText(m_font_large, 24.0f, ImVec2(screenWidth / 2 - 100, screenHeight / 2 + 50), IM_COL32_WHITE, "-May take several seconds to a minute");
+					draw_list->AddText(m_font_large, 24.0f, ImVec2(screenWidth / 2 - 100, screenHeight / 2 + 80), IM_COL32_WHITE, "-Don't do any other task while pre-rendering");
 					// turn off explore buttons
 					show_main_buttons = false;
+					show_demo_window = false;
+					show_fractal_selection = false;
+					hud_toggle = false;
 					m_pre_render_frame_count++;
 				}
 				// heavy rendering work
