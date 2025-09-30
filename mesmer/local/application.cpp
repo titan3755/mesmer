@@ -1696,7 +1696,6 @@ void Application::run() {
 					show_main_buttons = false;
 					show_demo_window = false;
 					show_fractal_selection = false;
-					hud_toggle = false;
 					m_pre_render_frame_count++;
 				}
 				// heavy rendering work
