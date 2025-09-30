@@ -2164,7 +2164,8 @@ void Application::performPreRender() {
 	spdlog::info("Setting shader uniforms...");
 	ourShader->use();
 	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
-	ourShader->setInt("u_max_iterations", 5000);
+	ourShader->setInt("u_max_iterations", 10000);
+	ourShader->setFloat("u_color_density", m_color_density);
 	if (m_currentFractal == FractalType::MANDELBROT) {
 		ourShader->setDVec2("u_center", -0.75, 0.0);
 		ourShader->setDouble("u_zoom", 1.0);
@@ -2173,6 +2174,23 @@ void Application::performPreRender() {
 			ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
 			ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
 			ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+		}
+		else {
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::JULIA) {
+		ourShader->setDVec2("u_center", 0.0, 0.0);
+		ourShader->setDouble("u_zoom", 1.0);
+		ourShader->setDVec2("u_julia_c", -0.7, 0.27015);
+		if (!m_apply_common_color_palette) {
+			ourShader->setVec3("u_palette_a", m_palette_julia_a.x, m_palette_julia_a.y, m_palette_julia_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_julia_b.x, m_palette_julia_b.y, m_palette_julia_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_julia_c.x, m_palette_julia_c.y, m_palette_julia_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_julia_d.x, m_palette_julia_d.y, m_palette_julia_d.z);
 		}
 		else {
 			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
