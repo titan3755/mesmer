@@ -1376,10 +1376,18 @@ void Application::run() {
 				if (ImGui::Button("Julia", ImVec2(button_width, 80))) {
 					spdlog::info("'Julia' button clicked!");
 					m_currentFractal = FractalType::JULIA;
-
 					if (ourShader != nullptr) delete ourShader;
-					ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
-					spdlog::info("Loaded Julia shader.");
+
+					if (m_pre_render_enabled) {
+						ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
+						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Julia shader.");
+					}
+					else
+					{
+						ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
+						spdlog::info("Loaded Julia shader.");
+					}
 
 					show_fractal_selection = false;
 					show_main_buttons = false;
