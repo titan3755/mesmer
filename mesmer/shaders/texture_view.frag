@@ -10,6 +10,7 @@ in vec2 TexCoords;
 uniform sampler2D screenTexture;
 uniform dvec2 u_center;
 uniform double u_zoom;
+uniform vec2 iResolution;
 
 void main()
 {
