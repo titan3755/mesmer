@@ -1306,6 +1306,8 @@ void Application::run() {
 				ImGui::BulletText(app_metadata["control_five"].c_str());
 				ImGui::BulletText(app_metadata["control_six"].c_str());
 				ImGui::Separator();
+				ImGui::Text("warning");
+				ImGui::Separator();
 				ImGui::Text("%s", status);
 				ImGui::End();
 			}
