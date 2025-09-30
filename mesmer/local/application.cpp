@@ -1420,8 +1420,8 @@ void Application::run() {
 				if (ImGui::Button("Burning Ship", ImVec2(button_width, 80))) {
 					spdlog::info("'Burning Ship' button clicked!");
 					m_currentFractal = FractalType::BURNING_SHIP;
-
 					if (ourShader != nullptr) delete ourShader;
+
 					ourShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
 					spdlog::info("Loaded Burning Ship shader.");
 
