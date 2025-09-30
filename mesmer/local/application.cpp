@@ -1274,7 +1274,12 @@ void Application::run() {
 				// pre rendering options -->
 				if (ImGui::CollapsingHeader("Pre-Rendering Parameters"))
 				{
-
+					if (m_pre_render_enabled) {
+						ImGui::InputDouble("Pre-Render Zoom Threshold", &m_pre_render_zoom_threshold, 0.1, 0.0, "%.8f");
+					}
+					else {
+						ImGui::Text("Enable Pre-Rendering to adjust these settings.");
+					}
 				}
 				ImGui::End();
 			}
