@@ -2178,7 +2178,7 @@ void Application::performPreRender() {
 	ourShader->setFloat("u_color_density", m_color_density);
 	if (m_currentFractal == FractalType::MANDELBROT) {
 		ourShader->setDVec2("u_center", -0.75, 0.0);
-		ourShader->setDouble("u_zoom", 1.0);
+		ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
 		if (!m_apply_common_color_palette) {
 			ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
 			ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
