@@ -22,7 +22,10 @@ std::map<std::string, std::string> app_metadata = {
 	{"control_three", "Mouse Wheel - Zoom In/Out"},
 	{"control_four", "Click + Drag - Pan View"},
 	{"control_five", "M (Julia) - Toggle mapping constant to mouse"},
-	{"control_six", "I (Julia) - Toggle interactive mode"}
+	{"control_six", "I (Julia) - Toggle interactive mode"},
+	{"warning_one", "Warning: Pre-Rendering is experimental and may cause crashes"},
+	{"warning_two", "Warning: This Application requires OpenGL v-4.6 for fractal calculations"}
+	
 };
 
 int main(int argc, char* argv[]) {
