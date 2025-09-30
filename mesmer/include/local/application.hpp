@@ -145,6 +145,8 @@ private:
 	double m_view_center_y = 0.0;
     double m_view_zoom = 1.0;
 	double m_pre_render_zoom_threshold = 1000.0;
+	double m_pre_render_center_x = 0.0;
+	double m_pre_render_center_y = 0.0; 
 };
 
 #endif
