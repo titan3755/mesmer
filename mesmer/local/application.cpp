@@ -2136,7 +2136,7 @@ void Application::addTextWithStroke(ImDrawList* draw_list, ImFont* font, float s
 }
 
 void Application::performPreRender() {
-	spdlog::info("Starting 16K pre-render...");
+	spdlog::info("Starting 32K pre-render...");
 	spdlog::info("Initializing framebuffers and textures...");
 	glGenFramebuffers(1, &m_pre_render_fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pre_render_fbo);
@@ -2164,7 +2164,7 @@ void Application::performPreRender() {
 	spdlog::info("Setting shader uniforms...");
 	ourShader->use();
 	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
-	ourShader->setInt("u_max_iterations", 10000);
+	ourShader->setInt("u_max_iterations", 5000);
 	ourShader->setFloat("u_color_density", m_color_density);
 	if (m_currentFractal == FractalType::MANDELBROT) {
 		ourShader->setDVec2("u_center", -0.75, 0.0);
