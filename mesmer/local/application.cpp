@@ -1479,13 +1479,17 @@ void Application::run() {
 				if (ImGui::Button("Tricorn", ImVec2(button_width, 80))) {
 					spdlog::info("'Tricorn' button clicked!");
 					m_currentFractal = FractalType::TRICORN;
+					if (ourShader != nullptr) delete ourShader;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
+					if (m_pre_render_enabled) {
+						ourShader = new Shader("shaders/tricorn.vert", "shaders/tricorn.frag");
+						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Tricorn shader.");
 					}
-
-					ourShader = new Shader("shaders/tricorn.vert", "shaders/tricorn.frag");
-					spdlog::info("Loaded Tricorn shader.");
+					else {
+						ourShader = new Shader("shaders/tricorn.vert", "shaders/tricorn.frag");
+						spdlog::info("Loaded Tricorn shader.");
+					}
 
 					show_fractal_selection = false;
 					show_main_buttons = false;
