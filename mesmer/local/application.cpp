@@ -1284,7 +1284,12 @@ void Application::run() {
 						ImGui::TextWrapped("Fractal Specific Parameter Customization");
 						ImGui::InputDouble("Pre-Render Julia c (real)", &m_pre_render_julia_c_x, 0.001, 0.0, "%.8f");
 						ImGui::InputDouble("Pre-Render Julia c (imag)", &m_pre_render_julia_c_y, 0.001, 0.0, "%.8f");
-
+						ImGui::InputDouble("Pre-Render Phoenix c (real)", &m_pre_render_phoenix_c_x, 0.01, 0.0, "%.4f");
+						ImGui::InputDouble("Pre-Render Phoenix c (imag)", &m_pre_render_phoenix_c_y, 0.01, 0.0, "%.4f");
+						ImGui::InputDouble("Pre-Render Phoenix p", &m_pre_render_phoenix_p, 0.01, 0.0, "%.4f");
+						ImGui::InputDouble("Pre-Render Multibrot Power", &m_pre_render_multibrot_power, -10.0f, 10.0f);
+						ImGui::InputDouble("Pre-Render Nova Power", &m_pre_render_nova_power, 1.0f, 10.0f);
+						ImGui::InputDouble("Pre-Render Nova Relaxation", &m_pre_render_nova_relaxation, 0.1f, 2.0f);
 					}
 					else {
 						ImGui::Text("Enable Pre-Rendering to adjust these settings.");
