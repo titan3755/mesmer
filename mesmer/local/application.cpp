@@ -1280,7 +1280,6 @@ void Application::run() {
 							ImGui::InputDouble("Pre-Render Zoom", &m_pre_render_zoom_threshold, 0.1, 0.0, "%.8f");
 							ImGui::InputDouble("Pre-Render Center X", &m_pre_render_center_x, 0.01, 0.0, "%.8f");
 							ImGui::InputDouble("Pre-Render Center Y", &m_pre_render_center_y, 0.01, 0.0, "%.8f");
-							ImGui::Checkbox("Use Pre-Render Settings", &m_use_pre_render_params);
 							ImGui::TextWrapped("Adjust the settings in the fractal display settings tab to change color and color density");
 							ImGui::Separator();
 							ImGui::TextWrapped("Fractal Specific Parameter Customization");
@@ -1292,6 +1291,13 @@ void Application::run() {
 							ImGui::InputDouble("Pre-Render Multibrot Power", &m_pre_render_multibrot_power, -10.0f, 10.0f);
 							ImGui::InputDouble("Pre-Render Nova Power", &m_pre_render_nova_power, 1.0f, 10.0f);
 							ImGui::InputDouble("Pre-Render Nova Relaxation", &m_pre_render_nova_relaxation, 0.1f, 2.0f);
+							ImGui::Separator();
+							ImGui::Checkbox("Use Pre-Render Settings", &m_use_pre_render_params);
+							ImGui::Separator();
+							ImGui::PushTextWrapPos(0.0f);
+							ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Don't use pre-rendering if your dont have a powerful GPU with a good amount of VRAM (~6GB)");
+							ImGui::PopTextWrapPos();
+
 						}
 						else {
 							ImGui::Text("Enable Pre-Rendering to adjust these settings.");
