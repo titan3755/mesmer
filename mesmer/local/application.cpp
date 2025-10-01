@@ -1306,11 +1306,14 @@ void Application::run() {
 				ImGui::BulletText(app_metadata["control_five"].c_str());
 				ImGui::BulletText(app_metadata["control_six"].c_str());
 				ImGui::Separator();
-				ImGui::PushTextWrapPos(0.0f);  // wrap at window edge
+				ImGui::PushTextWrapPos(0.0f);
 				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), app_metadata["warning_one"].c_str());
 				ImGui::PopTextWrapPos();
-				ImGui::PushTextWrapPos(0.0f);  // wrap at window edge
+				ImGui::PushTextWrapPos(0.0f);
 				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), app_metadata["warning_two"].c_str());
+				ImGui::PopTextWrapPos();
+				ImGui::PushTextWrapPos(0.0f);
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), app_metadata["warning_three"].c_str());
 				ImGui::PopTextWrapPos();
 				ImGui::Separator();
 				ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", status);
