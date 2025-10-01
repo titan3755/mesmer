@@ -19,7 +19,8 @@
 -> Add fractal rendering system for Julia set [HIGH PRIORITY] [DONE] <br>
 -> Tidy up the GUI [DONE] <br>
 -> Fix the spaghetti code in application.cpp [HIGH PRIORITY] <br>
--> Finish adding pre-rendering system and refine the processing method [HIGH PRIORITY] <br>
+-> Finish adding pre-rendering system and refine the processing method [DONE] [HIGH PRIORITY] <br>
+-> Newton and Nova fractal renderings look very unusual at the moment, need to fix it [HIGH PRIORITY] <br>
 -> (...) <br>
 
 ### More fractal ideas to implement
