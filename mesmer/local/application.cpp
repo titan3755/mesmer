@@ -2272,12 +2272,13 @@ void Application::performPreRender() {
 		if (m_use_pre_render_params) {
 			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
 			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			ourShader->setDVec2("u_julia_c", m_pre_render_julia_c_x, m_pre_render_julia_c_y);
 		}
 		else {
 			ourShader->setDVec2("u_center", 0.0, 0.0);
 			ourShader->setDouble("u_zoom", 1.0);
+			ourShader->setDVec2("u_julia_c", -0.7, 0.27015);
 		}
-		ourShader->setDVec2("u_julia_c", -0.7, 0.27015);
 		if (!m_apply_common_color_palette) {
 			ourShader->setVec3("u_palette_a", m_palette_julia_a.x, m_palette_julia_a.y, m_palette_julia_a.z);
 			ourShader->setVec3("u_palette_b", m_palette_julia_b.x, m_palette_julia_b.y, m_palette_julia_b.z);
@@ -2345,7 +2346,10 @@ void Application::performPreRender() {
 		else {
 			ourShader->setDVec2("u_center", 0.0, 0.0);
 			ourShader->setDouble("u_zoom", 0.5);
+			ourShader->setDVec2("u_phoenix_c", -0.5, 0.0);
+			ourShader->setDouble("u_phoenix_p", 0.56667);
 		}
+
 	}
 	// else if (m_currentFractal == FractalType::BURNING_SHIP) { ... send its defaults ... }
 
