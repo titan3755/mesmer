@@ -1297,7 +1297,6 @@ void Application::run() {
 							ImGui::PushTextWrapPos(0.0f);
 							ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Don't use pre-rendering if your dont have a powerful GPU with a good amount of VRAM (~6GB)");
 							ImGui::PopTextWrapPos();
-
 						}
 						else {
 							ImGui::Text("Enable Pre-Rendering to adjust these settings.");
