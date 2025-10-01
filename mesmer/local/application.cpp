@@ -2335,6 +2335,18 @@ void Application::performPreRender() {
 			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
+	else if (m_currentFractal == FractalType::PHOENIX) {
+		if (m_use_pre_render_params) {
+			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			ourShader->setDVec2("u_phoenix_c", m_pre_render_phoenix_c_x, m_pre_render_phoenix_c_y);
+			ourShader->setDouble("u_phoenix_p", m_pre_render_phoenix_p);
+		}
+		else {
+			ourShader->setDVec2("u_center", 0.0, 0.0);
+			ourShader->setDouble("u_zoom", 0.5);
+		}
+	}
 	// else if (m_currentFractal == FractalType::BURNING_SHIP) { ... send its defaults ... }
 
 	ourShader->setFloat("u_color_density", m_color_density);
