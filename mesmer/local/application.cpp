@@ -2406,6 +2406,59 @@ void Application::performPreRender() {
 			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
+	else if (m_currentFractal == FractalType::NOVA) {
+		if (m_use_pre_render_params) {
+			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			ourShader->setDouble("u_power", m_pre_render_nova_power);
+			ourShader->setDouble("u_relaxation", m_pre_render_nova_relaxation);
+		}
+		else {
+			ourShader->setDVec2("u_center", 0.0, 0.0);
+			ourShader->setDouble("u_zoom", 0.5);
+			ourShader->setDouble("u_power", 3.0);
+			ourShader->setDouble("u_relaxation", 1.0);
+		}
+		if (!m_apply_common_color_palette) {
+			ourShader->setVec3("u_palette_a", m_palette_nova_a.x, m_palette_nova_a.y, m_palette_nova_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_nova_b.x, m_palette_nova_b.y, m_palette_nova_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_nova_c.x, m_palette_nova_c.y, m_palette_nova_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_nova_d.x, m_palette_nova_d.y, m_palette_nova_d.z);
+		}
+		else {
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::MULTIBROT) {
+		if (m_use_pre_render_params) {
+			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			ourShader->setDouble("u_power", m_pre_render_multibrot_power);
+		}
+		else {
+			ourShader->setDVec2("u_center", 0.0, 0.0);
+			ourShader->setDouble("u_zoom", 0.5);
+			ourShader->setDouble("u_power", 3.0);
+		}
+		if (!m_apply_common_color_palette) {
+			ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+		}
+		else {
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::SPIDER) {
+		
+	}
 	//else {
 	//	spdlog::warn("Pre-render is only supported for Mandelbrot and Julia sets. No pre-render performed.");
 	//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
