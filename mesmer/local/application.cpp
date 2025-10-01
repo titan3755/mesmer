@@ -2457,14 +2457,30 @@ void Application::performPreRender() {
 		}
 	}
 	else if (m_currentFractal == FractalType::SPIDER) {
-		
+		if (m_use_pre_render_params) {
+			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			ourShader->setDVec2("u_center", 0.0, 0.0);
+			ourShader->setDouble("u_zoom", 0.5);
+		}
+		if (!m_apply_common_color_palette) {
+			ourShader->setVec3("u_palette_a", m_palette_spider_a.x, m_palette_spider_a.y, m_palette_spider_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_spider_b.x, m_palette_spider_b.y, m_palette_spider_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_spider_c.x, m_palette_spider_c.y, m_palette_spider_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_spider_d.x, m_palette_spider_d.y, m_palette_spider_d.z);
+		}
+		else {
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
 	}
-	//else {
-	//	spdlog::warn("Pre-render is only supported for Mandelbrot and Julia sets. No pre-render performed.");
-	//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//	glDeleteTextures(1, &m_pre_render_texture);
-	//	glDeleteFramebuffers(1, &m_pre_render_fbo);
-	//}
+	else {
+		spdlog::warn("No fractals selected, pre-render aborted ...");
+	}
 
 	ourShader->setFloat("u_color_density", m_color_density);
 	glBindVertexArray(VAO);
