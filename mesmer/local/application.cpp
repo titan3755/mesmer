@@ -1278,6 +1278,7 @@ void Application::run() {
 						ImGui::InputDouble("Pre-Render Zoom", &m_pre_render_zoom_threshold, 0.1, 0.0, "%.8f");
 						ImGui::InputDouble("Pre-Render Center X", &m_pre_render_center_x, 0.01, 0.0, "%.8f");
 						ImGui::InputDouble("Pre-Render Center Y", &m_pre_render_center_y, 0.01, 0.0, "%.8f");
+						ImGui::Checkbox("Use Pre-Render Settings", &m_use_pre_render_params);
 						ImGui::TextWrapped("Adjust the settings in the fractal display settings tab to change color and color density");
 					}
 					else {
@@ -2199,8 +2200,13 @@ void Application::performPreRender() {
 	ourShader->setInt("u_max_iterations", 5000);
 	ourShader->setFloat("u_color_density", m_color_density);
 	if (m_currentFractal == FractalType::MANDELBROT) {
-		if () {
-
+		if (m_use_pre_render_params) {
+			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			ourShader->setDVec2("u_center", 0.0, 0.0);
+			ourShader->setDouble("u_zoom", 1.0);
 		}
 		if (!m_apply_common_color_palette) {
 			ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
@@ -2216,8 +2222,14 @@ void Application::performPreRender() {
 		}
 	}
 	else if (m_currentFractal == FractalType::JULIA) {
-		ourShader->setDVec2("u_center", 0.0, 0.0);
-		ourShader->setDouble("u_zoom", 1.0);
+		if (m_use_pre_render_params) {
+			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			ourShader->setDVec2("u_center", 0.0, 0.0);
+			ourShader->setDouble("u_zoom", 1.0);
+		}
 		ourShader->setDVec2("u_julia_c", -0.7, 0.27015);
 		if (!m_apply_common_color_palette) {
 			ourShader->setVec3("u_palette_a", m_palette_julia_a.x, m_palette_julia_a.y, m_palette_julia_a.z);
