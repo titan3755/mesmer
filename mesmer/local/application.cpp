@@ -1440,11 +1440,9 @@ void Application::run() {
 					}
 					else 
 					{
-
+						ourShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
+						spdlog::info("Loaded Burning Ship shader.");
 					}
-
-					ourShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
-					spdlog::info("Loaded Burning Ship shader.");
 
 					show_fractal_selection = false;
 					show_main_buttons = false;
@@ -2232,6 +2230,9 @@ void Application::performPreRender() {
 			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
 			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
+	}
+	else if (m_currentFractal == FractalType::BURNING_SHIP) {
+		
 	}
 	// else if (m_currentFractal == FractalType::BURNING_SHIP) { ... send its defaults ... }
 
