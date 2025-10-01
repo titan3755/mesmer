@@ -12,9 +12,9 @@ const char* SETTINGS_FILE = "settings.mesmer";
 // application metadata
 std::map<std::string, std::string> app_metadata = {
 	{"name", "Mesmer"},
-	{"version", "Version: 0.8.5 Beta (Dev-PreRelease)"},
+	{"version", "Version: 1.0.0 (Release)"},
 	{"author_desc", "Made by Titan // GH: https://github.com/titan3755/mesmer"},
-	{"build", "Build Date: September 2025"},
+	{"build", "Build Date: October 2025"},
 	{"description", "Mesmer - Fractal Generator and Explorer"},
 	{"license", "License: GPL-3.0"},
 	{"control_one", "H - Toggle HUD"},
@@ -24,8 +24,8 @@ std::map<std::string, std::string> app_metadata = {
 	{"control_five", "M (Julia) - Toggle mapping constant to mouse"},
 	{"control_six", "I (Julia) - Toggle interactive mode"},
 	{"warning_one", "Warning: Pre-Rendering is experimental and may cause crashes"},
-	{"warning_two", "Warning: This Application requires OpenGL v-4.6 for fractal calculations"}
-	
+	{"warning_two", "Warning: This Application requires OpenGL v-4.6 for fractal calculations"},
+	{"warning_three", "Warning: Make sure you have the latest graphics drivers installed"},
 };
 
 int main(int argc, char* argv[]) {
