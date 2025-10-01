@@ -132,7 +132,7 @@ private:
     ImVec4 m_menu_bg_color_two = ImVec4(0.15f, 0.05f, 0.25f, 1.0f);
     ImVec4 m_menu_bg_accent_color = ImVec4(0.95f, 0.35f, 0.65f, 1.0f);
 
-    // pre-rendering variables
+    // pre-rendering variables ---------------------------------------------------------------------------------
     bool m_pre_render_enabled = false;
     bool m_is_pre_rendering = false;
     bool m_pre_render_complete = false;
