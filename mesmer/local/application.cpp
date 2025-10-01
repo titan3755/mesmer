@@ -2351,7 +2351,7 @@ void Application::performPreRender() {
 		}
 
 	}
-	// else if (m_currentFractal == FractalType::BURNING_SHIP) { ... send its defaults ... }
+	
 
 	ourShader->setFloat("u_color_density", m_color_density);
 	glBindVertexArray(VAO);
