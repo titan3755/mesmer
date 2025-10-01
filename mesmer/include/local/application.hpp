@@ -148,6 +148,13 @@ private:
 	double m_pre_render_center_x = 0.0;
 	double m_pre_render_center_y = 0.0;
     bool m_use_pre_render_params = false;
+
+	// fractal specific parameters (pre-rendering system)
+	double m_pre_render_julia_c_x = -0.8;
+	double m_pre_render_julia_c_y = 0.156;
+	double m_pre_render_phoenix_c_x = 0.5067;
+	double m_pre_render_phoenix_c_y = 0.0200;
+	double m_pre_render_phoenix_p = -0.9900;
 };
 
 #endif

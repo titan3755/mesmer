@@ -1280,6 +1280,11 @@ void Application::run() {
 						ImGui::InputDouble("Pre-Render Center Y", &m_pre_render_center_y, 0.01, 0.0, "%.8f");
 						ImGui::Checkbox("Use Pre-Render Settings", &m_use_pre_render_params);
 						ImGui::TextWrapped("Adjust the settings in the fractal display settings tab to change color and color density");
+						ImGui::Separator();
+						ImGui::TextWrapped("Fractal Specific Parameter Customization");
+						ImGui::InputDouble("Pre-Render Julia c (real)", &m_pre_render_julia_c_x, 0.001, 0.0, "%.8f");
+						ImGui::InputDouble("Pre-Render Julia c (imag)", &m_pre_render_julia_c_y, 0.001, 0.0, "%.8f");
+
 					}
 					else {
 						ImGui::Text("Enable Pre-Rendering to adjust these settings.");
