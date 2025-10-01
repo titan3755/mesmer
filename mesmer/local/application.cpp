@@ -1272,7 +1272,7 @@ void Application::run() {
 				ImGui::Checkbox("Toggle info window", &info_gui_window_toggle);
 				ImGui::Checkbox("Toggle pre-rendering system (EXPERIMENTAL - MAY CAUSE CRASHES)", &m_pre_render_enabled);
 				// pre rendering options -->
-				if (ImGui::CollapsingHeader("Pre-Rendering Parameters") && m_currentFractal != FractalType::NONE)
+				if (ImGui::CollapsingHeader("Pre-Rendering Parameters") && m_currentFractal == FractalType::NONE)
 				{
 					if (m_pre_render_enabled) {
 						ImGui::InputDouble("Pre-Render Zoom", &m_pre_render_zoom_threshold, 0.1, 0.0, "%.8f");
