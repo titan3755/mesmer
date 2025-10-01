@@ -1510,14 +1510,19 @@ void Application::run() {
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.5f, 0.2f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.3f, 0.05f, 1.0f));
 				if (ImGui::Button("Phoenix", ImVec2(button_width, 80))) {
+					spdlog::info("'Phoenix' button clicked!");
 					m_currentFractal = FractalType::PHOENIX;
+					if (ourShader != nullptr) delete ourShader;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
+					if (m_pre_render_enabled) {
+						ourShader = new Shader("shaders/phoenix.vert", "shaders/phoenix.frag");
+						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Phoenix shader.");
 					}
-
-					ourShader = new Shader("shaders/phoenix.vert", "shaders/phoenix.frag");
-					spdlog::info("Loaded Phoenix shader.");
+					else {
+						ourShader = new Shader("shaders/phoenix.vert", "shaders/phoenix.frag");
+						spdlog::info("Loaded Phoenix shader.");
+					}
 
 					show_fractal_selection = false;
 					show_main_buttons = false;
@@ -1536,14 +1541,19 @@ void Application::run() {
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.7f, 0.3f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.5f, 0.1f, 1.0f));
 				if (ImGui::Button("Lyapunov", ImVec2(button_width, 80))) {
+					spdlog::info("'Lyapunov' button clicked!");
 					m_currentFractal = FractalType::LYAPUNOV;
+					if (ourShader != nullptr) delete ourShader;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
+					if (m_pre_render_enabled) {
+						ourShader = new Shader("shaders/lyapunov.vert", "shaders/lyapunov.frag");
+						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Lyapunov shader.");
 					}
-
-					ourShader = new Shader("shaders/lyapunov.vert", "shaders/lyapunov.frag");
-					spdlog::info("Loaded Lyapunov shader.");
+					else {
+						ourShader = new Shader("shaders/lyapunov.vert", "shaders/lyapunov.frag");
+						spdlog::info("Loaded Lyapunov shader.");
+					}
 
 					show_fractal_selection = false;
 					show_main_buttons = false;
@@ -1566,14 +1576,19 @@ void Application::run() {
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.4f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.6f, 0.2f, 1.0f));
 				if (ImGui::Button("Newton", ImVec2(button_width, 80))) {
+					spdlog::info("'Newton' button clicked!");
 					m_currentFractal = FractalType::NEWTON;
+					if (ourShader != nullptr) delete ourShader;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
+					if (m_pre_render_enabled) {
+						ourShader = new Shader("shaders/newton.vert", "shaders/newton.frag");
+						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Newton shader.");
 					}
-
-					ourShader = new Shader("shaders/newton.vert", "shaders/newton.frag");
-					spdlog::info("Loaded Newton shader.");
+					else {
+						ourShader = new Shader("shaders/newton.vert", "shaders/newton.frag");
+						spdlog::info("Loaded Newton shader.");
+					}
 
 					show_fractal_selection = false;
 					show_main_buttons = false;
@@ -1592,14 +1607,19 @@ void Application::run() {
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.4f, 0.8f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.2f, 0.6f, 1.0f));
 				if (ImGui::Button("Multibrot", ImVec2(button_width, 80))) {
+					spdlog::info("'Multibrot' button clicked!");
 					m_currentFractal = FractalType::MULTIBROT;
+					if (ourShader != nullptr) delete ourShader;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
+					if (m_pre_render_enabled) {
+						ourShader = new Shader("shaders/multibrot.vert", "shaders/multibrot.frag");
+						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Multibrot shader.");
 					}
-
-					ourShader = new Shader("shaders/multibrot.vert", "shaders/multibrot.frag");
-					spdlog::info("Loaded Multibrot shader.");
+					else {
+						ourShader = new Shader("shaders/multibrot.vert", "shaders/multibrot.frag");
+						spdlog::info("Loaded Multibrot shader.");
+					}
 
 					show_fractal_selection = false;
 					show_main_buttons = false;
@@ -1620,14 +1640,19 @@ void Application::run() {
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.6f, 0.3f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.1f, 1.0f));
 				if (ImGui::Button("Nova", ImVec2(button_width, 80))) {
+					spdlog::info("'Nova' button clicked!");
 					m_currentFractal = FractalType::NOVA;
+					if (ourShader != nullptr) delete ourShader;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
+					if (m_pre_render_enabled) {
+						ourShader = new Shader("shaders/nova.vert", "shaders/nova.frag");
+						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Nova shader.");
 					}
-
-					ourShader = new Shader("shaders/nova.vert", "shaders/nova.frag");
-					spdlog::info("Loaded Nova shader.");
+					else {
+						ourShader = new Shader("shaders/nova.vert", "shaders/nova.frag");
+						spdlog::info("Loaded Nova shader.");
+					}
 
 					show_fractal_selection = false;
 					show_main_buttons = false;
@@ -1648,14 +1673,19 @@ void Application::run() {
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
 				if (ImGui::Button("Spider", ImVec2(button_width, 80))) {
+					spdlog::info("'Spider' button clicked!");
 					m_currentFractal = FractalType::SPIDER;
+					if (ourShader != nullptr) delete ourShader;
 
-					if (ourShader != nullptr) {
-						delete ourShader;
+					if (m_pre_render_enabled) {
+						ourShader = new Shader("shaders/spider.vert", "shaders/spider.frag");
+						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Spider shader.");
 					}
-
-					ourShader = new Shader("shaders/spider.vert", "shaders/spider.frag");
-					spdlog::info("Loaded Spider shader.");
+					else {
+						ourShader = new Shader("shaders/spider.vert", "shaders/spider.frag");
+						spdlog::info("Loaded Spider shader.");
+					}
 
 					show_fractal_selection = false;
 					show_main_buttons = false;
