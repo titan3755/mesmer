@@ -2349,7 +2349,18 @@ void Application::performPreRender() {
 			ourShader->setDVec2("u_phoenix_c", -0.5, 0.0);
 			ourShader->setDouble("u_phoenix_p", 0.56667);
 		}
-
+		if (!m_apply_common_color_palette) {
+			ourShader->setVec3("u_palette_a", m_palette_phoenix_a.x, m_palette_phoenix_a.y, m_palette_phoenix_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_phoenix_b.x, m_palette_phoenix_b.y, m_palette_phoenix_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_phoenix_c.x, m_palette_phoenix_c.y, m_palette_phoenix_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_phoenix_d.x, m_palette_phoenix_d.y, m_palette_phoenix_d.z);
+		}
+		else {
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
 	}
 	
 
