@@ -2130,6 +2130,11 @@ void Application::initOpenGL() {
 	spdlog::info("Max texture size supported: {}x{}", max_texture_size, max_texture_size);
 	if (m_pre_render_resolution > max_texture_size) {
 		spdlog::warn("Requested pre-render resolution ({}) exceeds the maximum supported size ({}).", m_pre_render_resolution, max_texture_size);
+		spdlog::warn("Setting pre-render resolution to the maximum supported size.");
+		m_pre_render_resolution = max_texture_size;
+	}
+	else {
+		spdlog::info("Pre-render resolution set to {}.", m_pre_render_resolution);
 	}
 
 	spdlog::info("OpenGL Vendor: {}", (const char*)glGetString(GL_VENDOR));
