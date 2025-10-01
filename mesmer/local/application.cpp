@@ -2479,7 +2479,13 @@ void Application::performPreRender() {
 		}
 	}
 	else {
-		spdlog::warn("No fractals selected, pre-render aborted ...");
+		spdlog::critical("No fractals selected, pre-render aborted ...");
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteTextures(1, &m_pre_render_texture);
+		glDeleteFramebuffers(1, &m_pre_render_fbo);
+		m_pre_render_texture = 0;
+		m_pre_render_fbo = 0;
+		return;
 	}
 
 	ourShader->setFloat("u_color_density", m_color_density);
