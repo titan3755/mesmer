@@ -1432,6 +1432,17 @@ void Application::run() {
 					m_currentFractal = FractalType::BURNING_SHIP;
 					if (ourShader != nullptr) delete ourShader;
 
+					if (m_pre_render_enabled)
+					{
+						ourShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
+						m_is_pre_rendering = true;
+						spdlog::info("Loaded (Pre-Render) Burning Ship shader.");
+					}
+					else 
+					{
+
+					}
+
 					ourShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
 					spdlog::info("Loaded Burning Ship shader.");
 
