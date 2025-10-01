@@ -33,5 +33,5 @@
 -> Get Mesmer ready for v-1.0 release [V.H.PRIORITY] <br>
 
 ### Binaries
--> Windows: [https://www.mediafire.com/file/cmex5fup2x260qh/mesmer_windows.7z/file](https://www.mediafire.com/file/cmex5fup2x260qh/mesmer_windows.7z/file)
+-> Windows: [https://www.mediafire.com/file/vgu4r20l23ljdn2/mesmer_windows.7z/file](https://www.mediafire.com/file/vgu4r20l23ljdn2/mesmer_windows.7z/file)
 
