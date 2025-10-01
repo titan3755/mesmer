@@ -9,7 +9,7 @@
 const char* WINDOW_TITLE = "Mesmer";
 const char* SETTINGS_FILE = "settings.mesmer";
 
-const char* APP_MODE = "DEBUG"; // or "RELEASE"
+const char* APP_MODE = "RELEASE"; // or "RELEASE"
 
 // application metadata
 std::map<std::string, std::string> app_metadata = {
