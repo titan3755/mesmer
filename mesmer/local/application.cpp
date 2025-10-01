@@ -2362,7 +2362,34 @@ void Application::performPreRender() {
 			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
-	
+	else if (m_currentFractal == FractalType::LYAPUNOV) {
+		if (m_use_pre_render_params) {
+			ourShader->setDVec2("u_lyapunov_center", m_pre_render_lyapunov_center_a, m_pre_render_lyapunov_center_b);
+			ourShader->setDouble("u_lyapunov_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			ourShader->setDVec2("u_lyapunov_center", 3.0, 3.0);
+			ourShader->setDouble("u_lyapunov_zoom", 1.0);
+		}
+		if (!m_apply_common_color_palette) {
+			ourShader->setVec3("u_palette_a", m_palette_lyapunov_a.x, m_palette_lyapunov_a.y, m_palette_lyapunov_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_lyapunov_b.x, m_palette_lyapunov_b.y, m_palette_lyapunov_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_lyapunov_c.x, m_palette_lyapunov_c.y, m_palette_lyapunov_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_lyapunov_d.x, m_palette_lyapunov_d.y, m_palette_lyapunov_d.z);
+		}
+		else {
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else {
+		spdlog::warn("Pre-render is only supported for Mandelbrot and Julia sets. No pre-render performed.");
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteTextures(1, &m_pre_render_texture);
+		glDeleteFramebuffers(1, &m_pre_render_fbo);
+	}
 
 	ourShader->setFloat("u_color_density", m_color_density);
 	glBindVertexArray(VAO);

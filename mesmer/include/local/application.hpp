@@ -155,6 +155,9 @@ private:
 	double m_pre_render_phoenix_c_x = 0.5067;
 	double m_pre_render_phoenix_c_y = 0.0200;
 	double m_pre_render_phoenix_p = -0.9900;
+	double m_pre_render_lyapunov_center_a = 3.4;
+	double m_pre_render_lyapunov_center_b = 3.4;
+	double m_pre_render_lyapunov_zoom = 0.25;
 	double m_pre_render_multibrot_power = 2.0;
     double m_pre_render_nova_power = 3.0;
     double m_pre_render_nova_relaxation = 1.0;
