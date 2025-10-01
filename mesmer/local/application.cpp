@@ -2283,6 +2283,28 @@ void Application::performPreRender() {
 			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
+	else if (m_currentFractal == FractalType::TRICORN) {
+		if (m_use_pre_render_params) {
+			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			ourShader->setDVec2("u_center", 0.0, 0.0);
+			ourShader->setDouble("u_zoom", 0.5);
+		}
+		if (!m_apply_common_color_palette) {
+			ourShader->setVec3("u_palette_a", m_palette_tricorn_a.x, m_palette_tricorn_a.y, m_palette_tricorn_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_tricorn_b.x, m_palette_tricorn_b.y, m_palette_tricorn_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_tricorn_c.x, m_palette_tricorn_c.y, m_palette_tricorn_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_tricorn_d.x, m_palette_tricorn_d.y, m_palette_tricorn_d.z);
+		}
+		else {
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
 	// else if (m_currentFractal == FractalType::BURNING_SHIP) { ... send its defaults ... }
 
 	ourShader->setFloat("u_color_density", m_color_density);
