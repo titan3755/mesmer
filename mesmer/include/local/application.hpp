@@ -15,6 +15,9 @@
 #include <stdexcept>
 #include <string>
 #include <map>
+#include <thread>
+#include <future>
+#include <atomic>
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
 #include <SDL.h>
