@@ -1,7 +1,5 @@
 # mesmer
 
-## { --UNDER ACTIVE DEVELOPMENT-- }
-
 ### Added features
 -> Settings functionality added <br>
 -> Code modularized for easier modifications <br>
@@ -33,4 +31,7 @@
 
 ### Immediate Tasks
 -> Get Mesmer ready for v-1.0 release [V.H.PRIORITY] <br>
+
+### Binaries
+-> Windows: [https://www.mediafire.com/file/vgu4r20l23ljdn2/mesmer_windows.7z/file](https://www.mediafire.com/file/vgu4r20l23ljdn2/mesmer_windows.7z/file)
 
