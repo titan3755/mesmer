@@ -164,6 +164,10 @@ private:
 	double m_pre_render_multibrot_power = 2.0;
     double m_pre_render_nova_power = 3.0;
     double m_pre_render_nova_relaxation = 1.0;
+
+    // non-blocking pre-rendering variables
+    SDL_GLContext m_worker_context = nullptr;
+    std::future<bool> m_pre_render_future;
 };
 
 #endif
