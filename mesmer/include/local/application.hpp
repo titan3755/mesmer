@@ -54,6 +54,7 @@ private:
 
     void addTextWithStroke(ImDrawList* draw_list, ImFont* font, float size, ImVec2 pos, ImU32 fill_col, ImU32 outline_col, float thickness, const char* text);
     void performPreRender();
+    bool preRenderWorker();
 
     ImFont* m_font_regular;
     ImFont* m_font_large;

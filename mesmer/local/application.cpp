@@ -2089,6 +2089,7 @@ void Application::initSDL() {
 }
 
 void Application::initOpenGL() {
+	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -2118,11 +2119,15 @@ void Application::initOpenGL() {
 	}
 	SDL_SetWindowFullscreen(window, 0);
 	//SDL_SetWindowBordered(window, SDL_TRUE);
-
 	gl_context = SDL_GL_CreateContext(window);
 	if (!gl_context) {
 		throw std::runtime_error(std::string("SDL_GL_CreateContext Error: ") + SDL_GetError());
 	}
+	m_worker_context = SDL_GL_CreateContext(window);
+	if (!m_worker_context) {
+		throw std::runtime_error(std::string("SDL_GL_CreateContext Error (worker): ") + SDL_GetError());
+	}
+	spdlog::info("All OpenGL context created successfully.");
 	SDL_GL_MakeCurrent(window, gl_context);
 	SDL_GL_SetSwapInterval(1);
 
