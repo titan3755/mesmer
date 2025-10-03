@@ -33,6 +33,7 @@
 
 ### Immediate Tasks
 -> Get Mesmer ready for v-1.1 release [H.PRIORITY] <br>
+-> Fix the black screen problem when pre-rendering (background pre-render impl) [H.PRIORITY] <br>
 
 ### Binaries
 [Note: Only windows binaries are available at this time, Linux binaries will be released soon] <br>
