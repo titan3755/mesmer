@@ -229,8 +229,14 @@ void Application::run() {
 							m_pre_render_texture = 0;
 							m_pre_render_fbo = 0;
 						}
+						if (m_is_loading) {
+							// This is a simple way to handle closing while loading, though it will still wait for the thread.
+							// More advanced logic would involve signaling the thread to cancel.
+							if (m_pre_render_future.valid()) m_pre_render_future.wait();
+						}
 						m_pre_render_enabled = false;
 						m_pre_render_complete = false;
+						m_is_loading = false;
 						show_main_buttons = !show_main_buttons;
 						show_fractal_selection = false;
 						spdlog::info("'Space' key pressed - toggling main buttons.");
@@ -1391,15 +1397,16 @@ void Application::run() {
 					spdlog::info("'Mandelbrot' button clicked!");
 					m_currentFractal = FractalType::MANDELBROT;
 					if (ourShader != nullptr) delete ourShader;
+					ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
 					
 					if (m_pre_render_enabled) {
-						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
-						m_is_pre_rendering = true;
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						m_pre_render_future = std::async(std::launch::async, &Application::preRenderWorker, this);
 						spdlog::info("Loaded (Pre-Render) Mandelbrot shader.");
 					}
 					else
 					{
-						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
 						spdlog::info("Loaded Mandelbrot shader.");
 					}
 					show_fractal_selection = false;
@@ -1766,30 +1773,51 @@ void Application::run() {
 			int drawable_w, drawable_h;
 			SDL_GL_GetDrawableSize(window, &drawable_w, &drawable_h);
 
-			if (m_is_pre_rendering) {
+			if (m_is_loading)
+			{
 				glViewport(0, 0, drawable_w, drawable_h);
 				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT);
 
-				// loading screen
-				if (m_pre_render_frame_count == 0 || m_pre_render_frame_count == 1) {
-					ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
-					draw_list->AddText(m_font_large, 48.0f, ImVec2((float)screenWidth / 2 - 250, (float)screenHeight / 2), IM_COL32_WHITE, "Pre-rendering, please wait...");
-					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 50), IM_COL32_WHITE, "-May take several seconds to a minute");
-					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 80), IM_COL32_WHITE, "-Pre-Rendering is a very GPU heavy task");
-					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 110), IM_COL32_WHITE, "-Don't do any other task while pre-rendering");
-					// turn off explore button
-					show_main_buttons = false;
-					show_demo_window = false;
-					show_fractal_selection = false;
-					m_pre_render_frame_count++;
+				// --- Part 1: Render the animated loading screen every frame ---
+				if (m_loading_shader != nullptr) {
+					m_loading_shader->use();
+					m_loading_shader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
+					m_loading_shader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
+					glBindVertexArray(VAO);
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 				}
-				// heavy rendering work
-				else {
-					performPreRender();
-					m_is_pre_rendering = false;
-					m_pre_render_complete = true;
-					m_pre_render_frame_count = 0; // Reset for next time
+
+				// --- Part 2: Draw the loading text on top ---
+				ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
+				addTextWithStroke(draw_list, m_font_large, 48.0f, ImVec2(screenWidth / 2 - 250, screenHeight / 2 - 80), IM_COL32_WHITE, IM_COL32_BLACK, 2.0f, "Rendering, please wait...");
+				addTextWithStroke(draw_list, m_font_regular, 24.0f, ImVec2(screenWidth / 2 - 250, screenHeight / 2 + 20), IM_COL32_WHITE, IM_COL32_BLACK, 1.0f, "- This may take several seconds to a minute.");
+				addTextWithStroke(draw_list, m_font_regular, 24.0f, ImVec2(screenWidth / 2 - 250, screenHeight / 2 + 50), IM_COL32_WHITE, IM_COL32_BLACK, 1.0f, "- Your application will remain responsive.");
+
+				// --- Part 3: Check if the background thread is finished ---
+				// We check this every frame without blocking the main loop.
+				if (m_pre_render_future.valid() && m_pre_render_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+				{
+					spdlog::info("Main thread: Worker has finished.");
+					bool success = m_pre_render_future.get(); // Finalize the thread and get its return value
+
+					// Tidy up the shaders used during loading
+					if (m_loading_shader != nullptr) {
+						delete m_loading_shader;
+						m_loading_shader = nullptr;
+					}
+					if (ourShader != nullptr) {
+						delete ourShader;
+						ourShader = nullptr;
+					}
+
+					if (success) {
+						// Load the viewer shader and transition to the "complete" state
+						m_texture_view_shader = new Shader("shaders/simple.vert", "shaders/texture_view.frag");
+						m_pre_render_complete = true;
+						spdlog::info("Pre-rendering completed successfully.");
+					}
+					m_is_loading = false; // Exit the loading state
 				}
 			}
 			else if (m_pre_render_complete) {
@@ -2089,7 +2117,6 @@ void Application::initSDL() {
 }
 
 void Application::initOpenGL() {
-	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -2097,6 +2124,7 @@ void Application::initOpenGL() {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 
 	SDL_DisplayMode current;
 	if (SDL_GetCurrentDisplayMode(0, &current) != 0) {
@@ -2516,4 +2544,114 @@ void Application::performPreRender() {
 	}
 	m_texture_view_shader = new Shader("shaders/texture_view.vert", "shaders/texture_view.frag");
 	spdlog::info("Pre-render complete.");
+}
+
+bool Application::preRenderWorker()
+{
+	// STEP 1: Claim the OpenGL Context for this Thread
+	// CRITICAL: This MUST be the first thing the worker thread does. It tells this thread
+	// to direct all subsequent OpenGL calls to the shared worker context.
+	if (SDL_GL_MakeCurrent(window, m_worker_context) != 0) {
+		spdlog::critical("Worker thread could not set GL context! Error: {}", SDL_GetError());
+		return false;
+	}
+
+	spdlog::info("Worker context current: {}", (SDL_GL_GetCurrentContext() == m_worker_context) ? "yes" : "NO");
+
+	// what program is current?
+	GLint curProg = 0;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &curProg);
+	spdlog::info("Worker current program id = {}", curProg);
+
+	spdlog::info("Worker thread: Starting {}K pre-render...", (m_pre_render_resolution / 1024));
+
+	Shader mandelbrotShader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
+
+	// STEP 2: Create the Framebuffer Object (FBO) and the high-resolution texture
+	glGenFramebuffers(1, &m_pre_render_fbo);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_pre_render_fbo);
+	glGenTextures(1, &m_pre_render_texture);
+	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+
+	// Define the 16K texture. We'll generate mipmaps later.
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pre_render_resolution, m_pre_render_resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	// STEP 3: Set Texture Parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Use simple linear for now, will be updated after mipmap generation
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	// STEP 4: Attach texture to FBO and verify it's complete
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pre_render_texture, 0);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		spdlog::critical("Worker thread: Framebuffer is not complete!");
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteTextures(1, &m_pre_render_texture);
+		glDeleteFramebuffers(1, &m_pre_render_fbo);
+		return false;
+	}
+
+	// STEP 5: Perform the Render
+	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
+	glClear(GL_COLOR_BUFFER_BIT); // Clear the FBO's texture to black
+
+	mandelbrotShader.use();
+
+	// Send all uniforms needed for the render
+	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
+	ourShader->setInt("u_max_iterations", 5000); // Use the high iteration count
+	ourShader->setFloat("u_color_density", m_color_density);
+
+	// Send the correct view and palette uniforms based on the selected fractal
+	if (m_currentFractal == FractalType::MANDELBROT) {
+		if (m_use_pre_render_params) {
+			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			ourShader->setDVec2("u_center", 0.0, 0.0);
+			ourShader->setDouble("u_zoom", 1.0);
+		}
+		if (!m_apply_common_color_palette) {
+			ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+		}
+		else {
+			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::BURNING_SHIP) {
+		ourShader->setDVec2("u_center", -1.75, -0.04);
+		ourShader->setDouble("u_zoom", 4.0);
+		ourShader->setVec3("u_palette_a", m_palette_burning_ship_a.x, m_palette_burning_ship_a.y, m_palette_burning_ship_a.z);
+		// ... send b, c, and d for burning ship ...
+	}
+	// ... add cases for your other fractals ...
+
+	// Draw the full-screen quad to the FBO
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	// STEP 6: Generate Mipmaps from the finished render
+	// This MUST be done AFTER rendering to the texture is complete.
+	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// Now we can set the high-quality mipmap filter for the viewer to use.
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	// STEP 7: Clean up and finish
+	glFinish();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // Unbind the FBO
+	spdlog::info("Worker thread: Pre-render finished successfully.");
+
+	return true; // Indicate success
 }

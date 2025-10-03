@@ -169,6 +169,8 @@ private:
     // non-blocking pre-rendering variables
     SDL_GLContext m_worker_context = nullptr;
     std::future<bool> m_pre_render_future;
+    bool m_is_loading = false;
+    Shader* m_loading_shader = nullptr;
 };
 
 #endif

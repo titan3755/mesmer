@@ -506,6 +506,8 @@
     <None Include="shaders\spider.frag" />
     <None Include="shaders\texture_view.vert" />
     <None Include="shaders\texture_view.frag" />
+    <None Include="shaders\simple.vert" />
+    <None Include="shaders\loading_screen.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
