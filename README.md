@@ -25,6 +25,7 @@
 
 ### More fractal ideas to implement
 -> Halley Fractal <br>
+-> Mandelbox Fractal <br>
 -> (...) <br>
 
 ### Immediate Tasks
