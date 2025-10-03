@@ -24,12 +24,8 @@
 -> (...) <br>
 
 ### More fractal ideas to implement
--> Lyapunov Fractal [DONE] <br>
--> Phoenix Fractal [DONE] <br>
--> Newton Fractal [DONE] <br>
--> Nova Fractal [DONE] <br>
--> Spider Fractal [DONE] <br>
--> Multibrot Fractal [DONE] <br>
+-> Halley Fractal <br>
+-> (...) <br>
 
 ### Immediate Tasks
 -> Get Mesmer ready for v-1.1 release [H.PRIORITY] <br>
