@@ -1,5 +1,7 @@
 # mesmer
 
+## Mesmer V-1.0.0 (Production) has been released!
+
 ### Added features
 -> Settings functionality added <br>
 -> Code modularized for easier modifications <br>
