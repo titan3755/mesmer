@@ -32,7 +32,7 @@
 -> Multibrot Fractal [DONE] <br>
 
 ### Immediate Tasks
--> Get Mesmer ready for v-1.0 release [V.H.PRIORITY] <br>
+-> Get Mesmer ready for v-1.1 release [H.PRIORITY] <br>
 
 ### Binaries
 [Note: Only windows binaries are available at this time, Linux binaries will be released soon] <br>
