@@ -2097,6 +2097,7 @@ void Application::run() {
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			SDL_GL_SwapWindow(window);
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
 		}
 	}
@@ -2211,7 +2212,7 @@ void Application::initBG() {
 		0, 2, 3
 	};
 
-	GLuint EBO;
+	//GLuint EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO_vertices);
 	glGenBuffers(1, &EBO);
@@ -2564,6 +2565,16 @@ bool Application::preRenderWorker()
 	spdlog::info("Worker current program id = {}", curProg);
 
 	spdlog::info("Worker thread: Starting {}K pre-render...", (m_pre_render_resolution / 1024));
+	GLuint workerVAO;
+	glGenVertexArrays(1, &workerVAO);
+	glBindVertexArray(workerVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_vertices);
+	// The EBO is also shared. (Ensure your EBO ID is a member variable 'this->EBO')
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// STEP 2: Create the Framebuffer Object (FBO) and the high-resolution texture
 	glGenFramebuffers(1, &m_pre_render_fbo);
@@ -2590,6 +2601,7 @@ bool Application::preRenderWorker()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDeleteTextures(1, &m_pre_render_texture);
 		glDeleteFramebuffers(1, &m_pre_render_fbo);
+		glDeleteVertexArrays(1, &workerVAO);
 		return false;
 	}
 
@@ -2638,7 +2650,7 @@ bool Application::preRenderWorker()
 	// ... add cases for your other fractals ...
 
 	// Draw the full-screen quad to the FBO
-	glBindVertexArray(VAO);
+	glBindVertexArray(workerVAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	// STEP 6: Generate Mipmaps from the finished render
@@ -2649,6 +2661,7 @@ bool Application::preRenderWorker()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	// STEP 7: Clean up and finish
+	glDeleteVertexArrays(1, &workerVAO);
 	glFinish();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // Unbind the FBO
 	spdlog::info("Worker thread: Pre-render finished successfully.");
