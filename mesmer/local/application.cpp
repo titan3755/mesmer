@@ -2565,8 +2565,6 @@ bool Application::preRenderWorker()
 
 	spdlog::info("Worker thread: Starting {}K pre-render...", (m_pre_render_resolution / 1024));
 
-	Shader mandelbrotShader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
-
 	// STEP 2: Create the Framebuffer Object (FBO) and the high-resolution texture
 	glGenFramebuffers(1, &m_pre_render_fbo);
 
@@ -2599,7 +2597,9 @@ bool Application::preRenderWorker()
 	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
 	glClear(GL_COLOR_BUFFER_BIT); // Clear the FBO's texture to black
 
-	mandelbrotShader.use();
+	ourShader->use();
+	glGetIntegerv(GL_CURRENT_PROGRAM, &curProg);
+	spdlog::info("Worker current program id (after shader->use();) = {}", curProg);
 
 	// Send all uniforms needed for the render
 	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
