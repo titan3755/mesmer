@@ -1396,8 +1396,6 @@ void Application::run() {
 				if (ImGui::Button("Mandelbrot", ImVec2(button_width, 80))) {
 					spdlog::info("'Mandelbrot' button clicked!");
 					m_currentFractal = FractalType::MANDELBROT;
-
-					// Always load the chosen fractal shader. The worker thread will use it.
 					if (ourShader != nullptr) delete ourShader;
 					ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
 
@@ -2543,10 +2541,9 @@ void Application::performPreRender() {
 
 void Application::preRenderWorker()
 {
-	// STEP 1: Claim the OpenGL Context. This is still the first, critical step.
 	if (SDL_GL_MakeCurrent(window, m_worker_context) != 0) {
 		spdlog::critical("Worker thread could not set GL context! Error: {}", SDL_GetError());
-		m_worker_finished_submission.store(true); // Signal failure
+		m_worker_finished_submission.store(true);
 		return;
 	}
 
@@ -2558,14 +2555,13 @@ void Application::preRenderWorker()
 	else if (m_currentFractal == FractalType::BURNING_SHIP) {
 		workerShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
 	}
-	// ... add cases for your other fractals ...
+	// more fractal cases
 	else {
 		spdlog::critical("Worker thread: No valid fractal type set for pre-render!");
 		m_worker_finished_submission.store(true);
 		return;
 	}
 
-	// --- Create all necessary OpenGL objects on this thread's context ---
 	GLuint workerVAO;
 	glGenVertexArrays(1, &workerVAO);
 	glBindVertexArray(workerVAO);
@@ -2575,7 +2571,6 @@ void Application::preRenderWorker()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
 	glGenFramebuffers(1, &m_pre_render_fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pre_render_fbo);
 	glGenTextures(1, &m_pre_render_texture);
@@ -2595,19 +2590,17 @@ void Application::preRenderWorker()
 		glDeleteTextures(1, &m_pre_render_texture);
 		glDeleteFramebuffers(1, &m_pre_render_fbo);
 		glDeleteVertexArrays(1, &workerVAO);
-		m_worker_finished_submission.store(true); // Signal failure
+		m_worker_finished_submission.store(true);
 		return;
 	}
 
-	// STEP 2: Perform the Render (Submit the commands)
 	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
 	glClear(GL_COLOR_BUFFER_BIT);
 	workerShader->use();
 	workerShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
-	workerShader->setInt("u_max_iterations", 5000); // Use the high iteration count
+	workerShader->setInt("u_max_iterations", 5000);
 	workerShader->setFloat("u_color_density", m_color_density);
 
-	// Send the correct view and palette uniforms based on the selected fractal
 	if (m_currentFractal == FractalType::MANDELBROT) {
 		if (m_use_pre_render_params) {
 			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
@@ -2633,25 +2626,15 @@ void Application::preRenderWorker()
 	glBindVertexArray(workerVAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	// STEP 3: Create a fence object to signal when the GPU is done
 	if (m_pre_render_fence) {
 		glDeleteSync(m_pre_render_fence);
 	}
 	m_pre_render_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-
-	// STEP 4: Flush the commands to the GPU
-	// This tells the driver to send our work, but we DON'T wait for it to finish.
 	glFlush();
 
-	// STEP 5: Clean up thread-local resources
 	glDeleteVertexArrays(1, &workerVAO);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// STEP 6: Release the context
-	// This is CRITICAL. It immediately frees the driver for the main thread to use.
 	SDL_GL_MakeCurrent(window, nullptr);
-
-	// STEP 7: Signal the main thread that we are done SUBMITTING the work.
 	m_worker_finished_submission.store(true);
 	spdlog::info("Worker thread: Render commands submitted and fence created.");
 }
