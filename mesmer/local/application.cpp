@@ -1403,13 +1403,12 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						spdlog::info("Launching pre-render worker for Mandelbrot...");
-						m_is_loading = true; // Set the app to the "loading" state
+						m_is_loading = true;
 						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
-
-						m_worker_finished_submission.store(false); // Reset the flag
-						if (m_pre_render_thread.joinable()) m_pre_render_thread.join(); // Join any previous thread
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
 						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
-						m_pre_render_thread.detach(); // Let the thread run independently
+						m_pre_render_thread.detach();
 					}
 					else {
 						spdlog::info("Loaded Mandelbrot shader for real-time rendering.");
@@ -2552,6 +2551,19 @@ void Application::preRenderWorker()
 	}
 
 	spdlog::info("Worker thread: Starting {}K pre-render submission...", (m_pre_render_resolution / 1024));
+	Shader* workerShader;
+	if (m_currentFractal == FractalType::MANDELBROT) {
+		workerShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
+	}
+	else if (m_currentFractal == FractalType::BURNING_SHIP) {
+		workerShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
+	}
+	// ... add cases for your other fractals ...
+	else {
+		spdlog::critical("Worker thread: No valid fractal type set for pre-render!");
+		m_worker_finished_submission.store(true);
+		return;
+	}
 
 	// --- Create all necessary OpenGL objects on this thread's context ---
 	GLuint workerVAO;
@@ -2590,32 +2602,32 @@ void Application::preRenderWorker()
 	// STEP 2: Perform the Render (Submit the commands)
 	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
 	glClear(GL_COLOR_BUFFER_BIT);
-	ourShader->use();
-	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
-	ourShader->setInt("u_max_iterations", 5000); // Use the high iteration count
-	ourShader->setFloat("u_color_density", m_color_density);
+	workerShader->use();
+	workerShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
+	workerShader->setInt("u_max_iterations", 5000); // Use the high iteration count
+	workerShader->setFloat("u_color_density", m_color_density);
 
 	// Send the correct view and palette uniforms based on the selected fractal
 	if (m_currentFractal == FractalType::MANDELBROT) {
 		if (m_use_pre_render_params) {
-			ourShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
-			ourShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
 		}
 		else {
-			ourShader->setDVec2("u_center", 0.0, 0.0);
-			ourShader->setDouble("u_zoom", 1.0);
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 1.0);
 		}
 		if (!m_apply_common_color_palette) {
-			ourShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
-			ourShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
-			ourShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
-			ourShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+			workerShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
 		}
 		else {
-			ourShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
-			ourShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
-			ourShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
-			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
 	glBindVertexArray(workerVAO);
