@@ -1396,19 +1396,26 @@ void Application::run() {
 				if (ImGui::Button("Mandelbrot", ImVec2(button_width, 80))) {
 					spdlog::info("'Mandelbrot' button clicked!");
 					m_currentFractal = FractalType::MANDELBROT;
+
+					// Always load the chosen fractal shader. The worker thread will use it.
 					if (ourShader != nullptr) delete ourShader;
 					ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
-					
+
 					if (m_pre_render_enabled) {
-						m_is_loading = true;
+						spdlog::info("Launching pre-render worker for Mandelbrot...");
+						m_is_loading = true; // Set the app to the "loading" state
 						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
-						m_pre_render_future = std::async(std::launch::async, &Application::preRenderWorker, this);
-						spdlog::info("Loaded (Pre-Render) Mandelbrot shader.");
+
+						m_worker_finished_submission.store(false); // Reset the flag
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join(); // Join any previous thread
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach(); // Let the thread run independently
 					}
-					else
-					{
-						spdlog::info("Loaded Mandelbrot shader.");
+					else {
+						spdlog::info("Loaded Mandelbrot shader for real-time rendering.");
 					}
+
+					// Common state changes
 					show_fractal_selection = false;
 					show_main_buttons = false;
 					sub = "Mesmer - Mandelbrot Set";
@@ -1773,51 +1780,41 @@ void Application::run() {
 			int drawable_w, drawable_h;
 			SDL_GL_GetDrawableSize(window, &drawable_w, &drawable_h);
 
-			if (m_is_loading)
-			{
-				glViewport(0, 0, drawable_w, drawable_h);
+			if (m_is_loading) {
 				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT);
 
-				// --- Part 1: Render the animated loading screen every frame ---
-				if (m_loading_shader != nullptr) {
-					m_loading_shader->use();
-					m_loading_shader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
-					m_loading_shader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
-					glBindVertexArray(VAO);
-					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-				}
+				// Render the animated loading screen background
+				m_loading_shader->use();
+				m_loading_shader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
+				m_loading_shader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
+				glBindVertexArray(VAO);
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-				// --- Part 2: Draw the loading text on top ---
+				// Draw loading text on top
 				ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
 				addTextWithStroke(draw_list, m_font_large, 48.0f, ImVec2(screenWidth / 2 - 250, screenHeight / 2 - 80), IM_COL32_WHITE, IM_COL32_BLACK, 2.0f, "Rendering, please wait...");
-				addTextWithStroke(draw_list, m_font_regular, 24.0f, ImVec2(screenWidth / 2 - 250, screenHeight / 2 + 20), IM_COL32_WHITE, IM_COL32_BLACK, 1.0f, "- This may take several seconds to a minute.");
-				addTextWithStroke(draw_list, m_font_regular, 24.0f, ImVec2(screenWidth / 2 - 250, screenHeight / 2 + 50), IM_COL32_WHITE, IM_COL32_BLACK, 1.0f, "- Your application will remain responsive.");
 
-				// --- Part 3: Check if the background thread is finished ---
-				// We check this every frame without blocking the main loop.
-				if (m_pre_render_future.valid() && m_pre_render_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
-				{
-					spdlog::info("Main thread: Worker has finished.");
-					bool success = m_pre_render_future.get(); // Finalize the thread and get its return value
+				// Check if the GPU has finished the work signaled by the fence
+				if (m_worker_finished_submission && m_pre_render_fence) {
+					GLenum wait_result = glClientWaitSync(m_pre_render_fence, 0, 0);
+					if (wait_result == GL_ALREADY_SIGNALED || wait_result == GL_CONDITION_SATISFIED) {
+						spdlog::info("Main thread: Fence signaled! GPU render is complete.");
 
-					// Tidy up the shaders used during loading
-					if (m_loading_shader != nullptr) {
-						delete m_loading_shader;
-						m_loading_shader = nullptr;
-					}
-					if (ourShader != nullptr) {
-						delete ourShader;
-						ourShader = nullptr;
-					}
+						// The texture is ready, now generate mipmaps on the main thread
+						glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+						glGenerateMipmap(GL_TEXTURE_2D);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-					if (success) {
-						// Load the viewer shader and transition to the "complete" state
+						glDeleteSync(m_pre_render_fence);
+						m_pre_render_fence = nullptr;
+
 						m_texture_view_shader = new Shader("shaders/simple.vert", "shaders/texture_view.frag");
 						m_pre_render_complete = true;
-						spdlog::info("Pre-rendering completed successfully.");
+						m_is_loading = false;
+
+						delete m_loading_shader; m_loading_shader = nullptr;
 					}
-					m_is_loading = false; // Exit the loading state
 				}
 			}
 			else if (m_pre_render_complete) {
@@ -2097,8 +2094,6 @@ void Application::run() {
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			SDL_GL_SwapWindow(window);
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
 		}
 	}
 	catch (const std::exception& e) {
@@ -2547,73 +2542,55 @@ void Application::performPreRender() {
 	spdlog::info("Pre-render complete.");
 }
 
-bool Application::preRenderWorker()
+void Application::preRenderWorker()
 {
-	// STEP 1: Claim the OpenGL Context for this Thread
-	// CRITICAL: This MUST be the first thing the worker thread does. It tells this thread
-	// to direct all subsequent OpenGL calls to the shared worker context.
+	// STEP 1: Claim the OpenGL Context. This is still the first, critical step.
 	if (SDL_GL_MakeCurrent(window, m_worker_context) != 0) {
 		spdlog::critical("Worker thread could not set GL context! Error: {}", SDL_GetError());
-		return false;
+		m_worker_finished_submission.store(true); // Signal failure
+		return;
 	}
 
-	spdlog::info("Worker context current: {}", (SDL_GL_GetCurrentContext() == m_worker_context) ? "yes" : "NO");
+	spdlog::info("Worker thread: Starting {}K pre-render submission...", (m_pre_render_resolution / 1024));
 
-	// what program is current?
-	GLint curProg = 0;
-	glGetIntegerv(GL_CURRENT_PROGRAM, &curProg);
-	spdlog::info("Worker current program id = {}", curProg);
-
-	spdlog::info("Worker thread: Starting {}K pre-render...", (m_pre_render_resolution / 1024));
+	// --- Create all necessary OpenGL objects on this thread's context ---
 	GLuint workerVAO;
 	glGenVertexArrays(1, &workerVAO);
 	glBindVertexArray(workerVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_vertices);
-	// The EBO is also shared. (Ensure your EBO ID is a member variable 'this->EBO')
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	// STEP 2: Create the Framebuffer Object (FBO) and the high-resolution texture
 	glGenFramebuffers(1, &m_pre_render_fbo);
-
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pre_render_fbo);
 	glGenTextures(1, &m_pre_render_texture);
 	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
-
-	// Define the 16K texture. We'll generate mipmaps later.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pre_render_resolution, m_pre_render_resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-	// STEP 3: Set Texture Parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Use simple linear for now, will be updated after mipmap generation
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	float borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-	// STEP 4: Attach texture to FBO and verify it's complete
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pre_render_texture, 0);
+
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		spdlog::critical("Worker thread: Framebuffer is not complete!");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDeleteTextures(1, &m_pre_render_texture);
 		glDeleteFramebuffers(1, &m_pre_render_fbo);
 		glDeleteVertexArrays(1, &workerVAO);
-		return false;
+		m_worker_finished_submission.store(true); // Signal failure
+		return;
 	}
 
-	// STEP 5: Perform the Render
+	// STEP 2: Perform the Render (Submit the commands)
 	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
-	glClear(GL_COLOR_BUFFER_BIT); // Clear the FBO's texture to black
-
+	glClear(GL_COLOR_BUFFER_BIT);
 	ourShader->use();
-	glGetIntegerv(GL_CURRENT_PROGRAM, &curProg);
-	spdlog::info("Worker current program id (after shader->use();) = {}", curProg);
-
-	// Send all uniforms needed for the render
 	ourShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
 	ourShader->setInt("u_max_iterations", 5000); // Use the high iteration count
 	ourShader->setFloat("u_color_density", m_color_density);
@@ -2641,30 +2618,28 @@ bool Application::preRenderWorker()
 			ourShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
-	else if (m_currentFractal == FractalType::BURNING_SHIP) {
-		ourShader->setDVec2("u_center", -1.75, -0.04);
-		ourShader->setDouble("u_zoom", 4.0);
-		ourShader->setVec3("u_palette_a", m_palette_burning_ship_a.x, m_palette_burning_ship_a.y, m_palette_burning_ship_a.z);
-		// ... send b, c, and d for burning ship ...
-	}
-	// ... add cases for your other fractals ...
-
-	// Draw the full-screen quad to the FBO
 	glBindVertexArray(workerVAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	// STEP 6: Generate Mipmaps from the finished render
-	// This MUST be done AFTER rendering to the texture is complete.
-	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	// Now we can set the high-quality mipmap filter for the viewer to use.
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	// STEP 3: Create a fence object to signal when the GPU is done
+	if (m_pre_render_fence) {
+		glDeleteSync(m_pre_render_fence);
+	}
+	m_pre_render_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
-	// STEP 7: Clean up and finish
+	// STEP 4: Flush the commands to the GPU
+	// This tells the driver to send our work, but we DON'T wait for it to finish.
+	glFlush();
+
+	// STEP 5: Clean up thread-local resources
 	glDeleteVertexArrays(1, &workerVAO);
-	glFinish();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); // Unbind the FBO
-	spdlog::info("Worker thread: Pre-render finished successfully.");
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	return true; // Indicate success
+	// STEP 6: Release the context
+	// This is CRITICAL. It immediately frees the driver for the main thread to use.
+	SDL_GL_MakeCurrent(window, nullptr);
+
+	// STEP 7: Signal the main thread that we are done SUBMITTING the work.
+	m_worker_finished_submission.store(true);
+	spdlog::info("Worker thread: Render commands submitted and fence created.");
 }
