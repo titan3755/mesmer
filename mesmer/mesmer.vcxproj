@@ -293,8 +293,10 @@
     <None Include="include\ogl\glm\gtx\vector_angle.inl" />
     <None Include="include\ogl\glm\gtx\vector_query.inl" />
     <None Include="include\ogl\glm\gtx\wrap.inl" />
+    <None Include="mesmer.aps" />
     <None Include="SDL2.dll" />
     <None Include="SDL2_ttf.dll" />
+    <None Include="settings.mesmer" />
     <None Include="shaders\background.frag" />
     <None Include="shaders\background.vert" />
     <None Include="shaders\burningship.frag" />
@@ -320,6 +322,7 @@
     <None Include="shaders\spider.vert" />
     <None Include="shaders\texture_view.frag" />
     <None Include="shaders\texture_view.vert" />
+    <None Include="shaders\tiled_render.vert" />
     <None Include="shaders\triangle.frag" />
     <None Include="shaders\triangle.vert" />
     <None Include="shaders\tricorn.frag" />

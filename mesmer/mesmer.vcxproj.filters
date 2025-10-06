@@ -508,6 +508,9 @@
     <None Include="shaders\texture_view.frag" />
     <None Include="shaders\simple.vert" />
     <None Include="shaders\loading_screen.frag" />
+    <None Include="mesmer.aps" />
+    <None Include="settings.mesmer" />
+    <None Include="shaders\tiled_render.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
