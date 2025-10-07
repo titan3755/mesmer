@@ -511,6 +511,7 @@
     <None Include="mesmer.aps" />
     <None Include="settings.mesmer" />
     <None Include="shaders\tiled_render.vert" />
+    <None Include="shaders\prerender.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
