@@ -309,6 +309,7 @@
     <None Include="shaders\lyapunov.vert" />
     <None Include="shaders\mandelbrot.frag" />
     <None Include="shaders\mandelbrot.vert" />
+    <None Include="shaders\mandelbrot_prerender.frag" />
     <None Include="shaders\multibrot.frag" />
     <None Include="shaders\multibrot.vert" />
     <None Include="shaders\newton.frag" />

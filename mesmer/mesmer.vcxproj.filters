@@ -512,6 +512,7 @@
     <None Include="settings.mesmer" />
     <None Include="shaders\tiled_render.vert" />
     <None Include="shaders\prerender.vert" />
+    <None Include="shaders\mandelbrot_prerender.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
