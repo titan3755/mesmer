@@ -2550,10 +2550,10 @@ void Application::preRenderWorker()
 	spdlog::info("Worker thread: Starting {}K pre-render submission...", (m_pre_render_resolution / 1024));
 	Shader* workerShader;
 	if (m_currentFractal == FractalType::MANDELBROT) {
-		workerShader = new Shader("shaders/tiled_render.vert", "shaders/mandelbrot.frag");
+		workerShader = new Shader("shaders/prerender.vert", "shaders/mandelbrot_prerender.frag");
 	}
 	else if (m_currentFractal == FractalType::BURNING_SHIP) {
-		workerShader = new Shader("shaders/tiled_render.vert", "shaders/burningship.frag");
+		workerShader = new Shader("shaders/prerender.vert", "shaders/burningship_prerender.frag");
 	}
 	// more fractal cases
 	else {
@@ -2623,31 +2623,34 @@ void Application::preRenderWorker()
 			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
-	const int TILE_SIZE = 256;
-	const int num_tiles = m_pre_render_resolution / TILE_SIZE;
 
-	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// Tiled rendering parameters
+	const int TILE_SIZE = 256;
+	const int BATCH_SIZE = 8;
+
+	const int num_tiles = m_pre_render_resolution / TILE_SIZE;
+	int batch_counter = 0;
+
+	glEnable(GL_SCISSOR_TEST);
 	for (int tile_y = 0; tile_y < num_tiles; ++tile_y) {
 		for (int tile_x = 0; tile_x < num_tiles; ++tile_x) {
-			float scale = 1.0f / num_tiles;
-			float tx = -1.0f + (2.0f * tile_x + 1.0f) * scale;
-			float ty = -1.0f + (2.0f * tile_y + 1.0f) * scale;
-			float transform[16] = {
-				scale, 0.0f,  0.0f,  0.0f,
-				0.0f,  scale, 0.0f,  0.0f,
-				0.0f,  0.0f,  1.0f,  0.0f,
-				tx,    ty,    0.0f,  1.0f
-			};
-
-			workerShader->setMat4("u_tile_transform", transform);
+			int x_pos = tile_x * TILE_SIZE;
+			int y_pos = tile_y * TILE_SIZE;
+			glViewport(x_pos, y_pos, TILE_SIZE, TILE_SIZE);
+			glScissor(x_pos, y_pos, TILE_SIZE, TILE_SIZE);
+			workerShader->setIVec4("u_tile_info", tile_x, tile_y, num_tiles, num_tiles);
 			glBindVertexArray(workerVAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-			glFlush();
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			if (++batch_counter >= BATCH_SIZE) {
+				glFlush();
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				batch_counter = 0;
+			}
 		}
 	}
+	glDisable(GL_SCISSOR_TEST);
 	//glBindVertexArray(workerVAO);
 	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
