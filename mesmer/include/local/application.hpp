@@ -18,6 +18,7 @@
 #include <thread>
 #include <future>
 #include <atomic>
+#include <memory>
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
 #include <SDL.h>
