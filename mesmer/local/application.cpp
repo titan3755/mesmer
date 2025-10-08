@@ -1412,7 +1412,6 @@ void Application::run() {
 						spdlog::info("Loaded Mandelbrot shader for real-time rendering.");
 					}
 
-					// Common state changes
 					show_fractal_selection = false;
 					show_main_buttons = false;
 					sub = "Mesmer - Mandelbrot Set";
