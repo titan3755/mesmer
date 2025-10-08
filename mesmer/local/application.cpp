@@ -1406,6 +1406,7 @@ void Application::run() {
 						m_worker_finished_submission.store(false);
 						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
 						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
@@ -1786,7 +1787,6 @@ void Application::run() {
 				m_loading_shader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
 				glBindVertexArray(VAO);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 				ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
 				addTextWithStroke(draw_list, m_font_large, 48.0f, ImVec2((float)screenWidth / 2 - 250.0f, (float)screenHeight / 2 - 80.0f), IM_COL32_WHITE, IM_COL32_BLACK, 2.0f, "Rendering, please wait...");
 
@@ -1810,6 +1810,7 @@ void Application::run() {
 				}
 			}
 			else if (m_pre_render_complete) {
+				hud_toggle = true;
 				glViewport(0, 0, drawable_w, drawable_h);
 				glClearColor(clear_color.x* clear_color.w, clear_color.y* clear_color.w, clear_color.z* clear_color.w, clear_color.w);
 				glClear(GL_COLOR_BUFFER_BIT);
