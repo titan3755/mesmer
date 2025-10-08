@@ -1398,6 +1398,7 @@ void Application::run() {
 					m_currentFractal = FractalType::MANDELBROT;
 					if (ourShader != nullptr) delete ourShader;
 					if (m_pre_render_enabled) {
+						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
 						spdlog::info("Launching pre-render worker for Mandelbrot...");
 						m_is_loading = true;
 						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
@@ -2561,6 +2562,13 @@ void Application::preRenderWorker()
 		return;
 	}
 
+	if (workerShader == nullptr || workerShader->ID == 0) {
+		spdlog::critical("Worker thread: Failed to create or link the shader program!");
+		delete workerShader;
+		m_worker_finished_submission.store(true);
+		return;
+	}
+
 	GLuint workerVAO;
 	glGenVertexArrays(1, &workerVAO);
 	glBindVertexArray(workerVAO);
@@ -2628,20 +2636,22 @@ void Application::preRenderWorker()
 	// Tiled rendering parameters
 	const int TILE_SIZE = 256;
 	const int BATCH_SIZE = 8;
-
 	const int num_tiles = m_pre_render_resolution / TILE_SIZE;
 	int batch_counter = 0;
-
 	glEnable(GL_SCISSOR_TEST);
+
 	for (int tile_y = 0; tile_y < num_tiles; ++tile_y) {
 		for (int tile_x = 0; tile_x < num_tiles; ++tile_x) {
 			int x_pos = tile_x * TILE_SIZE;
 			int y_pos = tile_y * TILE_SIZE;
 			glViewport(x_pos, y_pos, TILE_SIZE, TILE_SIZE);
 			glScissor(x_pos, y_pos, TILE_SIZE, TILE_SIZE);
+
 			workerShader->setIVec4("u_tile_info", tile_x, tile_y, num_tiles, num_tiles);
+
 			glBindVertexArray(workerVAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 			if (++batch_counter >= BATCH_SIZE) {
 				glFlush();
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -2650,18 +2660,13 @@ void Application::preRenderWorker()
 		}
 	}
 	glDisable(GL_SCISSOR_TEST);
-	//glBindVertexArray(workerVAO);
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	if (m_pre_render_fence) {
-		glDeleteSync(m_pre_render_fence);
-	}
+	if (m_pre_render_fence) { glDeleteSync(m_pre_render_fence); }
 	m_pre_render_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 	glFlush();
-
+	delete workerShader;
 	glDeleteVertexArrays(1, &workerVAO);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	SDL_GL_MakeCurrent(window, nullptr);
 	m_worker_finished_submission.store(true);
-	spdlog::info("Worker thread: Render commands submitted and fence created.");
+	spdlog::info("Worker thread: Render commands submitted.");
 }
