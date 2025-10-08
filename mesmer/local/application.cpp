@@ -1787,21 +1787,17 @@ void Application::run() {
 				glBindVertexArray(VAO);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-				// Draw loading text on top
 				ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
-				addTextWithStroke(draw_list, m_font_large, 48.0f, ImVec2(screenWidth / 2 - 250, screenHeight / 2 - 80), IM_COL32_WHITE, IM_COL32_BLACK, 2.0f, "Rendering, please wait...");
+				addTextWithStroke(draw_list, m_font_large, 48.0f, ImVec2((float)screenWidth / 2 - 250.0f, (float)screenHeight / 2 - 80.0f), IM_COL32_WHITE, IM_COL32_BLACK, 2.0f, "Rendering, please wait...");
 
-				// Check if the GPU has finished the work signaled by the fence
 				if (m_worker_finished_submission && m_pre_render_fence) {
 					GLenum wait_result = glClientWaitSync(m_pre_render_fence, 0, 0);
 					if (wait_result == GL_ALREADY_SIGNALED || wait_result == GL_CONDITION_SATISFIED) {
 						spdlog::info("Main thread: Fence signaled! GPU render is complete.");
 
-						// The texture is ready, now generate mipmaps on the main thread
 						glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
 						glGenerateMipmap(GL_TEXTURE_2D);
 						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
 						glDeleteSync(m_pre_render_fence);
 						m_pre_render_fence = nullptr;
 
