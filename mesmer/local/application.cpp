@@ -2605,8 +2605,8 @@ void Application::preRenderWorker()
 
 	if (m_currentFractal == FractalType::MANDELBROT) {
 		if (m_use_pre_render_params) {
-			workerShader->setDVec2("u_center", -0.75, 0.0);
-			workerShader->setDouble("u_zoom", 1.0);
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
 		}
 		else {
 			workerShader->setDVec2("u_center", -0.75, 0.0);
