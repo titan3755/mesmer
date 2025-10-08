@@ -2626,7 +2626,7 @@ void Application::preRenderWorker()
 		}
 	}
 
-	// Tiled rendering parameters
+	// tiled rendering parameters
 	const int TILE_SIZE = 256;
 	const int BATCH_SIZE = 4;
 	const int num_tiles = m_pre_render_resolution / TILE_SIZE;
@@ -2641,20 +2641,17 @@ void Application::preRenderWorker()
 			workerShader->setIVec4("u_tile_info", tile_x, tile_y, num_tiles, num_tiles);
 			glBindVertexArray(workerVAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-			if (++batch_counter >= BATCH_SIZE) {
-				glFlush();
-				GLsync tempFence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-				// fix loading screen stutter
-				GLenum waitResult;
-				do {
-					waitResult = glClientWaitSync(tempFence, GL_SYNC_FLUSH_COMMANDS_BIT, 5'000'000);
-				} while (waitResult == GL_TIMEOUT_EXPIRED);
-				glDeleteSync(tempFence);
-				std::this_thread::sleep_for(std::chrono::milliseconds(6));
-				batch_counter = 0;
-			}
+			glFlush();
+			GLsync tileFence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+			GLenum waitRes;
+			do {
+				waitRes = glClientWaitSync(tileFence, GL_SYNC_FLUSH_COMMANDS_BIT, 5'000'000);
+			} while (waitRes == GL_TIMEOUT_EXPIRED);
+			glDeleteSync(tileFence);
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 	}
+	spdlog::info("Worker thread: All tiles rendered.");
 	glDisable(GL_SCISSOR_TEST);
 	if (m_pre_render_fence) { glDeleteSync(m_pre_render_fence); }
 	m_pre_render_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
