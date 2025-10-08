@@ -2643,7 +2643,10 @@ void Application::preRenderWorker()
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			if (++batch_counter >= BATCH_SIZE) {
 				glFlush();
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				GLsync tempFence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+				glClientWaitSync(tempFence, GL_SYNC_FLUSH_COMMANDS_BIT, 2'000'000);
+				glDeleteSync(tempFence);
+				std::this_thread::sleep_for(std::chrono::milliseconds(6));
 				batch_counter = 0;
 			}
 		}
