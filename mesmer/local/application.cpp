@@ -1397,8 +1397,6 @@ void Application::run() {
 					spdlog::info("'Mandelbrot' button clicked!");
 					m_currentFractal = FractalType::MANDELBROT;
 					if (ourShader != nullptr) delete ourShader;
-					ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
-
 					if (m_pre_render_enabled) {
 						spdlog::info("Launching pre-render worker for Mandelbrot...");
 						m_is_loading = true;
@@ -1409,6 +1407,7 @@ void Application::run() {
 						m_pre_render_thread.detach();
 					}
 					else {
+						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
 						spdlog::info("Loaded Mandelbrot shader for real-time rendering.");
 					}
 
