@@ -30,7 +30,7 @@ void main() {
     float dist = abs(infinity) * 15.0;
     float glow = 0.015 / (dist + 0.1);
     float shimmer = 0.5 + 0.5 * sin((uv.x + uv.y) * 25.0 + t * 5.0);
-    glow *= mix(0.8, 1.2, shimmer);
+    glow *= mix(0.8, 1.2, shimmer) * 5.0;
     float hue = atan(uv.y, uv.x) / 6.28318 + 0.5 + t * 0.1;
     vec3 col = palette(hue) * glow * 1.4;
     FragColor = vec4(col, 1.0);
