@@ -2638,12 +2638,9 @@ void Application::preRenderWorker()
 			int y_pos = tile_y * TILE_SIZE;
 			glViewport(x_pos, y_pos, TILE_SIZE, TILE_SIZE);
 			glScissor(x_pos, y_pos, TILE_SIZE, TILE_SIZE);
-
 			workerShader->setIVec4("u_tile_info", tile_x, tile_y, num_tiles, num_tiles);
-
 			glBindVertexArray(workerVAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 			if (++batch_counter >= BATCH_SIZE) {
 				glFlush();
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
