@@ -2628,7 +2628,7 @@ void Application::preRenderWorker()
 
 	// Tiled rendering parameters
 	const int TILE_SIZE = 256;
-	const int BATCH_SIZE = 8;
+	const int BATCH_SIZE = 4;
 	const int num_tiles = m_pre_render_resolution / TILE_SIZE;
 	int batch_counter = 0;
 	glEnable(GL_SCISSOR_TEST);
@@ -2644,7 +2644,10 @@ void Application::preRenderWorker()
 			if (++batch_counter >= BATCH_SIZE) {
 				glFlush();
 				GLsync tempFence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-				glClientWaitSync(tempFence, GL_SYNC_FLUSH_COMMANDS_BIT, 2'000'000);
+				GLenum waitResult;
+				do {
+					waitResult = glClientWaitSync(tempFence, GL_SYNC_FLUSH_COMMANDS_BIT, 5'000'000);
+				} while (waitResult == GL_TIMEOUT_EXPIRED);
 				glDeleteSync(tempFence);
 				std::this_thread::sleep_for(std::chrono::milliseconds(6));
 				batch_counter = 0;
