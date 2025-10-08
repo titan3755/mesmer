@@ -2604,17 +2604,17 @@ void Application::preRenderWorker()
 	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
 	glClear(GL_COLOR_BUFFER_BIT);
 	workerShader->use();
-	workerShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);
+	/*workerShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);*/
 	workerShader->setInt("u_max_iterations", 5000);
 	workerShader->setFloat("u_color_density", m_color_density);
 
 	if (m_currentFractal == FractalType::MANDELBROT) {
 		if (m_use_pre_render_params) {
-			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
-			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			workerShader->setDVec2("u_center", -0.75, 0.0);
+			workerShader->setDouble("u_zoom", 1.0);
 		}
 		else {
-			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDVec2("u_center", -0.75, 0.0);
 			workerShader->setDouble("u_zoom", 1.0);
 		}
 		if (!m_apply_common_color_palette) {
@@ -2630,8 +2630,6 @@ void Application::preRenderWorker()
 			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
-
-	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Tiled rendering parameters
 	const int TILE_SIZE = 256;

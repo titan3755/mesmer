@@ -5,21 +5,17 @@
 */
 
 #version 460 core
-
 out vec4 FragColor;
 in vec2 TexCoords;
-
 uniform dvec2 u_center;
 uniform double u_zoom;
 uniform int u_max_iterations;
-uniform vec2 iResolution;
 uniform vec3 u_palette_a;
 uniform vec3 u_palette_b;
 uniform vec3 u_palette_c;
 uniform vec3 u_palette_d;
 uniform float u_color_density;
 uniform ivec4 u_tile_info;
-
 vec3 palette(float t) {
     return u_palette_a + u_palette_b * cos(6.28318 * (u_palette_c * t + u_palette_d));
 }
@@ -31,7 +27,7 @@ void main()
     dvec2 z = dvec2(0.0);
     int i;
     for (i = 0; i < u_max_iterations; i++) {
-        z = z*z + c;
+        z = dvec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
         if (dot(z, z) > 4.0) break;
     }
     if (i == u_max_iterations) {
@@ -43,5 +39,3 @@ void main()
         FragColor = vec4(palette(color_val), 1.0);
     }
 }
-
-
