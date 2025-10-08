@@ -2644,6 +2644,7 @@ void Application::preRenderWorker()
 			if (++batch_counter >= BATCH_SIZE) {
 				glFlush();
 				GLsync tempFence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+				// fix loading screen stutter
 				GLenum waitResult;
 				do {
 					waitResult = glClientWaitSync(tempFence, GL_SYNC_FLUSH_COMMANDS_BIT, 5'000'000);
