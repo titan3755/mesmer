@@ -2632,7 +2632,6 @@ void Application::preRenderWorker()
 	const int num_tiles = m_pre_render_resolution / TILE_SIZE;
 	int batch_counter = 0;
 	glEnable(GL_SCISSOR_TEST);
-
 	for (int tile_y = 0; tile_y < num_tiles; ++tile_y) {
 		for (int tile_x = 0; tile_x < num_tiles; ++tile_x) {
 			int x_pos = tile_x * TILE_SIZE;
@@ -2662,4 +2661,5 @@ void Application::preRenderWorker()
 	SDL_GL_MakeCurrent(window, nullptr);
 	m_worker_finished_submission.store(true);
 	spdlog::info("Worker thread: Render commands submitted.");
+	spdlog::info("Worker thread: Pre-render worker completed.");
 }
