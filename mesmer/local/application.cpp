@@ -1456,7 +1456,6 @@ void Application::run() {
 					spdlog::info("'Julia' button clicked!");
 					m_currentFractal = FractalType::JULIA;
 					if (ourShader != nullptr) delete ourShader;
-
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
 						m_is_pre_rendering = true;
@@ -1465,7 +1464,7 @@ void Application::run() {
 					else
 					{
 						ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
-						spdlog::info("Loaded Julia shader.");
+						spdlog::info("Loaded Julia shader for real-time rendering.");
 					}
 
 					show_fractal_selection = false;
