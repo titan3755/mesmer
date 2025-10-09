@@ -1,5 +1,6 @@
 # mesmer
 
+## An interactive and performant fractal generator and explorer
 ## Mesmer V-1.0.0 (Production) has been released!
 
 ### Added features
