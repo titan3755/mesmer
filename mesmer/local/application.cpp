@@ -1458,8 +1458,14 @@ void Application::run() {
 					if (ourShader != nullptr) delete ourShader;
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Julia shader.");
+						spdlog::info("Launching pre-render worker for Julia...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else
 					{
@@ -2574,8 +2580,8 @@ void Application::preRenderWorker()
 	if (m_currentFractal == FractalType::MANDELBROT) {
 		workerShader = new Shader("shaders/prerender.vert", "shaders/mandelbrot_prerender.frag");
 	}
-	else if (m_currentFractal == FractalType::BURNING_SHIP) {
-		workerShader = new Shader("shaders/prerender.vert", "shaders/burningship_prerender.frag");
+	else if (m_currentFractal == FractalType::JULIA) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/julia_prerender.frag");
 	}
 	// more fractal cases
 	else {
@@ -2644,6 +2650,30 @@ void Application::preRenderWorker()
 			workerShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
 			workerShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
 			workerShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::JULIA) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			workerShader->setDVec2("u_julia_c", m_pre_render_julia_c_x, m_pre_render_julia_c_y);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 1.0);
+			workerShader->setDVec2("u_julia_c", -0.7, 0.27015);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_julia_a.x, m_palette_julia_a.y, m_palette_julia_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_julia_b.x, m_palette_julia_b.y, m_palette_julia_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_julia_c.x, m_palette_julia_c.y, m_palette_julia_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_julia_d.x, m_palette_julia_d.y, m_palette_julia_d.z);
 		}
 		else {
 			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
