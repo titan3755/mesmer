@@ -273,6 +273,7 @@ void Application::run() {
 						ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
 						sub = "Mesmer - Main Menu";
 						title_text_toggle = true;
+						hud_toggle = true;
 						spdlog::info("Reverted to background shader and main menu shown.");
 					}
 				}
@@ -316,7 +317,7 @@ void Application::run() {
 
 						m_drag_start_pos = current_pos;
 					}
-					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE && !m_is_loading) {
 						show_main_buttons = !show_main_buttons;
 						show_fractal_selection = false;
 						spdlog::info("'Space' key pressed - toggling main buttons.");
