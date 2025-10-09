@@ -154,6 +154,7 @@ private:
 	double m_pre_render_center_x = 0.0;
 	double m_pre_render_center_y = 0.0;
     bool m_use_pre_render_params = false;
+    int tex_res = 256;
 
 	// fractal specific parameters (pre-rendering system)
 	double m_pre_render_julia_c_x = -0.8;

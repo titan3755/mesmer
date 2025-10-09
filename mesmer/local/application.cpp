@@ -1308,7 +1308,7 @@ void Application::run() {
 				}
 				ImGui::Checkbox("Toggle info window", &info_gui_window_toggle);
 				ImGui::Checkbox("Toggle pre-rendering system (EXPERIMENTAL - MAY CAUSE CRASHES)", &m_pre_render_enabled);
-				// pre rendering options -->
+				// pre rendering control panel options -->
 				if (m_currentFractal == FractalType::NONE)
 				{
 					if (ImGui::CollapsingHeader("Pre-Rendering Parameters"))
@@ -1331,7 +1331,7 @@ void Application::run() {
 							ImGui::InputDouble("Pre-Render Nova Relaxation", &m_pre_render_nova_relaxation, 0.1f, 2.0f);
 							ImGui::Separator();
 							ImGui::TextWrapped("Pre-Render Resolution Customization");
-
+							ImGui::SliderInt("Pre-Render Texture Resolution", &tex_res, 256, m_pre_render_highest_supported_resolution);
 							ImGui::Separator();
 							ImGui::Checkbox("Use Pre-Render Settings", &m_use_pre_render_params);
 							ImGui::Separator();
@@ -2578,6 +2578,14 @@ void Application::performPreRender() {
 void Application::preRenderWorker()
 {
 	m_cancel_pre_render.store(false);
+	if (m_use_pre_render_params) {
+		spdlog::info("Worker thread: Using custom pre-render parameters.");
+		m_pre_render_resolution = tex_res;
+	}
+	else {
+		spdlog::info("Worker thread: Using default pre-render parameters.");
+		m_pre_render_resolution = m_pre_render_highest_supported_resolution / 2;
+	}
 	if (SDL_GL_MakeCurrent(window, m_worker_context) != 0) {
 		spdlog::critical("Worker thread could not set GL context! Error: {}", SDL_GetError());
 		m_worker_finished_submission.store(true);
