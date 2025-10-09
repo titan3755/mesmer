@@ -219,6 +219,8 @@ void Application::run() {
 						m_drag_start_pos = current_pos;
 					}
 					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+						spdlog::info("'Space' key pressed - attempting to cancel or reset pre-render.");
+						m_cancel_pre_render.store(true);
 						if (m_pre_render_complete) {
 							glDeleteTextures(1, &m_pre_render_texture);
 							glDeleteFramebuffers(1, &m_pre_render_fbo);
@@ -229,26 +231,20 @@ void Application::run() {
 							m_pre_render_texture = 0;
 							m_pre_render_fbo = 0;
 						}
-						if (m_is_loading) {
-							// This is a simple way to handle closing while loading, though it will still wait for the thread.
-							// More advanced logic would involve signaling the thread to cancel.
-							if (m_pre_render_future.valid()) m_pre_render_future.wait();
-						}
 						m_pre_render_enabled = false;
 						m_pre_render_complete = false;
 						m_is_loading = false;
-						show_main_buttons = !show_main_buttons;
+						show_main_buttons = true;
 						show_fractal_selection = false;
-						spdlog::info("'Space' key pressed - toggling main buttons.");
 						Application::m_currentFractal = FractalType::NONE;
 						if (ourShader != nullptr) {
 							delete ourShader;
 							ourShader = nullptr;
 						}
 						ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
-						spdlog::info("Reverted to background shader.");
 						sub = "Mesmer - Main Menu";
 						title_text_toggle = true;
+						spdlog::info("Reverted to background shader and main menu shown.");
 					}
 				}
 				// fractal-specific event handling (to clean up)
@@ -2537,6 +2533,7 @@ void Application::performPreRender() {
 
 void Application::preRenderWorker()
 {
+	m_cancel_pre_render.store(false);
 	if (SDL_GL_MakeCurrent(window, m_worker_context) != 0) {
 		spdlog::critical("Worker thread could not set GL context! Error: {}", SDL_GetError());
 		m_worker_finished_submission.store(true);
@@ -2635,6 +2632,13 @@ void Application::preRenderWorker()
 	glEnable(GL_SCISSOR_TEST);
 	for (int tile_y = 0; tile_y < num_tiles; ++tile_y) {
 		for (int tile_x = 0; tile_x < num_tiles; ++tile_x) {
+			if (m_cancel_pre_render.load()) {
+				spdlog::warn("Worker thread: pre-render cancelled by user.");
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				SDL_GL_MakeCurrent(window, nullptr);
+				m_worker_finished_submission.store(true);
+				return;
+			}
 			int x_pos = tile_x * TILE_SIZE;
 			int y_pos = tile_y * TILE_SIZE;
 			glViewport(x_pos, y_pos, TILE_SIZE, TILE_SIZE);

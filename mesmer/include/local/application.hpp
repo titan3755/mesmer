@@ -172,6 +172,7 @@ private:
     std::future<bool> m_pre_render_future;
     bool m_is_loading = false;
     Shader* m_loading_shader = nullptr;
+    std::atomic<bool> m_cancel_pre_render{ false };
 
     std::thread m_pre_render_thread;
     std::atomic<bool> m_worker_finished_submission = false;
