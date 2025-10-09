@@ -58,6 +58,11 @@ void Application::run() {
 		static bool info_gui_window_toggle = false;
 		int final_adaptive_iterations = m_base_iterations;
 
+		// find highest supported resolution/texture size by gpu
+		GLint maxTextureSize = 0;
+		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+		m_pre_render_highest_supported_resolution = maxTextureSize;
+
 		// settings load
 		// bg menu settings load attempt
 		if (app_settings.getSetting("menu_bg_color_one") != "") {
