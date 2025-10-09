@@ -2611,7 +2611,7 @@ void Application::preRenderWorker()
 	glGenTextures(1, &m_pre_render_texture);
 	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pre_render_resolution, m_pre_render_resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -2716,6 +2716,11 @@ void Application::preRenderWorker()
 		}
 	}
 	spdlog::info("Worker thread: All tiles rendered.");
+	spdlog::info("Worker thread: Generating mipmaps...");
+	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	spdlog::info("Worker thread: Mipmaps generated.");
 	glDisable(GL_SCISSOR_TEST);
 	if (m_pre_render_fence) { glDeleteSync(m_pre_render_fence); }
 	m_pre_render_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
