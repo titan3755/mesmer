@@ -2600,7 +2600,30 @@ void Application::preRenderWorker()
 	else if (m_currentFractal == FractalType::JULIA) {
 		workerShader = new Shader("shaders/prerender.vert", "shaders/julia_prerender.frag");
 	}
-	// more fractal cases
+	else if (m_currentFractal == FractalType::BURNING_SHIP) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/burning_ship_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::TRICORN) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/tricorn_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::PHOENIX) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/phoenix_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::LYAPUNOV) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/lyapunov_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::NEWTON) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/newton_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::NOVA) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/nova_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::MULTIBROT) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/multibrot_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::SPIDER) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/spider_prerender.frag");
+	}
 	else {
 		spdlog::critical("Worker thread: No valid fractal type set for pre-render!");
 		m_worker_finished_submission.store(true);
