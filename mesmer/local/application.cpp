@@ -2722,6 +2722,50 @@ void Application::preRenderWorker()
 			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
+	else if (m_currentFractal == FractalType::BURNING_SHIP) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_center", -1.75, -0.04);
+			workerShader->setDouble("u_zoom", 22.0);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_burning_ship_a.x, m_palette_burning_ship_a.y, m_palette_burning_ship_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_burning_ship_b.x, m_palette_burning_ship_b.y, m_palette_burning_ship_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_burning_ship_c.x, m_palette_burning_ship_c.y, m_palette_burning_ship_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_burning_ship_d.x, m_palette_burning_ship_d.y, m_palette_burning_ship_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::TRICORN) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_tricorn_a.x, m_palette_tricorn_a.y, m_palette_tricorn_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_tricorn_b.x, m_palette_tricorn_b.y, m_palette_tricorn_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_tricorn_c.x, m_palette_tricorn_c.y, m_palette_tricorn_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_tricorn_d.x, m_palette_tricorn_d.y, m_palette_tricorn_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
 
 	// tiled rendering parameters
 	const int TILE_SIZE = 256;
