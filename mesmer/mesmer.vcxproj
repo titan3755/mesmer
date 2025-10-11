@@ -331,6 +331,7 @@
     <None Include="shaders\triangle.vert" />
     <None Include="shaders\tricorn.frag" />
     <None Include="shaders\tricorn.vert" />
+    <None Include="shaders\tricorn_prerender.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\imgui\imconfig.h" />
