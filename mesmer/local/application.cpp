@@ -2593,6 +2593,7 @@ void Application::performPreRender() {
 	spdlog::info("Pre-render complete.");
 }
 
+// primary pre renderer function to be run in a separate thread
 void Application::preRenderWorker()
 {
 	m_cancel_pre_render.store(false);
@@ -2784,7 +2785,54 @@ void Application::preRenderWorker()
 			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
-
+	else if (m_currentFractal == FractalType::PHOENIX) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			workerShader->setDVec2("u_phoenix_c", m_pre_render_phoenix_c_x, m_pre_render_phoenix_c_y);
+			workerShader->setDouble("u_phoenix_p", m_pre_render_phoenix_p);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+			workerShader->setDVec2("u_phoenix_c", -0.5, 0.0);
+			workerShader->setDouble("u_phoenix_p", 0.56667);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_phoenix_a.x, m_palette_phoenix_a.y, m_palette_phoenix_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_phoenix_b.x, m_palette_phoenix_b.y, m_palette_phoenix_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_phoenix_c.x, m_palette_phoenix_c.y, m_palette_phoenix_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_phoenix_d.x, m_palette_phoenix_d.y, m_palette_phoenix_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::LYAPUNOV) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_lyapunov_center", m_pre_render_lyapunov_center_a, m_pre_render_lyapunov_center_b);
+			workerShader->setDouble("u_lyapunov_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_lyapunov_center", 3.0, 3.0);
+			workerShader->setDouble("u_lyapunov_zoom", 1.0);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_lyapunov_a.x, m_palette_lyapunov_a.y, m_palette_lyapunov_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_lyapunov_b.x, m_palette_lyapunov_b.y, m_palette_lyapunov_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_lyapunov_c.x, m_palette_lyapunov_c.y, m_palette_lyapunov_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_lyapunov_d.x, m_palette_lyapunov_d.y, m_palette_lyapunov_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
 	// tiled rendering parameters
 	const int TILE_SIZE = 256;
 	const int BATCH_SIZE = 4;

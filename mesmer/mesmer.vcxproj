@@ -309,6 +309,7 @@
     <None Include="shaders\loading_screen.frag" />
     <None Include="shaders\lyapunov.frag" />
     <None Include="shaders\lyapunov.vert" />
+    <None Include="shaders\lyapunov_prerender.frag" />
     <None Include="shaders\mandelbrot.frag" />
     <None Include="shaders\mandelbrot.vert" />
     <None Include="shaders\mandelbrot_prerender.frag" />
