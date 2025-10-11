@@ -315,6 +315,7 @@
     <None Include="shaders\mandelbrot_prerender.frag" />
     <None Include="shaders\multibrot.frag" />
     <None Include="shaders\multibrot.vert" />
+    <None Include="shaders\multibrot_prerender.frag" />
     <None Include="shaders\newton.frag" />
     <None Include="shaders\newton.vert" />
     <None Include="shaders\newton_prerender.frag" />

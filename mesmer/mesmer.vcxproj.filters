@@ -519,6 +519,7 @@
     <None Include="shaders\phoenix_prerender.frag" />
     <None Include="shaders\lyapunov_prerender.frag" />
     <None Include="shaders\newton_prerender.frag" />
+    <None Include="shaders\multibrot_prerender.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
