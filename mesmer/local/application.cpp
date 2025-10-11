@@ -2672,7 +2672,7 @@ void Application::preRenderWorker()
 	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
 	glClear(GL_COLOR_BUFFER_BIT);
 	workerShader->use();
-	/*workerShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);*/
+	/*workerShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);*/ // not required in pre rendering
 	workerShader->setInt("u_max_iterations", 5000);
 	workerShader->setFloat("u_color_density", m_color_density);
 
