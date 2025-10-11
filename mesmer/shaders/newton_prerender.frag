@@ -39,10 +39,14 @@ void main()
         z = cdiv(dvec2(2.0, 0.0) * z3 + dvec2(1.0, 0.0), dvec2(3.0, 0.0) * z2);
         if (distance(z, root1) < tolerance || distance(z, root2) < tolerance || distance(z, root3) < tolerance) break;
     }
-    vec3 base_color = vec3(0.0);
-    if (distance(z, root1) < tolerance)      base_color = vec3(1.0, 0.0, 0.0);
-    else if (distance(z, root2) < tolerance) base_color = vec3(0.0, 1.0, 0.0);
-    else if (distance(z, root3) < tolerance) base_color = vec3(0.0, 0.0, 1.0);
-    float brightness = 1.0 - (float(i) / float(u_max_iterations));
-    FragColor = vec4(base_color * pow(brightness, 2.0), 1.0);
+    float base_hue = 0.0;
+    if (distance(z, root1) < tolerance)      base_hue = u_palette_a.x;
+    else if (distance(z, root2) < tolerance) base_hue = u_palette_b.y;
+    else if (distance(z, root3) < tolerance) base_hue = u_palette_c.z;
+    vec3 color = vec3(0.0);
+    if (base_hue > 0.0) {
+        float color_val = base_hue - float(i) * u_color_density * 2.0;
+        color = palette(color_val);
+    }
+    FragColor = vec4(color, 1.0);
 }
