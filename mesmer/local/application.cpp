@@ -1505,8 +1505,14 @@ void Application::run() {
 					if (m_pre_render_enabled)
 					{
 						ourShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Burning Ship shader.");
+						spdlog::info("Launching pre-render worker for Burning Ship...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else 
 					{
@@ -1539,8 +1545,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/tricorn.vert", "shaders/tricorn.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Tricorn shader.");
+						spdlog::info("Launching pre-render worker for Tricorn...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/tricorn.vert", "shaders/tricorn.frag");
