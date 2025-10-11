@@ -1699,8 +1699,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/multibrot.vert", "shaders/multibrot.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Multibrot shader.");
+						spdlog::info("Launching pre-render worker for Multibrot...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/multibrot.vert", "shaders/multibrot.frag");
@@ -1732,8 +1738,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/nova.vert", "shaders/nova.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Nova shader.");
+						spdlog::info("Launching pre-render worker for Nova...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/nova.vert", "shaders/nova.frag");
@@ -1765,8 +1777,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/spider.vert", "shaders/spider.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Spider shader.");
+						spdlog::info("Launching pre-render worker for Spider...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/spider.vert", "shaders/spider.frag");
