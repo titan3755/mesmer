@@ -514,6 +514,7 @@
     <None Include="shaders\prerender.vert" />
     <None Include="shaders\mandelbrot_prerender.frag" />
     <None Include="shaders\julia_prerender.frag" />
+    <None Include="shaders\burning_ship_prerender.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogl\glad\glad.h">
