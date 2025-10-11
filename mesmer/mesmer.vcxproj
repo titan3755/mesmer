@@ -321,6 +321,7 @@
     <None Include="shaders\newton_prerender.frag" />
     <None Include="shaders\nova.frag" />
     <None Include="shaders\nova.vert" />
+    <None Include="shaders\nova_prerender.frag" />
     <None Include="shaders\phoenix.frag" />
     <None Include="shaders\phoenix.vert" />
     <None Include="shaders\phoenix_prerender.frag" />
