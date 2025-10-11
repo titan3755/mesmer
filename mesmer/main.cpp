@@ -14,7 +14,7 @@ const char* APP_MODE = "RELEASE"; // or "RELEASE"
 // application metadata
 std::map<std::string, std::string> app_metadata = {
 	{"name", "Mesmer"},
-	{"version", "Version: 1.0.0 (Release)"},
+	{"version", "Version: 1.1.0 (Release)"},
 	{"author_desc", "Made by Titan // GH: https://github.com/titan3755/mesmer"},
 	{"build", "Build Date: October 2025"},
 	{"description", "Mesmer - Fractal Generator and Explorer"},

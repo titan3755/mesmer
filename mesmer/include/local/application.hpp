@@ -18,6 +18,7 @@
 #include <thread>
 #include <future>
 #include <atomic>
+#include <memory>
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
 #include <SDL.h>
@@ -54,7 +55,7 @@ private:
 
     void addTextWithStroke(ImDrawList* draw_list, ImFont* font, float size, ImVec2 pos, ImU32 fill_col, ImU32 outline_col, float thickness, const char* text);
     void performPreRender();
-    bool preRenderWorker();
+    void preRenderWorker();
 
     ImFont* m_font_regular;
     ImFont* m_font_large;
@@ -143,6 +144,7 @@ private:
     int m_pre_render_frame_count = 0;
     unsigned int m_pre_render_fbo = 0;
     unsigned int m_pre_render_texture = 0;
+	int m_pre_render_highest_supported_resolution = 16384;
     int m_pre_render_resolution = 16384;
     Shader* m_texture_view_shader = nullptr;
     double m_view_center_x = 0.0;
@@ -152,6 +154,7 @@ private:
 	double m_pre_render_center_x = 0.0;
 	double m_pre_render_center_y = 0.0;
     bool m_use_pre_render_params = false;
+    int tex_res = 256;
 
 	// fractal specific parameters (pre-rendering system)
 	double m_pre_render_julia_c_x = -0.8;
@@ -169,6 +172,14 @@ private:
     // non-blocking pre-rendering variables
     SDL_GLContext m_worker_context = nullptr;
     std::future<bool> m_pre_render_future;
+    bool m_is_loading = false;
+    Shader* m_loading_shader = nullptr;
+    std::atomic<bool> m_cancel_pre_render{ false };
+
+    std::thread m_pre_render_thread;
+    std::atomic<bool> m_worker_finished_submission = false;
+    GLsync m_pre_render_fence = nullptr;
+
 };
 
 #endif

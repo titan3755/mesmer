@@ -1,0 +1,46 @@
+/*
+	Mesmer - An interactive and high-performance fractal generator and explorer.
+	Made by -> Titan // GH: https://github.com/titan3755/mesmer
+	[lyapunov_prerender.frag]
+*/
+
+#version 460 core
+out vec4 FragColor;
+in vec2 TexCoords;
+uniform dvec2 u_lyapunov_center;
+uniform double u_lyapunov_zoom;
+uniform int u_max_iterations;
+uniform vec3 u_palette_a, u_palette_b, u_palette_c, u_palette_d;
+uniform float u_color_density;
+uniform ivec4 u_tile_info;
+const int sequence[4] = int[4](0, 1, 0, 1); // ABAB
+const int sequence_len = 4;
+vec3 palette(float t) {
+    return u_palette_a + u_palette_b * cos(6.28318 * (u_palette_c * t + u_palette_d));
+}
+void main()
+{
+    dvec2 global_uv = (dvec2(u_tile_info.x, u_tile_info.y) + TexCoords) / dvec2(u_tile_info.z, u_tile_info.w);
+    global_uv = global_uv * 2.0 - 1.0;
+    dvec2 ab = global_uv / u_lyapunov_zoom + u_lyapunov_center;
+    dvec2 r_params = dvec2(ab.x, ab.y);
+    double x = 0.5;
+    double lambda = 0.0;
+    int n_warmup = u_max_iterations / 5;
+    int n_sum = u_max_iterations;
+    for (int i = 0; i < n_warmup + n_sum; i++) {
+        int r_index = sequence[i % sequence_len];
+        double r = (r_index == 0) ? r_params.x : r_params.y;
+        x = r * x * (1.0 - x);
+        if (i >= n_warmup) {
+            lambda += log(float(abs(r * (1.0 - 2.0 * x))));
+        }
+    }
+    lambda /= double(n_sum);
+    if (lambda > 0.0) {
+        FragColor = vec4(palette(float(lambda) * u_color_density * 50.0), 1.0);
+    } else {
+        float stability = clamp(abs(float(lambda)) * 2.0, 0.0, 1.0);
+        FragColor = vec4(vec3(0.0, 0.1, 0.5) * stability, 1.0);
+    }
+}

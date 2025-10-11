@@ -111,6 +111,15 @@ void Shader::setMat4(const std::string& name, const glm::mat4& mat) const {
     glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
+void Shader::setMat4(const std::string& name, const float* value) const
+{
+    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, value);
+}
+
+void Shader::setIVec4(const std::string& name, int v1, int v2, int v3, int v4) const {
+    glUniform4i(glGetUniformLocation(ID, name.c_str()), v1, v2, v3, v4);
+}
+
 void Shader::checkCompileErrors(GLuint shader, std::string type) {
     GLint success;
     GLchar infoLog[1024];

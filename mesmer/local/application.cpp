@@ -58,6 +58,11 @@ void Application::run() {
 		static bool info_gui_window_toggle = false;
 		int final_adaptive_iterations = m_base_iterations;
 
+		// find highest supported resolution/texture size by gpu
+		GLint maxTextureSize = 0;
+		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+		m_pre_render_highest_supported_resolution = maxTextureSize;
+
 		// settings load
 		// bg menu settings load attempt
 		if (app_settings.getSetting("menu_bg_color_one") != "") {
@@ -231,6 +236,7 @@ void Application::run() {
 						}
 						m_pre_render_enabled = false;
 						m_pre_render_complete = false;
+						m_is_loading = false;
 						show_main_buttons = !show_main_buttons;
 						show_fractal_selection = false;
 						spdlog::info("'Space' key pressed - toggling main buttons.");
@@ -243,6 +249,37 @@ void Application::run() {
 						spdlog::info("Reverted to background shader.");
 						sub = "Mesmer - Main Menu";
 						title_text_toggle = true;
+					}
+				}
+				if (m_is_loading) {
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
+						spdlog::info("'Space' key pressed - attempting to cancel or reset pre-render.");
+						m_cancel_pre_render.store(true);
+						if (m_pre_render_complete) {
+							glDeleteTextures(1, &m_pre_render_texture);
+							glDeleteFramebuffers(1, &m_pre_render_fbo);
+							if (m_texture_view_shader != nullptr) {
+								delete m_texture_view_shader;
+								m_texture_view_shader = nullptr;
+							}
+							m_pre_render_texture = 0;
+							m_pre_render_fbo = 0;
+						}
+						m_pre_render_enabled = false;
+						m_pre_render_complete = false;
+						m_is_loading = false;
+						show_main_buttons = true;
+						show_fractal_selection = false;
+						Application::m_currentFractal = FractalType::NONE;
+						if (ourShader != nullptr) {
+							delete ourShader;
+							ourShader = nullptr;
+						}
+						ourShader = new Shader("shaders/background.vert", "shaders/background.frag");
+						sub = "Mesmer - Main Menu";
+						title_text_toggle = true;
+						hud_toggle = true;
+						spdlog::info("Reverted to background shader and main menu shown.");
 					}
 				}
 				// fractal-specific event handling (to clean up)
@@ -285,7 +322,7 @@ void Application::run() {
 
 						m_drag_start_pos = current_pos;
 					}
-					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE && !m_is_loading) {
 						show_main_buttons = !show_main_buttons;
 						show_fractal_selection = false;
 						spdlog::info("'Space' key pressed - toggling main buttons.");
@@ -345,7 +382,7 @@ void Application::run() {
 
 						m_drag_start_pos = current_pos;
 					}
-					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+					if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE && !m_is_loading) {
 						show_main_buttons = !show_main_buttons;
 						show_fractal_selection = false;
 						spdlog::info("'Space' key pressed - toggling main buttons.");
@@ -1271,12 +1308,13 @@ void Application::run() {
 				}
 				ImGui::Checkbox("Toggle info window", &info_gui_window_toggle);
 				ImGui::Checkbox("Toggle pre-rendering system (EXPERIMENTAL - MAY CAUSE CRASHES)", &m_pre_render_enabled);
-				// pre rendering options -->
+				// pre rendering control panel options -->
 				if (m_currentFractal == FractalType::NONE)
 				{
 					if (ImGui::CollapsingHeader("Pre-Rendering Parameters"))
 					{
 						if (m_pre_render_enabled) {
+							ImGui::TextWrapped("Pre-Render Position Customization");
 							ImGui::InputDouble("Pre-Render Zoom", &m_pre_render_zoom_threshold, 0.1, 0.0, "%.8f");
 							ImGui::InputDouble("Pre-Render Center X", &m_pre_render_center_x, 0.01, 0.0, "%.8f");
 							ImGui::InputDouble("Pre-Render Center Y", &m_pre_render_center_y, 0.01, 0.0, "%.8f");
@@ -1291,6 +1329,9 @@ void Application::run() {
 							ImGui::InputDouble("Pre-Render Multibrot Power", &m_pre_render_multibrot_power, -10.0f, 10.0f);
 							ImGui::InputDouble("Pre-Render Nova Power", &m_pre_render_nova_power, 1.0f, 10.0f);
 							ImGui::InputDouble("Pre-Render Nova Relaxation", &m_pre_render_nova_relaxation, 0.1f, 2.0f);
+							ImGui::Separator();
+							ImGui::TextWrapped("Pre-Render Resolution Customization");
+							ImGui::SliderInt("Pre-Render Texture Resolution", &tex_res, 256, m_pre_render_highest_supported_resolution);
 							ImGui::Separator();
 							ImGui::Checkbox("Use Pre-Render Settings", &m_use_pre_render_params);
 							ImGui::Separator();
@@ -1391,17 +1432,22 @@ void Application::run() {
 					spdlog::info("'Mandelbrot' button clicked!");
 					m_currentFractal = FractalType::MANDELBROT;
 					if (ourShader != nullptr) delete ourShader;
-					
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Mandelbrot shader.");
+						spdlog::info("Launching pre-render worker for Mandelbrot...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
-					else
-					{
+					else {
 						ourShader = new Shader("shaders/mandelbrot.vert", "shaders/mandelbrot.frag");
-						spdlog::info("Loaded Mandelbrot shader.");
+						spdlog::info("Loaded Mandelbrot shader for real-time rendering.");
 					}
+
 					show_fractal_selection = false;
 					show_main_buttons = false;
 					sub = "Mesmer - Mandelbrot Set";
@@ -1419,16 +1465,21 @@ void Application::run() {
 					spdlog::info("'Julia' button clicked!");
 					m_currentFractal = FractalType::JULIA;
 					if (ourShader != nullptr) delete ourShader;
-
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Julia shader.");
+						spdlog::info("Launching pre-render worker for Julia...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else
 					{
 						ourShader = new Shader("shaders/julia.vert", "shaders/julia.frag");
-						spdlog::info("Loaded Julia shader.");
+						spdlog::info("Loaded Julia shader for real-time rendering.");
 					}
 
 					show_fractal_selection = false;
@@ -1454,8 +1505,14 @@ void Application::run() {
 					if (m_pre_render_enabled)
 					{
 						ourShader = new Shader("shaders/burningship.vert", "shaders/burningship.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Burning Ship shader.");
+						spdlog::info("Launching pre-render worker for Burning Ship...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else 
 					{
@@ -1488,8 +1545,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/tricorn.vert", "shaders/tricorn.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Tricorn shader.");
+						spdlog::info("Launching pre-render worker for Tricorn...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/tricorn.vert", "shaders/tricorn.frag");
@@ -1521,8 +1584,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/phoenix.vert", "shaders/phoenix.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Phoenix shader.");
+						spdlog::info("Launching pre-render worker for Phoenix...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/phoenix.vert", "shaders/phoenix.frag");
@@ -1552,8 +1621,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/lyapunov.vert", "shaders/lyapunov.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Lyapunov shader.");
+						spdlog::info("Launching pre-render worker for Lyapunov...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/lyapunov.vert", "shaders/lyapunov.frag");
@@ -1587,8 +1662,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/newton.vert", "shaders/newton.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Newton shader.");
+						spdlog::info("Launching pre-render worker for Newton...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/newton.vert", "shaders/newton.frag");
@@ -1618,8 +1699,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/multibrot.vert", "shaders/multibrot.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Multibrot shader.");
+						spdlog::info("Launching pre-render worker for Multibrot...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/multibrot.vert", "shaders/multibrot.frag");
@@ -1651,8 +1738,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/nova.vert", "shaders/nova.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Nova shader.");
+						spdlog::info("Launching pre-render worker for Nova...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/nova.vert", "shaders/nova.frag");
@@ -1684,8 +1777,14 @@ void Application::run() {
 
 					if (m_pre_render_enabled) {
 						ourShader = new Shader("shaders/spider.vert", "shaders/spider.frag");
-						m_is_pre_rendering = true;
-						spdlog::info("Loaded (Pre-Render) Spider shader.");
+						spdlog::info("Launching pre-render worker for Spider...");
+						m_is_loading = true;
+						m_loading_shader = new Shader("shaders/simple.vert", "shaders/loading_screen.frag");
+						if (m_pre_render_thread.joinable()) m_pre_render_thread.join();
+						m_worker_finished_submission.store(false);
+						m_pre_render_thread = std::thread(&Application::preRenderWorker, this);
+						m_pre_render_thread.detach();
+						hud_toggle = false;
 					}
 					else {
 						ourShader = new Shader("shaders/spider.vert", "shaders/spider.frag");
@@ -1766,33 +1865,40 @@ void Application::run() {
 			int drawable_w, drawable_h;
 			SDL_GL_GetDrawableSize(window, &drawable_w, &drawable_h);
 
-			if (m_is_pre_rendering) {
-				glViewport(0, 0, drawable_w, drawable_h);
+			if (m_is_loading) {
 				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT);
 
-				// loading screen
-				if (m_pre_render_frame_count == 0 || m_pre_render_frame_count == 1) {
-					ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
-					draw_list->AddText(m_font_large, 48.0f, ImVec2((float)screenWidth / 2 - 250, (float)screenHeight / 2), IM_COL32_WHITE, "Pre-rendering, please wait...");
-					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 50), IM_COL32_WHITE, "-May take several seconds to a minute");
-					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 80), IM_COL32_WHITE, "-Pre-Rendering is a very GPU heavy task");
-					draw_list->AddText(m_font_large, 24.0f, ImVec2((float)screenWidth / 2 - 100, (float)screenHeight / 2 + 110), IM_COL32_WHITE, "-Don't do any other task while pre-rendering");
-					// turn off explore button
-					show_main_buttons = false;
-					show_demo_window = false;
-					show_fractal_selection = false;
-					m_pre_render_frame_count++;
-				}
-				// heavy rendering work
-				else {
-					performPreRender();
-					m_is_pre_rendering = false;
-					m_pre_render_complete = true;
-					m_pre_render_frame_count = 0; // Reset for next time
+				// Render the animated loading screen background
+				m_loading_shader->use();
+				m_loading_shader->setVec2("iResolution", (float)drawable_w, (float)drawable_h);
+				m_loading_shader->setFloat("iTime", SDL_GetTicks() / 1000.0f);
+				glBindVertexArray(VAO);
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
+				addTextWithStroke(draw_list, m_font_large, 48.0f, ImVec2((float)screenWidth / 2 - 250.0f, (float)screenHeight / 2 - 80.0f), IM_COL32_WHITE, IM_COL32_BLACK, 2.0f, "Rendering, please wait...");
+
+				if (m_worker_finished_submission && m_pre_render_fence) {
+					GLenum wait_result = glClientWaitSync(m_pre_render_fence, 0, 0);
+					if (wait_result == GL_ALREADY_SIGNALED || wait_result == GL_CONDITION_SATISFIED) {
+						spdlog::info("Main thread: Fence signaled! GPU render is complete.");
+
+						glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+						glGenerateMipmap(GL_TEXTURE_2D);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+						glDeleteSync(m_pre_render_fence);
+						m_pre_render_fence = nullptr;
+
+						m_texture_view_shader = new Shader("shaders/simple.vert", "shaders/texture_view.frag");
+						m_pre_render_complete = true;
+						m_is_loading = false;
+
+						delete m_loading_shader; m_loading_shader = nullptr;
+					}
 				}
 			}
 			else if (m_pre_render_complete) {
+				hud_toggle = true;
 				glViewport(0, 0, drawable_w, drawable_h);
 				glClearColor(clear_color.x* clear_color.w, clear_color.y* clear_color.w, clear_color.z* clear_color.w, clear_color.w);
 				glClear(GL_COLOR_BUFFER_BIT);
@@ -2069,7 +2175,6 @@ void Application::run() {
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			SDL_GL_SwapWindow(window);
-
 		}
 	}
 	catch (const std::exception& e) {
@@ -2089,7 +2194,6 @@ void Application::initSDL() {
 }
 
 void Application::initOpenGL() {
-	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -2097,6 +2201,7 @@ void Application::initOpenGL() {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 
 	SDL_DisplayMode current;
 	if (SDL_GetCurrentDisplayMode(0, &current) != 0) {
@@ -2183,7 +2288,7 @@ void Application::initBG() {
 		0, 2, 3
 	};
 
-	GLuint EBO;
+	//GLuint EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO_vertices);
 	glGenBuffers(1, &EBO);
@@ -2516,4 +2621,399 @@ void Application::performPreRender() {
 	}
 	m_texture_view_shader = new Shader("shaders/texture_view.vert", "shaders/texture_view.frag");
 	spdlog::info("Pre-render complete.");
+}
+
+// primary pre renderer function to be run in a separate thread
+void Application::preRenderWorker()
+{
+	m_cancel_pre_render.store(false);
+	if (m_use_pre_render_params) {
+		spdlog::info("Worker thread: Using custom pre-render parameters.");
+		m_pre_render_resolution = tex_res;
+	}
+	else {
+		spdlog::info("Worker thread: Using default pre-render parameters.");
+		m_pre_render_resolution = m_pre_render_highest_supported_resolution / 2;
+	}
+	if (SDL_GL_MakeCurrent(window, m_worker_context) != 0) {
+		spdlog::critical("Worker thread could not set GL context! Error: {}", SDL_GetError());
+		m_worker_finished_submission.store(true);
+		return;
+	}
+
+	spdlog::info("Worker thread: Starting {}K pre-render submission...", (m_pre_render_resolution / 1024));
+	Shader* workerShader;
+	if (m_currentFractal == FractalType::MANDELBROT) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/mandelbrot_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::JULIA) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/julia_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::BURNING_SHIP) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/burning_ship_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::TRICORN) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/tricorn_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::PHOENIX) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/phoenix_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::LYAPUNOV) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/lyapunov_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::NEWTON) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/newton_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::NOVA) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/nova_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::MULTIBROT) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/multibrot_prerender.frag");
+	}
+	else if (m_currentFractal == FractalType::SPIDER) {
+		workerShader = new Shader("shaders/prerender.vert", "shaders/spider_prerender.frag");
+	}
+	else {
+		spdlog::critical("Worker thread: No valid fractal type set for pre-render!");
+		m_worker_finished_submission.store(true);
+		return;
+	}
+
+	if (workerShader == nullptr || workerShader->ID == 0) {
+		spdlog::critical("Worker thread: Failed to create or link the shader program!");
+		delete workerShader;
+		m_worker_finished_submission.store(true);
+		return;
+	}
+
+	GLuint workerVAO;
+	glGenVertexArrays(1, &workerVAO);
+	glBindVertexArray(workerVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_vertices);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glGenFramebuffers(1, &m_pre_render_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_pre_render_fbo);
+	glGenTextures(1, &m_pre_render_texture);
+	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pre_render_resolution, m_pre_render_resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pre_render_texture, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		spdlog::critical("Worker thread: Framebuffer is not complete!");
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteTextures(1, &m_pre_render_texture);
+		glDeleteFramebuffers(1, &m_pre_render_fbo);
+		glDeleteVertexArrays(1, &workerVAO);
+		m_worker_finished_submission.store(true);
+		return;
+	}
+
+	glViewport(0, 0, m_pre_render_resolution, m_pre_render_resolution);
+	glClear(GL_COLOR_BUFFER_BIT);
+	workerShader->use();
+	/*workerShader->setVec2("iResolution", (float)m_pre_render_resolution, (float)m_pre_render_resolution);*/ // not required in pre rendering
+	workerShader->setInt("u_max_iterations", 5000);
+	workerShader->setFloat("u_color_density", m_color_density);
+
+	if (m_currentFractal == FractalType::MANDELBROT) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_center", -0.75, 0.0);
+			workerShader->setDouble("u_zoom", 1.0);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::JULIA) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			workerShader->setDVec2("u_julia_c", m_pre_render_julia_c_x, m_pre_render_julia_c_y);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 1.0);
+			workerShader->setDVec2("u_julia_c", -0.7, 0.27015);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_julia_a.x, m_palette_julia_a.y, m_palette_julia_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_julia_b.x, m_palette_julia_b.y, m_palette_julia_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_julia_c.x, m_palette_julia_c.y, m_palette_julia_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_julia_d.x, m_palette_julia_d.y, m_palette_julia_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::BURNING_SHIP) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_center", -1.75, -0.04);
+			workerShader->setDouble("u_zoom", 22.0);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_burning_ship_a.x, m_palette_burning_ship_a.y, m_palette_burning_ship_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_burning_ship_b.x, m_palette_burning_ship_b.y, m_palette_burning_ship_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_burning_ship_c.x, m_palette_burning_ship_c.y, m_palette_burning_ship_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_burning_ship_d.x, m_palette_burning_ship_d.y, m_palette_burning_ship_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::TRICORN) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_tricorn_a.x, m_palette_tricorn_a.y, m_palette_tricorn_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_tricorn_b.x, m_palette_tricorn_b.y, m_palette_tricorn_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_tricorn_c.x, m_palette_tricorn_c.y, m_palette_tricorn_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_tricorn_d.x, m_palette_tricorn_d.y, m_palette_tricorn_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::PHOENIX) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			workerShader->setDVec2("u_phoenix_c", m_pre_render_phoenix_c_x, m_pre_render_phoenix_c_y);
+			workerShader->setDouble("u_phoenix_p", m_pre_render_phoenix_p);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+			workerShader->setDVec2("u_phoenix_c", -0.5, 0.0);
+			workerShader->setDouble("u_phoenix_p", 0.56667);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_phoenix_a.x, m_palette_phoenix_a.y, m_palette_phoenix_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_phoenix_b.x, m_palette_phoenix_b.y, m_palette_phoenix_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_phoenix_c.x, m_palette_phoenix_c.y, m_palette_phoenix_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_phoenix_d.x, m_palette_phoenix_d.y, m_palette_phoenix_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::LYAPUNOV) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_lyapunov_center", m_pre_render_lyapunov_center_a, m_pre_render_lyapunov_center_b);
+			workerShader->setDouble("u_lyapunov_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_lyapunov_center", 3.0, 3.0);
+			workerShader->setDouble("u_lyapunov_zoom", 1.0);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_lyapunov_a.x, m_palette_lyapunov_a.y, m_palette_lyapunov_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_lyapunov_b.x, m_palette_lyapunov_b.y, m_palette_lyapunov_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_lyapunov_c.x, m_palette_lyapunov_c.y, m_palette_lyapunov_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_lyapunov_d.x, m_palette_lyapunov_d.y, m_palette_lyapunov_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::NEWTON) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_newton_a.x, m_palette_newton_a.y, m_palette_newton_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_newton_b.x, m_palette_newton_b.y, m_palette_newton_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_newton_c.x, m_palette_newton_c.y, m_palette_newton_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_newton_d.x, m_palette_newton_d.y, m_palette_newton_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::NOVA) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			workerShader->setDouble("u_power", m_pre_render_nova_power);
+			workerShader->setDouble("u_relaxation", m_pre_render_nova_relaxation);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+			workerShader->setDouble("u_power", 3.0);
+			workerShader->setDouble("u_relaxation", 1.0);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_nova_a.x, m_palette_nova_a.y, m_palette_nova_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_nova_b.x, m_palette_nova_b.y, m_palette_nova_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_nova_c.x, m_palette_nova_c.y, m_palette_nova_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_nova_d.x, m_palette_nova_d.y, m_palette_nova_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::MULTIBROT) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			workerShader->setDouble("u_power", m_pre_render_multibrot_power);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+			workerShader->setDouble("u_power", 3.0);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::SPIDER) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_spider_a.x, m_palette_spider_a.y, m_palette_spider_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_spider_b.x, m_palette_spider_b.y, m_palette_spider_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_spider_c.x, m_palette_spider_c.y, m_palette_spider_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_spider_d.x, m_palette_spider_d.y, m_palette_spider_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else {
+		spdlog::critical("Worker thread: No fractals selected, pre-render aborted ...");
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteTextures(1, &m_pre_render_texture);
+		glDeleteFramebuffers(1, &m_pre_render_fbo);
+		glDeleteVertexArrays(1, &workerVAO);
+		delete workerShader;
+		m_worker_finished_submission.store(true);
+		return;
+	}
+	// tiled rendering parameters
+	const int TILE_SIZE = 256;
+	const int BATCH_SIZE = 4;
+	const int num_tiles = m_pre_render_resolution / TILE_SIZE;
+	int batch_counter = 0;
+	glEnable(GL_SCISSOR_TEST);
+	for (int tile_y = 0; tile_y < num_tiles; ++tile_y) {
+		for (int tile_x = 0; tile_x < num_tiles; ++tile_x) {
+			if (m_cancel_pre_render.load()) {
+				spdlog::warn("Worker thread: pre-render cancelled by user.");
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				SDL_GL_MakeCurrent(window, nullptr);
+				m_worker_finished_submission.store(true);
+				return;
+			}
+			int x_pos = tile_x * TILE_SIZE;
+			int y_pos = tile_y * TILE_SIZE;
+			glViewport(x_pos, y_pos, TILE_SIZE, TILE_SIZE);
+			glScissor(x_pos, y_pos, TILE_SIZE, TILE_SIZE);
+			workerShader->setIVec4("u_tile_info", tile_x, tile_y, num_tiles, num_tiles);
+			glBindVertexArray(workerVAO);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glFlush();
+			GLsync tileFence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+			GLenum waitRes;
+			do {
+				waitRes = glClientWaitSync(tileFence, GL_SYNC_FLUSH_COMMANDS_BIT, 5'000'000);
+			} while (waitRes == GL_TIMEOUT_EXPIRED);
+			glDeleteSync(tileFence);
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+	}
+	spdlog::info("Worker thread: All tiles rendered.");
+	spdlog::info("Worker thread: Generating mipmaps...");
+	glBindTexture(GL_TEXTURE_2D, m_pre_render_texture);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	spdlog::info("Worker thread: Mipmaps generated.");
+	glDisable(GL_SCISSOR_TEST);
+	if (m_pre_render_fence) { glDeleteSync(m_pre_render_fence); }
+	m_pre_render_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+	glFlush();
+	delete workerShader;
+	glDeleteVertexArrays(1, &workerVAO);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	SDL_GL_MakeCurrent(window, nullptr);
+	m_worker_finished_submission.store(true);
+	spdlog::info("Worker thread: Render commands submitted.");
+	spdlog::info("Worker thread: Pre-render worker completed.");
 }
