@@ -320,6 +320,7 @@
     <None Include="shaders\nova.vert" />
     <None Include="shaders\phoenix.frag" />
     <None Include="shaders\phoenix.vert" />
+    <None Include="shaders\phoenix_prerender.frag" />
     <None Include="shaders\prerender.vert" />
     <None Include="shaders\simple.vert" />
     <None Include="shaders\spider.frag" />
