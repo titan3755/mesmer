@@ -2893,6 +2893,52 @@ void Application::preRenderWorker()
 			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
 		}
 	}
+	else if (m_currentFractal == FractalType::MULTIBROT) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+			workerShader->setDouble("u_power", m_pre_render_multibrot_power);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+			workerShader->setDouble("u_power", 3.0);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_mandelbrot_a.x, m_palette_mandelbrot_a.y, m_palette_mandelbrot_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_mandelbrot_b.x, m_palette_mandelbrot_b.y, m_palette_mandelbrot_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_mandelbrot_c.x, m_palette_mandelbrot_c.y, m_palette_mandelbrot_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_mandelbrot_d.x, m_palette_mandelbrot_d.y, m_palette_mandelbrot_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
+	else if (m_currentFractal == FractalType::SPIDER) {
+		if (m_use_pre_render_params) {
+			workerShader->setDVec2("u_center", m_pre_render_center_x, m_pre_render_center_y);
+			workerShader->setDouble("u_zoom", m_pre_render_zoom_threshold);
+		}
+		else {
+			workerShader->setDVec2("u_center", 0.0, 0.0);
+			workerShader->setDouble("u_zoom", 0.5);
+		}
+		if (!m_apply_common_color_palette) {
+			workerShader->setVec3("u_palette_a", m_palette_spider_a.x, m_palette_spider_a.y, m_palette_spider_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_spider_b.x, m_palette_spider_b.y, m_palette_spider_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_spider_c.x, m_palette_spider_c.y, m_palette_spider_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_spider_d.x, m_palette_spider_d.y, m_palette_spider_d.z);
+		}
+		else {
+			workerShader->setVec3("u_palette_a", m_palette_a.x, m_palette_a.y, m_palette_a.z);
+			workerShader->setVec3("u_palette_b", m_palette_b.x, m_palette_b.y, m_palette_b.z);
+			workerShader->setVec3("u_palette_c", m_palette_c.x, m_palette_c.y, m_palette_c.z);
+			workerShader->setVec3("u_palette_d", m_palette_d.x, m_palette_d.y, m_palette_d.z);
+		}
+	}
 	else {
 		spdlog::critical("Worker thread: No fractals selected, pre-render aborted ...");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
