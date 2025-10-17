@@ -37,5 +37,3 @@
 [Note: Only windows binaries are available at this time, Linux binaries will be released soon] <br>
 -> Windows: [https://www.mediafire.com/file/vgu4r20l23ljdn2/mesmer_windows.7z/file](https://www.mediafire.com/file/vgu4r20l23ljdn2/mesmer_windows.7z/file)
 
-### (!) Created new branch of this repository -> background-pre-render
-
